@@ -64,6 +64,11 @@ defineProps({
       <circle cx="12" cy="10" r="2.6" />
     </template>
 
+    <!-- 체크 -->
+    <template v-else-if="name === 'check'">
+      <path d="m5 12.5 4.5 4.5L19 7" />
+    </template>
+
     <!-- 결과 없음 — 빈 돋보기 -->
     <template v-else-if="name === 'empty'">
       <circle cx="11" cy="11" r="7" />

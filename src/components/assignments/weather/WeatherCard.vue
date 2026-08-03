@@ -73,6 +73,9 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
           <span v-if="here" class="badge here-badge">
             <UiIcon name="location" :size="11" /> 현재 위치
           </span>
+          <span v-if="selected" class="pick" title="배경이 이 지역을 따릅니다">
+            <UiIcon name="check" :size="13" />
+          </span>
           <span v-if="cityItem.demo" class="badge demo-badge">데모</span>
         </h4>
         <p class="status">{{ cityItem.status }}</p>
@@ -152,10 +155,11 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
   background: var(--accent-tint);
 }
 
-/* 선택된 곳 — 배경이 이 도시를 따라간다. 현재 위치(초록)와 구분되게 파란 테두리만 */
+/* 선택된 곳 — 배경이 이 도시를 따라간다.
+   테두리는 눈에 거슬리지 않게 연한 회색으로만 두고, 표시는 옆의 체크가 맡는다 */
 .weather-card.selected {
-  border-color: #2f6b93;
-  box-shadow: 0 0 0 1px #2f6b93;
+  border-color: var(--line-strong);
+  background: var(--paper);
 }
 
 .weather-card.selected.here {
@@ -320,6 +324,14 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
   padding: 2px 8px;
   color: var(--muted);
   background: var(--line);
+}
+
+/* 선택 표시 — 도시 이름 옆 체크 */
+.pick {
+  display: inline-flex;
+  margin-left: 5px;
+  color: var(--muted);
+  vertical-align: -1px;
 }
 
 /* ── 별표 ── */

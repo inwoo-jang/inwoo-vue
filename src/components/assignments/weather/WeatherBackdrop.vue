@@ -92,6 +92,40 @@ watch(
   { immediate: true },
 )
 
+/**
+ * 빗방울을 낱개로 만든다.
+ * 줄무늬를 통째로 밀면 "사선 무늬가 미끄러지는" 느낌만 나고 비처럼 보이지 않는다.
+ * 길이 · 속도 · 굵기 · 시작 시각을 흩어 놓아야 쏟아지는 것처럼 보인다.
+ *
+ * 값은 규칙적인 수식으로 흩는다. Math.random을 쓰면 다시 그릴 때마다 튀어서
+ * 애니메이션이 끊겨 보인다.
+ */
+const makeDrops = (count, { minDur, maxDur, minLen, maxLen }) =>
+  Array.from({ length: count }, (_, i) => {
+    const a = ((i * 37) % 100) / 100 // 가로 위치
+    const b = ((i * 61) % 100) / 100 // 속도
+    const c = ((i * 83) % 100) / 100 // 길이
+    const d = ((i * 29) % 100) / 100 // 시작 시각
+    return {
+      left: a * 104 - 2,
+      dur: minDur + b * (maxDur - minDur),
+      len: minLen + c * (maxLen - minLen),
+      delay: -d * maxDur,
+      opacity: 0.3 + c * 0.55,
+      width: c > 0.72 ? 2 : 1.3,
+    }
+  })
+
+const RAIN = makeDrops(120, { minDur: 0.5, maxDur: 0.95, minLen: 42, maxLen: 110 })
+const RAIN_HEAVY = makeDrops(190, { minDur: 0.34, maxDur: 0.6, minLen: 60, maxLen: 150 })
+const DRIZZLE = makeDrops(80, { minDur: 1.3, maxDur: 2.1, minLen: 14, maxLen: 34 })
+
+const drops = computed(() => {
+  if (scene.value.effect === 'rain-heavy') return RAIN_HEAVY
+  if (scene.value.effect === 'drizzle') return DRIZZLE
+  return RAIN
+})
+
 /** 어두운 사진 위에서는 글자가 잘 보이도록 덮개를 더 진하게 */
 const isDark = computed(() =>
   ['storm', 'lightning', 'rain-heavy', 'rain'].includes(scene.value.effect),
@@ -125,11 +159,24 @@ const isDark = computed(() =>
       <div class="cloud-layer b" />
     </template>
 
-    <!-- 비: 굵기와 속도가 다른 빗줄기 세 겹 -->
+    <!-- 비: 빗방울을 낱개로 뿌리고, 바닥에는 물안개를 깐다 -->
     <template v-if="['rain', 'rain-heavy', 'drizzle', 'storm'].includes(scene.effect)">
-      <div class="rain-layer a" />
-      <div class="rain-layer b" />
-      <div class="rain-layer c" />
+      <div class="rain">
+        <span
+          v-for="(d, i) in drops"
+          :key="i"
+          class="drop"
+          :style="{
+            left: d.left + '%',
+            height: d.len + 'px',
+            width: d.width + 'px',
+            opacity: d.opacity,
+            animationDuration: d.dur + 's',
+            animationDelay: d.delay + 's',
+          }"
+        />
+      </div>
+      <div class="mist" />
     </template>
 
     <!-- 눈: 크기가 다른 눈송이가 흔들리며 내린다 -->
@@ -145,8 +192,48 @@ const isDark = computed(() =>
       <div class="fog-layer b" />
     </template>
 
-    <!-- 번개: 가끔 화면 전체가 번쩍인다 -->
-    <div v-if="['storm', 'lightning'].includes(scene.effect)" class="flash" />
+    <!-- 번개: 하늘이 번쩍인 뒤 갈래가 잠깐 그어진다 -->
+    <template v-if="['storm', 'lightning'].includes(scene.effect)">
+      <div class="flash" />
+      <svg
+        v-for="n in 2"
+        :key="n"
+        class="bolt"
+        :class="n === 1 ? 'a' : 'b'"
+        viewBox="0 0 200 300"
+        preserveAspectRatio="xMidYMin meet"
+      >
+        <!-- 바깥 후광 -->
+        <path
+          d="M96 0 78 96 112 88 66 210"
+          fill="none"
+          stroke="#bfe0ff"
+          stroke-width="11"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          opacity="0.55"
+        />
+        <!-- 몸통 -->
+        <path d="M96 0 78 96 112 88 66 210 90 128 58 138Z" fill="#f2f9ff" />
+        <!-- 하얗게 타는 심지 -->
+        <path
+          d="M96 0 78 96 112 88 66 210"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2.4"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+        />
+        <!-- 잔가지 -->
+        <path
+          d="M84 62 46 104M104 108 142 142M74 150 44 188"
+          fill="none"
+          stroke="#eaf5ff"
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </template>
 
     <!-- 글자가 읽히도록 덮는 층 -->
     <div class="veil" />
@@ -297,59 +384,78 @@ const isDark = computed(() =>
 }
 
 /* ── 비 ── */
-.rain-layer {
+.rain {
   position: absolute;
-  inset: -30% 0 0;
-  background-repeat: repeat;
+  inset: -14% 0 0;
 }
 
-.rain-layer.a {
-  background-image: repeating-linear-gradient(
-    102deg,
-    transparent 0 9px,
-    rgb(150 180 210 / 55%) 9px 10px,
-    transparent 10px 22px
+/* 빗방울 하나. 위는 투명하고 아래로 갈수록 진해야 떨어지는 물줄기로 보인다 */
+.drop {
+  position: absolute;
+  top: -12%;
+  border-radius: 999px;
+  background: linear-gradient(
+    to bottom,
+    rgb(214 232 246 / 0%),
+    rgb(214 232 246 / 75%) 45%,
+    rgb(236 246 255 / 95%)
   );
-  animation: rain-fall 0.62s linear infinite;
+  animation-name: drop-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
 }
 
-.rain-layer.b {
-  background-image: repeating-linear-gradient(
-    99deg,
-    transparent 0 15px,
-    rgb(170 195 220 / 40%) 15px 16px,
-    transparent 16px 34px
-  );
-  animation: rain-fall 0.95s linear infinite;
-}
-
-.rain-layer.c {
-  background-image: repeating-linear-gradient(
-    105deg,
-    transparent 0 24px,
-    rgb(120 155 190 / 30%) 24px 25px,
-    transparent 25px 52px
-  );
-  animation: rain-fall 1.45s linear infinite;
-}
-
-/* 이슬비는 가늘고 느리게, 호우는 굵고 빠르게 */
-.fx-drizzle .rain-layer {
-  opacity: 0.45;
-  animation-duration: 1.7s;
-}
-
-.fx-rain-heavy .rain-layer.a {
-  animation-duration: 0.42s;
-}
-
-.fx-rain-heavy .rain-layer.b {
-  animation-duration: 0.6s;
-}
-
-@keyframes rain-fall {
+/* 바람에 조금 기울어 떨어진다 */
+@keyframes drop-fall {
+  from {
+    transform: translate3d(0, -20%, 0);
+  }
   to {
-    transform: translateY(34%);
+    transform: translate3d(-90px, 125vh, 0);
+  }
+}
+
+/* 바닥에 튀어 오르는 물안개 */
+.mist {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 26%;
+  background: linear-gradient(to top, rgb(226 238 248 / 55%), transparent);
+  animation: mist-breathe 4.5s ease-in-out infinite;
+}
+
+@keyframes mist-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* 이슬비는 흐릿하게, 호우는 더 기울고 빠르게 */
+.fx-drizzle .drop {
+  filter: blur(0.4px);
+}
+
+.fx-drizzle .mist {
+  opacity: 0.4;
+}
+
+.fx-rain-heavy .drop {
+  animation-name: drop-fall-hard;
+}
+
+@keyframes drop-fall-hard {
+  from {
+    transform: translate3d(0, -20%, 0);
+  }
+  to {
+    transform: translate3d(-150px, 130vh, 0);
   }
 }
 
@@ -443,34 +549,119 @@ const isDark = computed(() =>
 }
 
 /* ── 번개 ── */
+/* 하늘 전체가 번쩍 — 짧고 불규칙하게 두 번 치는 것이 실제와 가깝다 */
 .flash {
   position: absolute;
-  background: rgb(255 255 255 / 90%);
+  background: radial-gradient(
+    ellipse 80% 60% at 40% 0%,
+    rgb(255 255 255 / 95%),
+    rgb(214 234 255 / 60%) 55%,
+    transparent 80%
+  );
   inset: 0;
   opacity: 0;
   animation: flash 9s linear infinite;
 }
 
-.fx-lightning .flash {
-  animation-duration: 6s;
+/* 갈래는 섬광과 같은 박자로 잠깐만, 대신 아주 밝게 */
+.bolt {
+  position: absolute;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgb(255 255 255 / 95%))
+    drop-shadow(0 0 22px rgb(150 205 255 / 90%)) drop-shadow(0 0 52px rgb(120 185 255 / 70%));
+  animation: bolt 9s linear infinite;
+  will-change: opacity;
 }
 
-/* 번쩍 · 잠깐 쉬고 한 번 더 · 그리고 긴 정적 */
+.bolt.a {
+  top: -3%;
+  left: 22%;
+  width: 27%;
+  height: 76%;
+}
+
+/* 두 번째 갈래는 반대쪽에서 시차를 두고 친다 */
+.bolt.b {
+  top: 2%;
+  right: 16%;
+  left: auto;
+  width: 19%;
+  height: 58%;
+  animation-delay: 4.9s;
+  transform: scaleX(-1);
+}
+
+.fx-lightning .flash,
+.fx-lightning .bolt {
+  animation-duration: 6.5s;
+}
+
+.fx-lightning .bolt.b {
+  animation-delay: 3.4s;
+}
+
 @keyframes flash {
   0%,
   100% {
     opacity: 0;
   }
-  2% {
-    opacity: 0.75;
+  1.4% {
+    opacity: 0.85;
   }
-  3.5% {
+  2.2% {
+    opacity: 0.12;
+  }
+  2.9% {
+    opacity: 0.7;
+  }
+  4.6% {
     opacity: 0;
   }
-  5% {
-    opacity: 0.45;
+  /* 두 번째 갈래(4.9s ≒ 54%)와 같은 순간에 하늘도 번쩍인다 */
+  53.5% {
+    opacity: 0;
   }
-  6.5% {
+  54.4% {
+    opacity: 0.7;
+  }
+  55.2% {
+    opacity: 0.1;
+  }
+  56% {
+    opacity: 0.5;
+  }
+  57.6% {
+    opacity: 0;
+  }
+}
+
+@keyframes bolt {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  0.9% {
+    opacity: 1;
+  }
+  1.4% {
+    opacity: 0.1;
+  }
+  1.8% {
+    opacity: 1;
+  }
+  2.3% {
+    opacity: 0.25;
+  }
+  2.8% {
+    opacity: 0.95;
+  }
+  3.3% {
+    opacity: 0.15;
+  }
+  3.7% {
+    opacity: 0.7;
+  }
+  4.6% {
     opacity: 0;
   }
 }

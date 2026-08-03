@@ -149,27 +149,73 @@ export const describeWeather = (code) => WMO[code] ?? '알 수 없음'
  * 여러 지역의 현재 날씨를 한 번의 요청으로 가져온다.
  * 좌표를 콤마로 이어 보내면 보낸 순서 그대로 배열이 돌아온다.
  *
+ * 같은 값을 10분 안에 다시 요청하지 않도록 브라우저에 잠깐 저장해 둔다.
+ * 무료 API라 요청이 잦으면 429(요청 한도 초과)를 돌려준다.
+ *
+ * @param {boolean} force 새로고침 버튼처럼 캐시를 무시하고 받아야 할 때
  * @returns {Promise<Array>} [{ id, name, region, temp, humidity, status }, ...]
  * @throws {Error} 네트워크 오류이거나 응답이 200이 아닐 때
  */
-export const fetchWeather = async (cities = CITIES) => {
-  const params = new URLSearchParams({
-    latitude: cities.map((c) => c.lat).join(','),
-    longitude: cities.map((c) => c.lon).join(','),
-    current: 'temperature_2m,relative_humidity_2m,weather_code',
-    timezone: 'Asia/Seoul',
-  })
+const CACHE_KEY = 'inwoo-weather-cache'
+const CACHE_TTL = 10 * 60 * 1000
 
-  const response = await fetch(`${BASE_URL}?${params}`)
-  if (!response.ok) {
-    throw new Error(`날씨 서버가 ${response.status} 응답을 보냈습니다.`)
+/**
+ * 받아 둔 값을 localStorage에 남긴다.
+ * 새로고침해도 남아 있어야 서버가 막혔을 때 화면이 비지 않는다.
+ */
+const readCache = (count, maxAge) => {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const saved = JSON.parse(raw)
+    if (saved.count !== count) return null
+    return Date.now() - saved.at <= maxAge ? saved : null
+  } catch {
+    return null
   }
+}
 
-  const data = await response.json()
+const writeCache = (count, rows) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), count, rows }))
+  } catch {
+    // 저장 공간이 없어도 화면은 그대로 동작해야 한다
+  }
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/** 429(요청 한도 초과)는 잠깐 기다리면 풀리는 경우가 많아 한 번만 다시 시도한다 */
+const request = async (url) => {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await fetch(url)
+    if (response.ok) return response
+    if (response.status !== 429 || attempt === 1) {
+      throw new Error(`날씨 서버가 ${response.status} 응답을 보냈습니다.`)
+    }
+    await sleep(1500)
+  }
+}
+
+export const fetchWeather = async (cities = CITIES, force = false) => {
+  const fresh = force ? null : readCache(cities.length, CACHE_TTL)
+  if (fresh) return { rows: fresh.rows, at: fresh.at, stale: false }
+
+  let data
+  try {
+    const response = await request(`${BASE_URL}?${params}`)
+    data = await response.json()
+  } catch (error) {
+    // 서버가 막혔더라도 지난번에 받아 둔 값이 있으면 그걸 보여 준다.
+    // 빈 화면에 오류만 띄우는 것보다 낫다.
+    const stale = readCache(cities.length, Infinity)
+    if (stale) return { rows: stale.rows, at: stale.at, stale: true }
+    throw error
+  }
   // 지역이 하나면 배열이 아니라 객체 하나로 오므로 형태를 맞춰 준다
   const list = Array.isArray(data) ? data : [data]
 
-  return cities.map((city, index) => {
+  const rows = cities.map((city, index) => {
     const current = list[index]?.current ?? {}
     return {
       id: city.id,
@@ -182,6 +228,9 @@ export const fetchWeather = async (cities = CITIES) => {
       observedAt: current.time ?? '',
     }
   })
+
+  writeCache(cities.length, rows)
+  return { rows, at: Date.now(), stale: false }
 }
 
 /**

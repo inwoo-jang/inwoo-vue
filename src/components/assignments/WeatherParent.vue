@@ -31,6 +31,7 @@ const FAVORITES_KEY = 'inwoo-weather-favorites'
 const weatherList = ref([])
 const isLoading = ref(false)
 const errorMessage = ref('')
+const isStale = ref(false)
 const updatedAt = ref('')
 
 // ── 사용자가 만지는 상태 ──
@@ -103,18 +104,21 @@ const findMyLocation = () => {
 }
 
 /** 실제 API 호출 — 실패해도 화면이 죽지 않도록 에러를 상태로 받는다 */
-const load = async () => {
+const load = async (force = false) => {
   isLoading.value = true
   errorMessage.value = ''
   try {
+    const { rows, at, stale } = await fetchWeather(undefined, force)
     // 데모 3곳은 배경 확인용이라 맨 뒤에 붙인다
-    weatherList.value = [...(await fetchWeather()), ...DEMO_ROWS]
-    updatedAt.value = new Date().toLocaleTimeString('ko-KR', {
+    weatherList.value = [...rows, ...DEMO_ROWS]
+    isStale.value = stale
+    updatedAt.value = new Date(at).toLocaleTimeString('ko-KR', {
       hour: '2-digit',
       minute: '2-digit',
     })
   } catch (error) {
     errorMessage.value = '날씨를 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
+    isStale.value = false
     console.error('[weather] 불러오기 실패', error)
   } finally {
     isLoading.value = false
@@ -175,6 +179,11 @@ watch(totalPages, (total) => {
  * 배경이 따라갈 날씨.
  *   ① 사용자가 고른 도시 → ② 현재 위치 도시 → ③ 둘 다 없으면 기본 배경
  */
+/** 지금 고른 도시 (없으면 null) */
+const selectedCity = computed(
+  () => weatherList.value.find((item) => item.id === selectedCityId.value) ?? null,
+)
+
 const backdropCity = computed(
   () =>
     weatherList.value.find((item) => item.id === selectedCityId.value) ??
@@ -257,10 +266,15 @@ const showDetail = (cityName) => {
           <UiIcon name="location" :size="14" />
           {{ locationState === 'asking' ? '찾는 중…' : '내 위치' }}
         </button>
-        <button class="tool" type="button" :disabled="isLoading" @click="load">
+        <button class="tool" type="button" :disabled="isLoading" @click="load(true)">
           {{ isLoading ? '불러오는 중…' : '새로고침' }}
         </button>
       </div>
+
+      <p v-if="isStale" class="hint stale">
+        지금 서버 응답을 받지 못해 <b>{{ updatedAt }}에 받아 둔 값</b>을 보여 주고 있습니다.
+        잠시 뒤 새로고침을 눌러 보세요.
+      </p>
 
       <p v-if="locationState === 'denied'" class="hint">
         위치 권한이 없어 현재 위치를 표시하지 못했습니다. 나머지 기능은 그대로 쓸 수 있습니다.
@@ -278,7 +292,7 @@ const showDetail = (cityName) => {
       <!-- 불러오기 실패 -->
       <p v-if="errorMessage" class="error-message">
         {{ errorMessage }}
-        <button type="button" @click="load">다시 시도</button>
+        <button type="button" @click="load(true)">다시 시도</button>
       </p>
 
       <!-- 첫 로딩 -->
@@ -338,15 +352,35 @@ const showDetail = (cityName) => {
       </template>
 
       <!-- ② 날씨별 -->
-      <WeatherByStatus
-        v-else
-        :list="matched"
-        :favorites="favorites"
-        :here-id="hereId"
-        :selected-id="selectedCityId"
-        @select-card="selectCity"
-        @toggle-favorite="toggleFavorite"
-      />
+      <template v-else>
+        <!-- 고른 곳은 맨 위에 카드로 올려 시간별까지 볼 수 있게 한다 -->
+        <template v-if="selectedCity">
+          <WeatherCard
+            :city-item="selectedCity"
+            :favorite="favorites.includes(selectedCity.id)"
+            :here="selectedCity.id === hereId"
+            :open="selectedCity.id === detailCityId"
+            :selected="true"
+            @select-card="selectCity"
+            @click-detail="showDetail"
+            @toggle-favorite="toggleFavorite"
+          />
+          <HourlyDetail
+            v-if="selectedCity.id === detailCityId"
+            :city="detailCity"
+            @close="detailCityId = ''"
+          />
+        </template>
+
+          <WeatherByStatus
+          :list="matched"
+          :favorites="favorites"
+          :here-id="hereId"
+          :selected-id="selectedCityId"
+          @select-card="selectCity"
+          @toggle-favorite="toggleFavorite"
+        />
+      </template>
     </BaseDashboardCard>
 
     <div class="status-bar">
@@ -478,6 +512,12 @@ const showDetail = (cityName) => {
   background: var(--paper);
   color: var(--faint);
   font-size: 12px;
+}
+
+.hint.stale {
+  border: 1px solid var(--signal);
+  background: var(--signal-tint);
+  color: var(--signal);
 }
 
 .empty-message {

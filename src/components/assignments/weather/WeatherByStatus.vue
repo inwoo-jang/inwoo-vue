@@ -52,6 +52,7 @@ const groups = computed(() => {
           >
             <UiIcon v-if="city.id === hereId" name="location" :size="11" />
             <span class="chip-name">{{ city.name }}</span>
+            <UiIcon v-if="city.id === selectedId" name="check" :size="12" class="chip-check" />
             <span class="chip-temp">{{ city.temp }}°</span>
             <span class="chip-region">{{ city.region }}</span>
           </button>
@@ -149,14 +150,14 @@ const groups = computed(() => {
   color: var(--accent);
 }
 
-/* 선택된 곳 — 카드와 같은 파란 테두리로 맞춘다 */
+/* 선택된 곳 — 카드와 같이 연한 회색 테두리 + 체크 */
 .chips li:has(.chip.selected) {
-  border-color: #2f6b93;
-  box-shadow: 0 0 0 1px #2f6b93;
+  border-color: var(--line-strong);
+  background: var(--surface);
 }
 
-.chip.selected .chip-name {
-  color: #2f6b93;
+.chip-check {
+  color: var(--muted);
 }
 
 .chip-name {
