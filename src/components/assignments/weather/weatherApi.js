@@ -185,6 +185,68 @@ const writeCache = (count, rows) => {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+/* ------------------------------------------------------------------
+ * 백업 제공자 — 노르웨이 기상청(MET Norway)
+ * ------------------------------------------------------------------
+ * Open-Meteo가 429(요청 한도 초과)를 돌려줄 때를 대비한 두 번째 줄.
+ * 키가 필요 없고 CORS도 열려 있다. 대신 좌표 하나당 한 번씩 불러야 해서
+ * 평소에는 쓰지 않고 1차가 실패했을 때만 쓴다.
+ * https://api.met.no/weatherapi/locationforecast/2.0/documentation
+ */
+const METNO_URL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact'
+
+/** met.no 심볼 코드 → 한글 상태 (아이콘 매칭 표의 낱말을 포함해야 한다) */
+const SYMBOL = [
+  ['thunder', '뇌우'],
+  ['heavysnow', '폭설'],
+  ['snow', '눈'],
+  ['sleet', '진눈깨비'],
+  ['heavyrainshowers', '소나기'],
+  ['rainshowers', '소나기'],
+  ['lightrainshowers', '소나기'],
+  ['heavyrain', '호우'],
+  ['lightrain', '이슬비'],
+  ['rain', '비'],
+  ['fog', '안개'],
+  ['cloudy', '흐림'],
+  ['partlycloudy', '구름조금'],
+  ['fair', '대체로 맑음'],
+  ['clearsky', '맑음'],
+]
+
+const describeSymbol = (code = '') => {
+  const key = code.replace(/_(day|night|polartwilight)$/, '')
+  return SYMBOL.find(([word]) => key.includes(word))?.[1] ?? '알 수 없음'
+}
+
+/** 한 번에 너무 많이 던지지 않도록 몇 개씩 끊어서 부른다 */
+const inBatches = async (items, size, task) => {
+  const out = []
+  for (let i = 0; i < items.length; i += size) {
+    out.push(...(await Promise.all(items.slice(i, i + size).map(task))))
+  }
+  return out
+}
+
+const fetchFromMetNo = async (cities) =>
+  inBatches(cities, 8, async (city) => {
+    const response = await fetch(`${METNO_URL}?lat=${city.lat}&lon=${city.lon}`)
+    if (!response.ok) throw new Error(`백업 서버가 ${response.status} 응답을 보냈습니다.`)
+    const data = await response.json()
+    const now = data.properties.timeseries[0]
+    const details = now.data.instant.details
+    return {
+      id: city.id,
+      name: city.name,
+      region: city.region,
+      group: groupOf(city.region),
+      temp: Math.round(details.air_temperature ?? 0),
+      humidity: Math.round(details.relative_humidity ?? 0),
+      status: describeSymbol(now.data.next_1_hours?.summary?.symbol_code),
+      observedAt: now.time ?? '',
+    }
+  })
+
 /** 429(요청 한도 초과)는 잠깐 기다리면 풀리는 경우가 많아 한 번만 다시 시도한다 */
 const request = async (url) => {
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -199,18 +261,27 @@ const request = async (url) => {
 
 export const fetchWeather = async (cities = CITIES, force = false) => {
   const fresh = force ? null : readCache(cities.length, CACHE_TTL)
-  if (fresh) return { rows: fresh.rows, at: fresh.at, stale: false }
+  if (fresh) return { rows: fresh.rows, at: fresh.at, stale: false, source: 'cache' }
 
   let data
   try {
     const response = await request(`${BASE_URL}?${params}`)
     data = await response.json()
   } catch (error) {
-    // 서버가 막혔더라도 지난번에 받아 둔 값이 있으면 그걸 보여 준다.
-    // 빈 화면에 오류만 띄우는 것보다 낫다.
-    const stale = readCache(cities.length, Infinity)
-    if (stale) return { rows: stale.rows, at: stale.at, stale: true }
-    throw error
+    console.warn('[weather] 1차 서버 실패, 백업 서버로 넘어갑니다.', error)
+    // ② 백업 제공자로 다시 시도한다
+    try {
+      const rows = await fetchFromMetNo(cities)
+      writeCache(cities.length, rows)
+      return { rows, at: Date.now(), stale: false, source: 'met.no' }
+    } catch (backupError) {
+      console.warn('[weather] 백업 서버도 실패했습니다.', backupError)
+      // ③ 둘 다 막혔더라도 지난번에 받아 둔 값이 있으면 그걸 보여 준다.
+      //    빈 화면에 오류만 띄우는 것보다 낫다.
+      const stale = readCache(cities.length, Infinity)
+      if (stale) return { rows: stale.rows, at: stale.at, stale: true }
+      throw error
+    }
   }
   // 지역이 하나면 배열이 아니라 객체 하나로 오므로 형태를 맞춰 준다
   const list = Array.isArray(data) ? data : [data]
@@ -230,7 +301,7 @@ export const fetchWeather = async (cities = CITIES, force = false) => {
   })
 
   writeCache(cities.length, rows)
-  return { rows, at: Date.now(), stale: false }
+  return { rows, at: Date.now(), stale: false, source: 'open-meteo' }
 }
 
 /**
@@ -317,37 +388,29 @@ export const fetchHourly = async (city, startDate, endDate = startDate) => {
  * demo 표시가 있으므로 실제 관측값과 섞이지 않는다.
  */
 export const DEMO_ROWS = [
-  {
-    id: 'demo-rain',
-    name: '비 오는 곳',
-    region: '데모',
-    group: '데모',
-    temp: 19,
-    humidity: 92,
-    status: '비',
-    demo: true,
-  },
-  {
-    id: 'demo-storm',
-    name: '번개 치는 곳',
-    region: '데모',
-    group: '데모',
-    temp: 24,
-    humidity: 85,
-    status: '뇌우',
-    demo: true,
-  },
-  {
-    id: 'demo-snow',
-    name: '눈 내리는 곳',
-    region: '데모',
-    group: '데모',
-    temp: -3,
-    humidity: 74,
-    status: '눈',
-    demo: true,
-  },
-]
+  ['맑음', 31, 40],
+  ['대체로 맑음', 28, 52],
+  ['구름조금', 26, 58],
+  ['구름많음', 24, 66],
+  ['흐림', 21, 72],
+  ['이슬비', 18, 84],
+  ['비', 19, 92],
+  ['호우', 17, 96],
+  ['소나기', 23, 80],
+  ['눈', -3, 74],
+  ['폭설', -7, 81],
+  ['안개', 12, 95],
+  ['뇌우', 24, 85],
+].map(([status, temp, humidity]) => ({
+  id: 'demo-' + status.replace(/\s/g, ''),
+  name: status,
+  region: '데모',
+  group: '데모',
+  temp,
+  humidity,
+  status,
+  demo: true,
+}))
 
 /** id로 도시 정보(좌표 포함)를 찾는다 */
 export const findCity = (id) => CITIES.find((city) => city.id === id) ?? null
