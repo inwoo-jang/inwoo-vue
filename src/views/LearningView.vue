@@ -1,11 +1,42 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ChallengeCard from '../components/ui/ChallengeCard.vue'
 import ChapterOrientation from '../components/ui/ChapterOrientation.vue'
 import { assignmentsOf, chapters, challengesOf } from '../data/curriculum'
 
-/** 현재 선택된 챕터 id */
-const selectedChapterId = ref(2)
+/**
+ * 현재 선택된 챕터 id — 주소(/learning/4)에서 읽는다.
+ * 주소에 담아 두면 "CH04 보고 있어"를 링크로 그대로 보낼 수 있다.
+ */
+const route = useRoute()
+const router = useRouter()
+
+const props = defineProps({
+  chapterId: { type: String, default: '' },
+})
+
+const DEFAULT_CHAPTER = 2
+
+const selectedChapterId = computed(() => {
+  const id = Number(props.chapterId)
+  return chapters.some((c) => c.id === id) ? id : DEFAULT_CHAPTER
+})
+
+/** 챕터를 고르면 주소를 바꾼다. 화면은 주소를 보고 따라 바뀐다. */
+const selectChapter = (id) => {
+  router.push({ name: 'learning', params: { chapterId: String(id) } })
+  document.getElementById('learning-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// 주소에 챕터가 없으면 기본 챕터를 주소에 채워 둔다(링크를 복사해도 같은 화면이 열리게)
+watch(
+  () => props.chapterId,
+  (value) => {
+    if (!value) router.replace({ name: 'learning', params: { chapterId: String(DEFAULT_CHAPTER) } })
+  },
+  { immediate: true },
+)
 
 /** 왼쪽 챕터 메뉴 접기 — 실습할 때 화면을 넓게 쓰기 위함 */
 const isNavCollapsed = ref(false)
@@ -37,11 +68,6 @@ const chapterStats = computed(() =>
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-const selectChapter = (id) => {
-  selectedChapterId.value = id
-  document.getElementById('learning-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 </script>
 
@@ -155,11 +181,11 @@ const selectChapter = (id) => {
       <!-- 이 챕터에 연결된 제출 과제 -->
       <section v-if="chapterAssignments.length" class="linked-assignments">
         <p class="section-label">이 챕터의 제출 과제</p>
-        <a
+        <RouterLink
           v-for="assignment in chapterAssignments"
           :key="assignment.id"
           class="assignment-link"
-          href="#/assignments"
+          to="/assignments"
         >
           <span class="step">{{ String(assignment.id).padStart(2, '0') }}</span>
           <span>
@@ -167,7 +193,7 @@ const selectChapter = (id) => {
             <small>{{ assignment.goal }}</small>
           </span>
           <span class="arrow">→</span>
-        </a>
+        </RouterLink>
       </section>
     </div>
   </section>

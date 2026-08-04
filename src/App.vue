@@ -1,58 +1,44 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import AssignmentsView from './views/AssignmentsView.vue'
-import HomeView from './views/HomeView.vue'
-import LearningView from './views/LearningView.vue'
-import ProjectView from './views/ProjectView.vue'
-import SettingsView from './views/SettingsView.vue'
+import { RouterLink, RouterView } from 'vue-router'
 
-const currentPath = ref(window.location.hash.slice(1) || '/')
-
-const updatePath = () => {
-  currentPath.value = window.location.hash.slice(1) || '/'
-}
-
-onMounted(() => window.addEventListener('hashchange', updatePath))
-onUnmounted(() => window.removeEventListener('hashchange', updatePath))
-
-const currentView = computed(() => {
-  if (currentPath.value === '/learning') return LearningView
-  if (currentPath.value === '/assignments') return AssignmentsView
-  if (currentPath.value === '/project') return ProjectView
-  if (currentPath.value === '/settings') return SettingsView
-  return HomeView
-})
-
-const isActive = (path) => currentPath.value === path
+/**
+ * 화면 전환은 라우터가 맡는다.
+ * 예전에는 여기서 location.hash 를 직접 읽어 컴포넌트를 갈아끼웠는데,
+ * 그 일(주소 감시 · 화면 선택 · 현재 메뉴 표시)을 전부 라우터가 대신한다.
+ */
+const MENU = [
+  { to: '/', label: '홈', exact: true }, // 홈은 정확히 '/'일 때만 켜진다
+  { to: '/learning', label: '학습 & 챌린지' },
+  { to: '/assignments', label: '제출 과제' },
+  { to: '/project', label: '최종 결과물' },
+  { to: '/settings', label: '환경 설정' },
+]
 </script>
 
 <template>
   <div class="app-shell">
     <header class="app-header">
-      <a class="brand" href="#/">
+      <RouterLink class="brand" to="/">
         <span class="brand-mark">V</span>
         <span>Vue Learning Lab</span>
-      </a>
+      </RouterLink>
 
       <nav class="main-nav" aria-label="주요 메뉴">
-        <a href="#/" :class="{ active: isActive('/') }">홈</a>
-        <a href="#/learning" :class="{ active: isActive('/learning') }">
-          학습 & 챌린지
-        </a>
-        <a href="#/assignments" :class="{ active: isActive('/assignments') }">
-          제출 과제
-        </a>
-        <a href="#/project" :class="{ active: isActive('/project') }">
-          최종 결과물
-        </a>
-        <a href="#/settings" :class="{ active: isActive('/settings') }">
-          환경 설정
-        </a>
+        <!-- RouterLink 는 현재 주소와 맞으면 router-link-active 를 알아서 붙여 준다 -->
+        <RouterLink
+          v-for="item in MENU"
+          :key="item.to"
+          :to="item.to"
+          :class="{ exact: item.exact }"
+        >
+          {{ item.label }}
+        </RouterLink>
       </nav>
     </header>
 
     <main class="page-container">
-      <component :is="currentView" />
+      <!-- 주소에 맞는 화면이 놓이는 자리 -->
+      <RouterView />
     </main>
   </div>
 </template>
@@ -116,8 +102,11 @@ const isActive = (path) => currentPath.value === path
   font-weight: 700;
 }
 
+/* router-link-active 는 앞부분만 맞아도 켜진다(/project → /project/3).
+   '/'는 모든 주소의 앞부분이라 홈만 exact-active 로 따로 본다. */
 .main-nav a:hover,
-.main-nav a.active {
+.main-nav a.router-link-active:not(.exact),
+.main-nav a.exact.router-link-exact-active {
   color: var(--ink);
   background: var(--accent-tint);
 }

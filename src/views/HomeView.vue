@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from 'vue-router'
 import {
   assignments,
   chapters,
@@ -19,8 +20,8 @@ const progressPercent = Math.round((doneAssignmentCount / assignments.length) * 
         코드 챌린지로 개념을 익히고, 단계별 제출 과제로 날씨 웹 애플리케이션을 발전시킵니다.
       </p>
       <div class="hero-actions">
-        <a class="primary-button" href="#/learning">학습 시작하기</a>
-        <a class="secondary-button" href="#/assignments">제출 과제 보기</a>
+        <RouterLink class="primary-button" to="/learning">학습 시작하기</RouterLink>
+        <RouterLink class="secondary-button" to="/assignments">제출 과제 보기</RouterLink>
       </div>
     </div>
     <div class="progress-card">
@@ -28,7 +29,7 @@ const progressPercent = Math.round((doneAssignmentCount / assignments.length) * 
       <strong>{{ doneAssignmentCount }} / {{ assignments.length }}</strong>
       <span>제출 과제 진행률</span>
       <div class="progress-track"><i :style="{ width: `${progressPercent}%` }"></i></div>
-      <a href="#/project">최종 결과물 확인 →</a>
+      <RouterLink to="/project">최종 결과물 확인 →</RouterLink>
     </div>
   </section>
 
@@ -38,7 +39,7 @@ const progressPercent = Math.round((doneAssignmentCount / assignments.length) * 
         <p class="eyebrow">CURRICULUM</p>
         <h2>학습 영역</h2>
       </div>
-      <a href="#/learning">전체 학습 보기 →</a>
+      <RouterLink to="/learning">전체 학습 보기 →</RouterLink>
     </div>
     <div class="chapter-grid">
       <article v-for="chapter in chapters.slice(0, 4)" :key="chapter.id" class="info-card">
@@ -56,7 +57,7 @@ const progressPercent = Math.round((doneAssignmentCount / assignments.length) * 
         <p class="eyebrow">SUBMISSION PROJECT</p>
         <h2>하나의 날씨 프로젝트</h2>
       </div>
-      <a href="#/assignments">과제 전체 보기 →</a>
+      <RouterLink to="/assignments">과제 전체 보기 →</RouterLink>
     </div>
     <div class="project-strip">
       <div>

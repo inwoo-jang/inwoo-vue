@@ -1,5 +1,6 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { assignments } from '../data/curriculum'
 import { findAssignmentResult } from '../components/assignments'
 import ResultAnatomy from '../components/ui/ResultAnatomy.vue'
@@ -20,14 +21,51 @@ const upcoming = computed(() =>
   assignments.filter((a) => !findAssignmentResult(a.result) && a.status !== 'done'),
 )
 
-/** 선택한 단계. null이면 가장 마지막에 완성한 단계를 보여준다. */
-const selectedId = ref(null)
+/**
+ * 어떤 단계를 볼지는 주소에 담는다 (/project/3).
+ * 그래야 "3단계 결과물"만 따로 링크로 보낼 수 있다.
+ * 주소에 단계가 없으면(/project) 가장 마지막에 완성한 단계를 보여준다.
+ */
+const router = useRouter()
+
+const props = defineProps({
+  stageId: { type: String, default: '' },
+})
 
 const current = computed(() => {
   const list = builtStages.value
   if (!list.length) return null
-  return list.find((s) => s.id === selectedId.value) ?? list[list.length - 1]
+  return list.find((s) => String(s.id) === props.stageId) ?? list[list.length - 1]
 })
+
+/** 단계를 고르면 주소를 바꾼다 */
+const selectStage = (id) => {
+  router.push({ name: 'project', params: { stageId: String(id) } })
+}
+
+/** 주소가 비어 있으면 지금 보고 있는 단계를 주소에 채워 링크를 복사할 수 있게 한다 */
+watch(
+  [() => props.stageId, current],
+  ([stageId, stage]) => {
+    if (!stageId && stage) {
+      router.replace({ name: 'project', params: { stageId: String(stage.id) } })
+    }
+  },
+  { immediate: true },
+)
+
+/** 이 화면의 주소를 클립보드로 */
+const copied = ref(false)
+
+const copyLink = async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+    copied.value = true
+    setTimeout(() => (copied.value = false), 1600)
+  } catch {
+    copied.value = false
+  }
+}
 </script>
 
 <template>
@@ -62,7 +100,7 @@ const current = computed(() => {
         class="stage-tab"
         :class="{ active: stage.id === current.id }"
         :aria-selected="stage.id === current.id"
-        @click="selectedId = stage.id"
+        @click="selectStage(stage.id)"
       >
         <span class="tab-no">{{ String(stage.id).padStart(2, '0') }}</span>
         <span class="tab-title">{{ stage.title }}</span>
@@ -76,7 +114,12 @@ const current = computed(() => {
         <h2>{{ current.title }}</h2>
         <p class="stage-goal">{{ current.goal }}</p>
       </div>
-      <a class="to-assignment" href="#/assignments">요구사항 보기 →</a>
+      <div class="head-actions">
+        <button class="copy-link" type="button" @click="copyLink">
+          {{ copied ? '복사됨' : '이 결과물 링크 복사' }}
+        </button>
+        <RouterLink class="to-assignment" to="/assignments">요구사항 보기 →</RouterLink>
+      </div>
     </div>
 
     <!-- 실제 결과물 -->
@@ -369,6 +412,34 @@ h2 {
 .stage-body {
   padding: 30px;
   background: var(--paper);
+}
+
+.head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.copy-link {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--surface);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.copy-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .stage-note {
