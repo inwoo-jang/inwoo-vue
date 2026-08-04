@@ -45,7 +45,7 @@ const SCENES = [
   ['싸락눈', { photo: 'overcast', effect: 'snow' }],
   ['눈', { photo: 'overcast', effect: 'snow' }],
   ['한파', { photo: 'overcast', effect: 'snow' }],
-  ['소나기', { photo: 'rain', effect: 'rain' }],
+  ['소나기', { photo: 'rain', effect: 'shower' }],
   ['호우', { photo: 'rain', effect: 'rain-heavy' }],
   ['이슬비', { photo: 'rain', effect: 'drizzle' }],
   ['어는 비', { photo: 'rain', effect: 'rain' }],
@@ -95,40 +95,54 @@ watch(
 /**
  * 빗방울을 낱개로 만든다.
  * 줄무늬를 통째로 밀면 "사선 무늬가 미끄러지는" 느낌만 나고 비처럼 보이지 않는다.
- * 길이 · 속도 · 굵기 · 시작 시각을 흩어 놓아야 쏟아지는 것처럼 보인다.
  *
- * 값은 규칙적인 수식으로 흩는다. Math.random을 쓰면 다시 그릴 때마다 튀어서
- * 애니메이션이 끊겨 보인다.
+ * 시작 시각(delay)은 반드시 "그 방울 자신의 주기"에 대한 비율로 흩어야 한다.
+ * 공통 최대값으로 흩으면 주기가 짧은 방울들이 같은 구간에 몰려서
+ * 위쪽에만 비가 오는 것처럼 보인다.
+ *
+ * 값은 황금비로 흩는다. Math.random을 쓰면 다시 그릴 때마다 튀어서 끊겨 보인다.
  */
-const makeDrops = (count, { minDur, maxDur, minLen, maxLen }) =>
+const GOLDEN = 0.618033988749895
+
+const makeDrops = (count, { minDur, maxDur, minLen, maxLen, minOp, maxOp, width }) =>
   Array.from({ length: count }, (_, i) => {
+    const phase = (i * GOLDEN) % 1 // 낙하 위상 — 고르게 흩어진다
     const a = ((i * 37) % 100) / 100 // 가로 위치
     const b = ((i * 61) % 100) / 100 // 속도
     const c = ((i * 83) % 100) / 100 // 길이
-    const d = ((i * 29) % 100) / 100 // 시작 시각
+    const dur = minDur + b * (maxDur - minDur)
     return {
-      left: a * 104 - 2,
-      dur: minDur + b * (maxDur - minDur),
+      left: a * 106 - 3,
+      dur,
       len: minLen + c * (maxLen - minLen),
-      delay: -d * maxDur,
-      opacity: 0.3 + c * 0.55,
-      width: c > 0.72 ? 2 : 1.3,
+      delay: -phase * dur,
+      opacity: minOp + c * (maxOp - minOp),
+      width: c > 0.7 ? width + 0.6 : width,
     }
   })
 
-const RAIN = makeDrops(120, { minDur: 0.5, maxDur: 0.95, minLen: 42, maxLen: 110 })
-const RAIN_HEAVY = makeDrops(190, { minDur: 0.34, maxDur: 0.6, minLen: 60, maxLen: 150 })
-const DRIZZLE = makeDrops(80, { minDur: 1.3, maxDur: 2.1, minLen: 14, maxLen: 34 })
-
-const drops = computed(() => {
-  if (scene.value.effect === 'rain-heavy') return RAIN_HEAVY
-  if (scene.value.effect === 'drizzle') return DRIZZLE
-  return RAIN
+/* 네 가지 비는 굵기 · 길이 · 속도 · 개수를 확실히 갈라 놓아야 구분된다 */
+const DRIZZLE = makeDrops(95, {
+  minDur: 1.8, maxDur: 2.9, minLen: 8, maxLen: 22, minOp: 0.16, maxOp: 0.4, width: 1,
 })
+const RAIN = makeDrops(150, {
+  minDur: 0.7, maxDur: 1.1, minLen: 28, maxLen: 70, minOp: 0.3, maxOp: 0.75, width: 1.3,
+})
+const SHOWER = makeDrops(200, {
+  minDur: 0.5, maxDur: 0.78, minLen: 42, maxLen: 100, minOp: 0.34, maxOp: 0.85, width: 1.6,
+})
+const RAIN_HEAVY = makeDrops(280, {
+  minDur: 0.28, maxDur: 0.46, minLen: 75, maxLen: 175, minOp: 0.4, maxOp: 0.95, width: 2.2,
+})
+
+const drops = computed(
+  () =>
+    ({ drizzle: DRIZZLE, shower: SHOWER, 'rain-heavy': RAIN_HEAVY })[scene.value.effect] ?? RAIN,
+)
 
 /** 어두운 사진 위에서는 글자가 잘 보이도록 덮개를 더 진하게 */
 const isDark = computed(() =>
-  ['storm', 'lightning', 'rain-heavy', 'rain'].includes(scene.value.effect),
+  ['storm', 'lightning', 'rain-heavy', 'rain', 'shower'].includes(scene.value.effect),
 )
 </script>
 
@@ -160,8 +174,9 @@ const isDark = computed(() =>
     </template>
 
     <!-- 비: 빗방울을 낱개로 뿌리고, 바닥에는 물안개를 깐다 -->
-    <template v-if="['rain', 'rain-heavy', 'drizzle', 'storm'].includes(scene.effect)">
-      <div class="rain">
+    <template v-if="['rain', 'rain-heavy', 'drizzle', 'shower', 'storm'].includes(scene.effect)">
+      <!-- 클래스 이름은 시간별 패널의 .rain 과 겹치지 않게 rain-field 로 둔다 -->
+      <div class="rain-field">
         <span
           v-for="(d, i) in drops"
           :key="i"
@@ -176,7 +191,7 @@ const isDark = computed(() =>
           }"
         />
       </div>
-      <div class="mist" />
+      <div v-if="scene.effect !== 'drizzle'" class="mist" />
     </template>
 
     <!-- 눈: 크기가 다른 눈송이가 흔들리며 내린다 -->
@@ -262,6 +277,11 @@ const isDark = computed(() =>
 
 .photo.on {
   opacity: 1;
+}
+
+/* 맑음 사진은 아래쪽에 옅은 구름이 깔려 있다. 파란 하늘 쪽을 보여 준다 */
+.fx-sun .photo {
+  background-position: 50% 22%;
 }
 
 @keyframes drift {
@@ -384,9 +404,10 @@ const isDark = computed(() =>
 }
 
 /* ── 비 ── */
-.rain {
+.rain-field {
   position: absolute;
-  inset: -14% 0 0;
+  /* 위쪽에서 충분히 여유를 두고 시작해야 화면 가득 고르게 내린다 */
+  inset: -30% 0 0;
 }
 
 /* 빗방울 하나. 위는 투명하고 아래로 갈수록 진해야 떨어지는 물줄기로 보인다 */
@@ -406,13 +427,14 @@ const isDark = computed(() =>
   will-change: transform;
 }
 
-/* 바람에 조금 기울어 떨어진다 */
+/* 바람에 조금 기울어 떨어진다.
+   낙하 거리는 화면보다 넉넉해야 바닥까지 빈틈이 없다 */
 @keyframes drop-fall {
   from {
-    transform: translate3d(0, -20%, 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-90px, 125vh, 0);
+    transform: translate3d(-80px, 175vh, 0);
   }
 }
 
@@ -437,26 +459,53 @@ const isDark = computed(() =>
   }
 }
 
-/* 이슬비는 흐릿하게, 호우는 더 기울고 빠르게 */
+/* 이슬비 — 가늘고 흐릿하게 흩날린다 */
 .fx-drizzle .drop {
-  filter: blur(0.4px);
+  filter: blur(0.7px);
+  animation-name: drop-drift;
 }
 
-.fx-drizzle .mist {
-  opacity: 0.4;
+@keyframes drop-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-140px, 175vh, 0);
+  }
 }
 
+/* 소나기 — 굵게 쏟아지되 세기가 물결친다 */
+.fx-shower .rain-field {
+  animation: shower-burst 6s ease-in-out infinite;
+}
+
+@keyframes shower-burst {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  35%,
+  65% {
+    opacity: 1;
+  }
+}
+
+/* 호우 — 굵고 빠르고 많이, 더 기울어 쏟아진다 */
 .fx-rain-heavy .drop {
   animation-name: drop-fall-hard;
 }
 
 @keyframes drop-fall-hard {
   from {
-    transform: translate3d(0, -20%, 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-150px, 130vh, 0);
+    transform: translate3d(-190px, 185vh, 0);
   }
+}
+
+.fx-rain-heavy .mist {
+  height: 34%;
 }
 
 /* ── 눈 (사진이 없어 효과층으로 만든 장면) ── */

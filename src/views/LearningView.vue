@@ -404,7 +404,8 @@ const selectChapter = (id) => {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 16px;
+  /* 아래 코드 챌린지 카드와 붙어 보이지 않게 여백을 둔다 */
+  margin: 16px 0 22px;
 }
 
 .topic-chips span {
