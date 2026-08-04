@@ -2214,6 +2214,155 @@ router.go(-1)                     // 뒤로 한 칸
     status: 'done',
   },
 
+  {
+    id: 27,
+    chapterId: 5,
+    label: 'Code Challenge 24',
+    title: 'Navigation Guard · Catch-all',
+    slidePage: '175쪽',
+    studyRange: '173~175쪽',
+    goal: '페이지 진입 전에 권한을 검사하고, 정의되지 않은 주소를 안전하게 받아냅니다.',
+    lecture: {
+      intro:
+        'Navigation Guard는 **페이지 입장 전 검문소**입니다. 로그인해야 볼 수 있는 마이페이지에 비로그인 사용자가 들어오려 하면, 문 앞에서 막아 로그인 화면으로 돌려보냅니다. Catch-all은 그 반대편 — **어느 문에도 안 걸린 사람을 받아 주는 안내 데스크**입니다.',
+      summary:
+        'Guard는 특정 라우트로 **진입하기 직전에 가로채** 권한 검사나 리다이렉션 같은 로직을 실행합니다. 쓰는 위치에 따라 **전역 가드 · 라우터별 가드 · 컴포넌트 내 가드**로 나뉩니다.',
+      points: [
+        'Guard는 세 종류다 — **전역(Global)**, **라우터별(Per-route)**, **컴포넌트 내(In-component)**. 가장 많이 쓰는 것은 전역 가드다.',
+        '전역 가드의 실행 시점은 셋이다. **beforeEach**(이동이 시작되기 직전) → **beforeResolve**(컴포넌트까지 다 준비된 직후) → **afterEach**(화면 전환이 끝난 뒤).',
+        '**beforeEach** 는 접근 권한 통제에, **beforeResolve** 는 마지막 데이터 확인에, **afterEach** 는 분석 로그 전송처럼 뒷정리에 쓴다.',
+        '가드는 `(to, from, next)` 를 받는다 — **to**는 가려는 곳, **from**은 지금 있는 곳, **next**는 통과를 허가하는 함수다.',
+        '`next()` 는 통과, `next(\'/login\')` 는 다른 곳으로 강제 이동이다. **next를 부르지 않으면 화면이 멈춘 채로 남는다.**',
+        '정의되지 않은 주소로 들어오면 Vue Router는 **에러를 던지지 않는다.** 그냥 매칭되는 컴포넌트를 못 찾아 `<RouterView/>` 자리가 **하얗게 비어 버린다.**',
+        '그래서 **Catch-all Route**(`/:pathMatch(.*)*`)를 routes 배열 **가장 마지막**에 두어 나머지를 전부 받아 낸다.',
+      ],
+      syntax: [
+        {
+          code: `// router/index.js — 라우터 인스턴스 아래에 배치
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = false   // 실제로는 쿠키나 localStorage 토큰 검사
+
+  if (to.meta.isAuth && !isAuthenticated) {
+    alert('로그인이 필요한 서비스입니다.')
+    next('/')                     // 통과를 불허하고 강제 이동
+  } else {
+    next()                        // 일반 통과 허가
+  }
+})`,
+          parts: [
+            { token: 'router.beforeEach', role: '모든 라우트 전환에서 불리는 전역 가드. 라우터를 만든 뒤에 붙인다' },
+            { token: 'to', role: '**이동할 목적지** route 객체. to.meta, to.params 를 여기서 본다' },
+            { token: 'from', role: '**현재 출발지** route 객체' },
+            { token: 'next', role: '이동을 허가하는 **종결 함수**. 부르지 않으면 화면이 멈춘다' },
+            { token: 'to.meta.isAuth', role: 'routes에 meta: { isAuth: true } 로 적어 둔 표식. 이름은 내가 정한다' },
+          ],
+          returns:
+            '돌려주는 값은 없다. next() 를 어떻게 부르느냐로 결과가 갈린다 — next()는 통과, next(경로)는 강제 이동, next(false)는 이동 취소.',
+          desc: '최신 문법에서는 next 대신 경로를 return 해도 된다.',
+        },
+        {
+          code: `// routes 에 표식 달기
+{
+  path: '/mypage',
+  name: 'MyPage',
+  component: () => import('../views/MyPageView.vue'),
+  meta: { isAuth: true },        // 이 문은 잠겨 있다
+}`,
+          parts: [
+            { token: 'meta', role: '라우트에 붙이는 메모장. 가드에서 to.meta 로 읽는다' },
+            { token: 'isAuth', role: '내가 정하는 이름. requiresAuth 등 무엇이든 좋다' },
+          ],
+          returns: 'meta 자체는 아무 동작도 하지 않는다. 가드가 읽어 줘야 의미가 생긴다.',
+          desc: '어느 문이 잠겼는지 routes 한 곳에 모아 두는 방식이다.',
+        },
+        {
+          code: `const routes = [
+  { path: '/', name: 'Home', component: HomeView },
+  // ... 기타 정의된 라우트들 ...
+
+  // 위 어디에도 안 걸린 모든 경로
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView },
+]`,
+          parts: [
+            { token: ':pathMatch', role: '내가 정하는 파라미터 이름. route.params.pathMatch 로 꺼낼 수 있다' },
+            { token: '(.*)*', role: '슬래시를 포함한 **모든 문자**를 받는다는 정규식' },
+          ],
+          returns:
+            '어디에도 매칭되지 않은 주소가 여기로 온다. 없으면 화면이 하얗게 빈다.',
+          desc: '반드시 배열 맨 마지막. 위에 두면 모든 주소를 이게 먼저 낚아챈다.',
+        },
+      ],
+    },
+    tasks: [
+      'routes에 meta: { isAuth: true } 표식 달기',
+      'router.beforeEach로 비로그인 접근 차단',
+      'next() 와 next(경로) 구분해서 사용',
+      'Catch-all Route를 배열 맨 마지막에 배치',
+    ],
+    practiceGuide: [
+      {
+        practice: 'Navigation Guard — 페이지 입장 전 검문소',
+        do: '**비로그인 상태**에서 자물쇠가 붙은 `/mypage` 를 눌러 보세요.',
+        see: '화면은 `/login` 으로 갑니다. 검문 기록에 붉은 줄로 `next(\'/login\')` 이 남습니다.',
+        why: '`to.meta.isAuth` 가 참인데 로그인이 안 됐으니 **문 앞에서 돌려보낸** 것입니다. 이것이 가드의 대표 용도입니다.',
+      },
+      {
+        do: '`로그인하기` 를 누른 뒤 다시 `/mypage` 를 눌러 보세요.',
+        see: '이번엔 통과해서 마이페이지가 뜨고, 기록에 `next() — 통과 허가` 가 초록으로 남습니다.',
+        why: '같은 코드인데 결과가 다릅니다. 가드는 **주소가 아니라 상태를 보고** 판단합니다.',
+      },
+      {
+        do: '검문 기록의 **순서**를 위에서 아래로 읽어 보세요(최근 것이 위입니다).',
+        see: 'beforeEach → beforeResolve → afterEach 순입니다. 차단된 경우엔 beforeResolve가 **아예 나오지 않습니다.**',
+        why: 'beforeEach에서 막히면 **컴포넌트를 준비할 필요조차 없기 때문**입니다. 그래서 권한 검사는 가장 앞인 beforeEach에서 합니다.',
+      },
+      {
+        do: '`Catch-all Route 사용` 체크를 **끄고** `/unknown-page` 를 눌러 보세요.',
+        see: '액자 안이 **하얗게 텅 빕니다.** 에러 메시지도 없습니다.',
+        why: '교안이 짚는 부분입니다 — Vue Router는 없는 주소에 **에러를 던지지 않습니다.** 그냥 그릴 컴포넌트를 못 찾을 뿐이라 원인을 찾기 어렵습니다.',
+      },
+      {
+        do: '체크를 다시 **켜고** `/unknown-page` 를 눌러 보세요.',
+        see: '404 안내 화면이 대신 나옵니다.',
+        why: '`/:pathMatch(.*)*` 가 나머지를 전부 받아 냈습니다. **배열 맨 마지막**에 있어야 다른 주소를 가로채지 않습니다.',
+      },
+    ],
+    pitfalls: [
+      {
+        bad: "router.beforeEach((to, from, next) => { if (ok) next() })",
+        good: 'if (ok) next() else next(\'/login\')',
+        why: '어느 갈래에서든 next를 **반드시 한 번** 불러야 합니다. 안 부르면 화면이 그대로 멈춥니다. 에러도 안 나서 가장 찾기 어려운 버그입니다.',
+      },
+      {
+        bad: "next('/login') 을 로그인 페이지에서도 실행",
+        good: "if (to.path !== '/login') next('/login')",
+        why: '로그인 페이지로 보내는 가드가 로그인 페이지에서도 돌면 **무한 리다이렉트**에 빠집니다.',
+      },
+      {
+        bad: "Catch-all 을 routes 배열 위쪽에 배치",
+        good: '항상 맨 마지막',
+        why: 'routes는 위에서부터 검사합니다. 그물을 앞에 두면 모든 주소가 404로 갑니다.',
+      },
+      {
+        bad: 'beforeEach 안에서 무거운 API 호출',
+        good: '필요한 검사만 하고 통과시킨 뒤 화면에서 불러오기',
+        why: '가드는 **모든 화면 이동마다** 실행됩니다. 여기가 느리면 앱 전체가 느려집니다.',
+      },
+      {
+        why: '전역 가드로 모든 걸 처리하려 하지 마세요. 한 화면에만 필요한 검사는 **컴포넌트 내 가드**나 그 화면의 onMounted가 더 읽기 쉽습니다.',
+      },
+    ],
+    extensions: [
+      'meta에 `roles: [\'admin\']` 처럼 배열을 넣고, 사용자 역할과 비교하는 가드를 만들어 보세요.',
+      'afterEach에서 `console.log(to.fullPath)` 를 찍어 방문 기록을 남겨 보세요. 실무에서 분석 도구를 붙이는 자리입니다.',
+      '`beforeEnter` (라우터별 가드)를 한 라우트에만 붙여 전역 가드와 실행 순서를 비교해 보세요.',
+      '차단할 때 `next(\'/login\')` 대신 `next({ name: \'Login\', query: { redirect: to.fullPath } })` 로 보내고, 로그인 후 원래 가려던 곳으로 돌려보내 보세요.',
+      'Catch-all에서 `route.params.pathMatch` 를 찍어, 사용자가 뭘 잘못 입력했는지 화면에 보여 주세요.',
+    ],
+    practices: ['RouterGuardPractice'],
+    status: 'done',
+  },
+
   /* ---------------- CH06 ---------------- */
   {
     id: 10,
@@ -3354,7 +3503,10 @@ export const assignments = [
       'WeatherAboutView.vue에 서비스 설명과 메인 이동',
       'NotFoundView.vue에 잘못된 주소 안내와 메인 이동',
     ],
-    status: 'todo',
+    result: 'WeatherRouterApp',
+    resultNote:
+      '실제 라우터로 동작합니다 — 위 메뉴를 누르면 주소가 바뀌고, 그 주소를 그대로 복사해 보낼 수 있습니다',
+    status: 'done',
   },
   {
     id: 5,

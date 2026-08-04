@@ -34,6 +34,35 @@ const routes = [
     name: 'project',
     component: () => import('../views/ProjectView.vue'),
     props: true,
+    /**
+     * 제출 과제 4(Router 활용)의 화면들.
+     * 결과물이 "실제 라우터로 도는 것"이어야 의미가 있으므로,
+     * 흉내가 아니라 이 앱의 자식 경로로 등록한다.
+     */
+    children: [
+      {
+        // 기본 화면 — /project/4 로 들어오면 이게 뜬다
+        path: '',
+        name: 'a4-home',
+        component: () => import('../components/assignments/router4/WeatherHomeView.vue'),
+      },
+      {
+        path: 'about',
+        name: 'a4-about',
+        component: () => import('../components/assignments/router4/WeatherAboutView.vue'),
+      },
+      {
+        path: 'weather/:cityId',
+        name: 'a4-detail',
+        component: () => import('../components/assignments/router4/WeatherDetailView.vue'),
+      },
+      {
+        // 과제 4 안에서만 쓰는 Catch-all. 반드시 형제들 뒤에 와야 한다.
+        path: ':pathMatch(.*)*',
+        name: 'a4-missing',
+        component: () => import('../components/assignments/router4/WeatherNotFoundView.vue'),
+      },
+    ],
   },
   {
     path: '/settings',

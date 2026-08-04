@@ -12,12 +12,14 @@
  *       그러지 않으면 이 사이트 전체 디자인이 깨진다.
  */
 
-const modules = import.meta.glob('./*.vue', { eager: true })
+// 하위 폴더(weather/, router4/)의 결과물도 함께 등록한다
+const modules = import.meta.glob('./**/*.vue', { eager: true })
 
 /** { WeatherMockup: 컴포넌트, ... } */
 export const assignmentComponents = Object.fromEntries(
   Object.entries(modules).map(([path, module]) => {
-    const name = path.replace('./', '').replace('.vue', '')
+    // 폴더가 달라도 파일 이름으로 찾을 수 있게 한다
+    const name = path.split('/').pop().replace('.vue', '')
     return [name, module.default]
   }),
 )

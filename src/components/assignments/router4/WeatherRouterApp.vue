@@ -1,0 +1,94 @@
+<script setup>
+import { computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+
+/**
+ * 과제 4 결과물의 껍데기 — 교안의 App.vue 역할.
+ *
+ *   내비게이션 바 : <RouterLink>
+ *   메인 콘텐츠   : <RouterView />
+ *
+ * 이 사이트 안에서 돌아가야 하므로, 과제의 화면들은
+ * /project/:stageId 아래의 자식 경로로 등록되어 있다.
+ * 원리는 교안과 같다 — 주소가 바뀌면 RouterView 자리가 갈아끼워진다.
+ */
+const route = useRoute()
+
+/** 자식 경로로 이동할 때 stageId 를 유지해야 한다 */
+const stageId = computed(() => route.params.stageId ?? '4')
+</script>
+
+<template>
+  <div class="app">
+    <!-- 내비게이션 바 -->
+    <nav class="nav">
+      <RouterLink :to="{ name: 'a4-home', params: { stageId } }" exact-active-class="on">
+        홈
+      </RouterLink>
+      <RouterLink :to="{ name: 'a4-about', params: { stageId } }" active-class="on">
+        소개
+      </RouterLink>
+      <RouterLink
+        :to="{ name: 'a4-detail', params: { stageId, cityId: 'city_03' } }"
+        active-class="on"
+      >
+        부산 상세
+      </RouterLink>
+      <RouterLink :to="{ name: 'a4-missing', params: { stageId, pathMatch: ['없는주소'] } }" active-class="on">
+        없는 주소
+      </RouterLink>
+
+      <code class="url">{{ route.path }}</code>
+    </nav>
+
+    <!-- 메인 콘텐츠 — 주소에 맞는 화면이 여기 놓인다 -->
+    <RouterView />
+  </div>
+</template>
+
+<style scoped>
+.app {
+  display: grid;
+  gap: 14px;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.nav a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.nav a.on {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.url {
+  margin-left: auto;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+</style>
