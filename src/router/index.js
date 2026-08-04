@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import finalRoutes from '../final/routes'
 
 /**
  * 주소표
@@ -63,6 +64,19 @@ const routes = [
         component: () => import('../components/assignments/router4/WeatherNotFoundView.vue'),
       },
     ],
+  },
+  {
+    /**
+     * 최종 결과물 — 과제를 다 쌓아 완성한 서비스.
+     * 단계별 결과물(/project)이 "만들어 온 과정"이라면, 여기는 "완성된 것"이다.
+     * 그래서 학습 페이지 안에 끼워 넣지 않고 자기 주소를 따로 갖는다.
+     *
+     * 껍데기(index.vue)가 홈 · 날씨 · 운세 메뉴를 그리고,
+     * 그 안의 <RouterView /> 자리에 아래 자식 화면이 들어온다.
+     */
+    path: '/final',
+    component: () => import('../final/index.vue'),
+    children: finalRoutes,
   },
   {
     path: '/settings',

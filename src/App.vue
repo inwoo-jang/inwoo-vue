@@ -10,7 +10,8 @@ const MENU = [
   { to: '/', label: '홈', exact: true }, // 홈은 정확히 '/'일 때만 켜진다
   { to: '/learning', label: '학습 & 챌린지' },
   { to: '/assignments', label: '제출 과제' },
-  { to: '/project', label: '최종 결과물' },
+  { to: '/project', label: '단계별 결과물' }, // 과제가 한 겹씩 쌓이는 과정
+  { to: '/final', label: '최종 결과물' }, // 다 쌓아 완성한 서비스
   { to: '/settings', label: '환경 설정' },
 ]
 </script>
