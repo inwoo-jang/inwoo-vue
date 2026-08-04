@@ -5,6 +5,7 @@ import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
 import WeatherIcon from '../weather/WeatherIcon.vue'
 import UiIcon from '../weather/UiIcon.vue'
 import { findMockCity } from './mockCities'
+import { backdropStatus } from './backdropState'
 
 /**
  * 과제 4 — 도시 상세 (/weather/:cityId)
@@ -19,6 +20,8 @@ const city = ref(null)
 
 onMounted(() => {
   city.value = findMockCity(route.params.cityId)
+  // 보고 있는 도시의 날씨로 배경을 바꾼다
+  if (city.value) backdropStatus.value = city.value.status
 })
 
 /** 아이콘 받침 색조 — 메인 카드와 같은 규칙 */

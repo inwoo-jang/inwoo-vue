@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import WeatherBackdrop from '../weather/WeatherBackdrop.vue'
+import { backdropStatus } from './backdropState'
 
 /**
  * 과제 4 결과물의 껍데기 — 교안의 App.vue 역할.
@@ -19,7 +21,10 @@ const stageId = computed(() => route.params.stageId ?? '4')
 </script>
 
 <template>
-  <div class="app">
+  <div class="app dashboard-wrapper">
+    <!-- 보고 있는 도시의 날씨가 배경이 된다 -->
+    <WeatherBackdrop :status="backdropStatus" />
+
     <!-- 내비게이션 바 -->
     <nav class="nav" role="tablist">
       <RouterLink
@@ -43,6 +48,12 @@ const stageId = computed(() => route.params.stageId ?? '4')
 .app {
   display: grid;
   gap: 14px;
+}
+
+/* 배경(z-index 0) 위에 내용이 오도록 */
+.app > *:not(.backdrop) {
+  position: relative;
+  z-index: 1;
 }
 
 .nav {

@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
 import SearchBar from '../weather/SearchBar.vue'
 import WeatherCard from '../weather/WeatherCard.vue'
 import UiIcon from '../weather/UiIcon.vue'
 import { MOCK_CITIES } from './mockCities'
+import { backdropStatus } from './backdropState'
 
 /**
  * 과제 4 — 메인 대시보드 (/ 경로)
@@ -22,6 +23,15 @@ const router = useRouter()
 
 const searchQuery = ref('')
 const selectedId = ref('')
+
+/** 고른 도시가 없으면 첫 도시의 날씨를 배경으로 쓴다 */
+const applyBackdrop = () => {
+  const picked = MOCK_CITIES.find((city) => city.id === selectedId.value)
+  backdropStatus.value = (picked ?? MOCK_CITIES[0]).status
+}
+
+onMounted(applyBackdrop)
+watch(selectedId, applyBackdrop)
 
 const filteredCities = computed(() => {
   const query = searchQuery.value.trim()
