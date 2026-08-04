@@ -13,7 +13,7 @@
  *
  * 날씨는 Open-Meteo에서 받아온다 (weather/weatherApi.js).
  */
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 // 1. 컴포넌트 파일명 국룰 표기법(PascalCase) 매칭 수입
 import BaseDashboardCard from './weather/BaseDashboardCard.vue'
 import SearchBar from './weather/SearchBar.vue'
@@ -109,9 +109,13 @@ const load = async (force = false) => {
   errorMessage.value = ''
   try {
     const { rows, at, stale } = await fetchWeather(undefined, force)
-    // 데모 3곳은 배경 확인용이라 맨 뒤에 붙인다
+    // 데모는 배경 확인용이라 맨 뒤에 붙인다
     weatherList.value = [...rows, ...DEMO_ROWS]
     isStale.value = stale
+
+    // 저장해 둔 값을 먼저 보여 줬다면, 뒤에서 조용히 새 값을 받아 바꿔 끼운다
+    if (stale) setTimeout(() => load(true), 0)
+    lastLoadedAt = at
     updatedAt.value = new Date(at).toLocaleTimeString('ko-KR', {
       hour: '2-digit',
       minute: '2-digit',
@@ -125,8 +129,42 @@ const load = async (force = false) => {
   }
 }
 
+/**
+ * 10분마다 조용히 새로 받는다.
+ * 다만 보고 있지 않은 탭에서까지 부르면 서버에 실례이므로,
+ * 화면이 보일 때만 돌리고 다시 돌아왔을 때 한 번 맞춰 준다.
+ */
+const REFRESH_MS = 10 * 60 * 1000
+let timer = null
+let lastLoadedAt = 0
+
+const startAutoRefresh = () => {
+  stopAutoRefresh()
+  timer = setInterval(() => {
+    if (document.visibilityState === 'visible') load(true)
+  }, REFRESH_MS)
+}
+
+const stopAutoRefresh = () => {
+  if (timer) clearInterval(timer)
+  timer = null
+}
+
+/** 탭으로 돌아왔는데 값이 오래됐으면 바로 맞춘다 */
+const onVisible = () => {
+  if (document.visibilityState !== 'visible') return
+  if (Date.now() - lastLoadedAt > REFRESH_MS) load(true)
+}
+
+onBeforeUnmount(() => {
+  stopAutoRefresh()
+  document.removeEventListener('visibilitychange', onVisible)
+})
+
 onMounted(async () => {
   load()
+  startAutoRefresh()
+  document.addEventListener('visibilitychange', onVisible)
   // 이미 허용해 둔 사용자에게만 조용히 위치를 쓴다. 처음이면 버튼을 누를 때 묻는다.
   const status = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null)
   if (status?.state === 'granted') findMyLocation()
@@ -295,10 +333,20 @@ const showDetail = (cityName) => {
         <button type="button" @click="load(true)">다시 시도</button>
       </p>
 
-      <!-- 첫 로딩 -->
-      <p v-else-if="isLoading && !weatherList.length" class="empty-message">
-        날씨를 불러오는 중입니다…
-      </p>
+      <!-- 첫 로딩 — 빈 화면 대신 카드 모양을 먼저 깔아 둔다 -->
+      <div v-else-if="isLoading && !weatherList.length" class="skeleton">
+        <div v-for="n in 5" :key="n" class="skeleton-card">
+          <span class="sk-tile" />
+          <span class="sk-lines">
+            <i class="sk-line wide" />
+            <i class="sk-line" />
+          </span>
+          <span class="sk-metrics">
+            <i class="sk-pill" />
+            <i class="sk-pill" />
+          </span>
+        </div>
+      </div>
 
       <!-- ① 지역별 -->
       <template v-else-if="viewMode === 'region'">
@@ -555,6 +603,79 @@ const showDetail = (cityName) => {
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+}
+
+/* ── 첫 로딩 스켈레톤 ── */
+.skeleton {
+  display: grid;
+  gap: 9px;
+}
+
+.skeleton-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.sk-tile {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+}
+
+.sk-lines {
+  display: grid;
+  gap: 7px;
+}
+
+.sk-line {
+  width: 90px;
+  height: 11px;
+  border-radius: 999px;
+}
+
+.sk-line.wide {
+  width: 130px;
+  height: 14px;
+}
+
+.sk-metrics {
+  display: grid;
+  gap: 5px;
+}
+
+.sk-pill {
+  width: 120px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+/* 은은하게 흐르는 빛 — 멈춰 있지 않다는 신호 */
+.sk-tile,
+.sk-line,
+.sk-pill {
+  background: linear-gradient(
+    90deg,
+    var(--paper) 25%,
+    color-mix(in srgb, var(--line) 60%, transparent) 37%,
+    var(--paper) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
 }
 
 /* ── 페이지 버튼 ── */

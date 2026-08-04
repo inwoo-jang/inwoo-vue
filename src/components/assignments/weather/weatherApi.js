@@ -259,9 +259,56 @@ const request = async (url) => {
   }
 }
 
+/**
+ * 지금 날아가고 있는 요청. 화면 여러 곳에서 동시에 불러도 요청은 하나만 나간다.
+ * 앱이 뜨자마자 미리 던져 두면(primeWeather) 화면이 준비될 즈음 답이 와 있다.
+ */
+let inflight = null
+
+const loadFresh = (cities) => {
+  if (!inflight) {
+    inflight = requestFresh(cities).finally(() => {
+      inflight = null
+    })
+  }
+  return inflight
+}
+
+/**
+ * 화면보다 먼저 날씨를 부르기 시작한다.
+ * 컴포넌트가 다 그려진 뒤에 요청하면 그만큼 늦어진다.
+ * 이미 신선한 값이 있으면 아무 것도 하지 않는다.
+ */
+export const primeWeather = () => {
+  if (readCache(CITIES.length, CACHE_TTL)) return
+  loadFresh(CITIES).catch(() => {
+    // 실패해도 화면 쪽에서 다시 시도하므로 여기서는 조용히 넘어간다
+  })
+}
+
+/**
+ * 저장된 값이 있으면 **먼저 보여 주고**, 오래됐으면 뒤에서 조용히 새로 받는다
+ * (stale-while-revalidate). 화면이 비어 있는 시간을 없애기 위함이다.
+ */
 export const fetchWeather = async (cities = CITIES, force = false) => {
-  const fresh = force ? null : readCache(cities.length, CACHE_TTL)
-  if (fresh) return { rows: fresh.rows, at: fresh.at, stale: false, source: 'cache' }
+  if (!force) {
+    const cached = readCache(cities.length, Infinity)
+    if (cached) {
+      const isFresh = Date.now() - cached.at < CACHE_TTL
+      if (!isFresh) primeWeather() // 뒤에서 새로 받아 둔다
+      return { rows: cached.rows, at: cached.at, stale: !isFresh, source: 'cache' }
+    }
+  }
+  return loadFresh(cities)
+}
+
+const requestFresh = async (cities = CITIES) => {
+  const params = new URLSearchParams({
+    latitude: cities.map((c) => c.lat).join(','),
+    longitude: cities.map((c) => c.lon).join(','),
+    current: 'temperature_2m,relative_humidity_2m,weather_code',
+    timezone: 'Asia/Seoul',
+  })
 
   let data
   try {

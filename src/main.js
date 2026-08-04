@@ -19,3 +19,21 @@ app.component('GlobalBadge', GlobalBadge)
 app.use(router)
 
 app.mount('#app')
+
+/**
+ * 화면이 다 뜬 뒤 한가할 때, 최종 결과물에서 쓸 것들을 미리 받아 둔다.
+ *
+ * 그냥 두면 "청크 받기 → 컴포넌트 실행 → 그제서야 API 호출"로 줄줄이 기다린다.
+ * 미리 시작해 두면 사용자가 그 화면에 도착했을 때 이미 답이 와 있다.
+ * 이미 신선한 값이 있으면 primeWeather()가 아무 것도 하지 않는다.
+ */
+const warmUp = () => {
+  import('./views/ProjectView.vue')
+  import('./components/assignments/weather/weatherApi').then((m) => m.primeWeather())
+}
+
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(warmUp, { timeout: 2000 })
+} else {
+  setTimeout(warmUp, 800)
+}
