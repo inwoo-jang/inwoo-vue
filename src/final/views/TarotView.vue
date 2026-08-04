@@ -34,6 +34,27 @@ const pickedIds = computed(() => new Set(picks.value.map((pick) => pick.card.id)
 /** 지금 몇 번째 자리를 고르는 중인지 */
 const currentSlot = computed(() => SPREAD[picks.value.length] ?? null)
 
+/**
+ * 머리말 아래 안내 한 줄.
+ *
+ * 카드를 뽑는 순간 문구가 사라지면 그 자리가 비어 어색하다.
+ * 자리는 그대로 두고 내용만 지금 상태에 맞게 바꾼다.
+ */
+const introMessage = computed(() => {
+  const left = SPREAD.length - picks.value.length
+
+  if (!picks.value.length) {
+    return '아래 78장 중 세 장을 고르면 오늘의 흐름 · 변수 · 조언을 읽어 드립니다.'
+  }
+  if (left > 0) {
+    return `${picks.value.length}장을 골랐습니다. ${left}장을 더 고르면 해석이 시작됩니다.`
+  }
+  if (reading.value.status === 'loading') {
+    return '세 장이 모두 놓였습니다. 카드를 읽는 중입니다…'
+  }
+  return '세 장이 모두 놓였습니다. 아래에서 오늘의 흐름 · 변수 · 조언을 확인해 보세요.'
+})
+
 const formattedDate = new Intl.DateTimeFormat('ko-KR', {
   month: 'long',
   day: 'numeric',
@@ -160,9 +181,7 @@ const removeKey = () => {
       <p class="tarot-eyebrow">DAILY TAROT · 3 CARD SPREAD</p>
       <h1>오늘의 운세</h1>
       <p>{{ formattedDate }} · 잠시 숨을 고르고, 지금 가장 궁금한 것을 떠올려 보세요.</p>
-      <p v-if="!picks.length" class="tarot-cta">
-        아래 78장 중 <b>세 장</b>을 고르면 오늘의 흐름 · 변수 · 조언을 읽어 드립니다.
-      </p>
+      <p class="tarot-cta">{{ introMessage }}</p>
     </section>
 
     <!-- 세 자리 -->
