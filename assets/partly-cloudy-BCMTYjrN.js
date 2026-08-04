@@ -1,1 +1,0 @@
-var e=`/inwoo-vue/assets/partly-cloudy-CiSaBxGH.jpg`;export{e as default};
