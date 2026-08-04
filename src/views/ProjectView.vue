@@ -58,7 +58,7 @@ watch(
 <template>
   <section class="hero">
     <div class="hero-text">
-      <p class="eyebrow">FINAL PROJECT</p>
+      <p class="eyebrow">STEP BY STEP</p>
       <h1>Weather<br /><span>Dashboard</span></h1>
       <p class="hero-copy">
         제출 과제가 한 겹씩 쌓여 완성되는 결과물입니다. 아래에서 단계를 골라

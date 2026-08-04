@@ -30,7 +30,7 @@ const routes = [
     component: () => import('../views/AssignmentsView.vue'),
   },
   {
-    // 최종 결과물 — 단계까지 주소에 담아 특정 결과물만 따로 보낼 수 있다
+    // 단계별 결과물 — 단계까지 주소에 담아 특정 결과물만 따로 보낼 수 있다
     path: '/project/:stageId(\\d+)?',
     name: 'project',
     component: () => import('../views/ProjectView.vue'),

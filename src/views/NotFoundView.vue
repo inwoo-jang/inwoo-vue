@@ -16,7 +16,7 @@ const route = useRoute()
     <nav class="links">
       <RouterLink class="primary" to="/">홈으로</RouterLink>
       <RouterLink to="/learning">학습 &amp; 챌린지</RouterLink>
-      <RouterLink to="/project">최종 결과물</RouterLink>
+      <RouterLink to="/final">최종 결과물</RouterLink>
     </nav>
   </section>
 </template>

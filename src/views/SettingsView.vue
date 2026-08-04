@@ -62,7 +62,7 @@ import { currentTheme, setTheme, THEMES } from '../utils/theme'
     </div>
     <dl class="facts">
       <dt>구성</dt>
-      <dd>학습 &amp; 코드 챌린지 · 제출 과제 · 최종 결과물</dd>
+      <dd>학습 &amp; 코드 챌린지 · 제출 과제 · 단계별 결과물 · 최종 결과물</dd>
       <dt>내용 출처</dt>
       <dd>Full-stack Engineering · Frontend Framework (Vue.js) 교안 276쪽</dd>
       <dt>내용 추가</dt>

@@ -29,7 +29,7 @@ const progressPercent = Math.round((doneAssignmentCount / assignments.length) * 
       <strong>{{ doneAssignmentCount }} / {{ assignments.length }}</strong>
       <span>제출 과제 진행률</span>
       <div class="progress-track"><i :style="{ width: `${progressPercent}%` }"></i></div>
-      <RouterLink to="/project">최종 결과물 확인 →</RouterLink>
+      <RouterLink to="/final">최종 결과물 확인 →</RouterLink>
     </div>
   </section>
 
