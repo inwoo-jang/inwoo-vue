@@ -24,4 +24,28 @@ export default defineConfig(({ command, isPreview }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+
+  /*
+   * 개발 서버 프록시 — 운세 기록 Mock API(npm run api, 3001 포트)
+   *
+   * 화면은 그냥 /api/... 로 부르고, Vite 가 3001 로 넘겨 준다.
+   * 이렇게 하면 좋은 점이 셋이다.
+   *   ① 같은 출처가 되어 CORS 를 신경 쓸 필요가 없다
+   *   ② 5173 이 이미 쓰이고 있어 5174 로 밀려도 그대로 동작한다
+   *   ③ .env.local 이 없는 사람이 받아도 바로 돌아간다
+   *
+   * VITE_API_BASE 를 적어 두면 그 주소가 이기고 이 프록시는 쓰이지 않는다.
+   * (예: 다른 컴퓨터에 띄운 API 를 볼 때)
+   *
+   * /api/tarot 는 여기 적지 않는다. 그건 Vercel 서버리스 함수(api/tarot.js)라
+   * Mock API 로 넘기면 404 가 된다.
+   */
+  server: {
+    proxy: {
+      '^/api/(auth|fortune-records|health|reset)': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
+  },
 }))

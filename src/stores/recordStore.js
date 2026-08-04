@@ -6,6 +6,7 @@ import {
   removeRecord,
   updateMemo,
 } from '../final/data/fortuneApi'
+import { READING_TYPES } from '../final/data/tarotReading'
 
 /**
  * 운세 기록 Store — 목록 · 등록 · 메모 수정 · 삭제
@@ -16,7 +17,15 @@ import {
  * 화면이 신경 쓸 것은 셋뿐이다 — records · isLoading · errorMessage.
  * 서버와 이야기하는 방식은 fortuneApi.js 가, 그 결과를 담는 일은 여기가 맡는다.
  */
-export const RECORD_TYPES = ['오늘의 운세', '연애운', '재회운']
+/**
+ * 기록 종류 — 타로 화면의 탭과 같은 목록이어야 한다.
+ * 원본은 tarotReading.js 가 들고 있고, 여기서는 그것을 그대로 가져다 쓴다.
+ * 두 곳에 따로 적어 두면 탭을 늘렸을 때 한쪽만 고치고 잊게 된다.
+ *
+ * (export … from 으로 곧장 넘기면 이 파일 안에서는 이름을 쓸 수 없다.
+ *  아래 typeCounts 가 이 목록을 세야 하므로 한 번 받아서 다시 내보낸다.)
+ */
+export const RECORD_TYPES = READING_TYPES
 
 export const useRecordStore = defineStore('fortuneRecord', () => {
   // ── state ──

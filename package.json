@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "api": "node mock-api/server.js",
+    "dev:all": "node scripts/dev-all.js",
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll && npx --yes gh-pages@6 -d dist -b gh-pages --dotfiles -m \"deploy: $(date +%Y-%m-%d\\ %H:%M)\""

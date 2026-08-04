@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { handleLocally } from './fortuneBrowserApi'
 
 /**
  * 운세 기록 API 창구
@@ -16,6 +17,37 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE ?? '',
   timeout: 8000,
 })
+
+/*
+ * 서버가 없으면 브라우저가 대신 답한다.
+ *
+ * mock-api 는 내 컴퓨터에서만 도는 Node 서버라, GitHub Pages 처럼 파일만
+ * 내려 주는 곳에서는 붙을 자리가 없다. 그렇다고 로그인 화면에서 "서버를
+ * 켜세요"라고 막아서면, 링크만 열어 본 사람에게는 기능이 없는 것과 같다.
+ *
+ * 그래서 바꾸는 것은 어댑터 하나뿐이다 — axios 가 요청을 실제로 내보내는
+ * 부분. 위아래(인터셉터·응답 형태·에러 문구)는 그대로라서 아래 함수들도,
+ * 화면도 서버를 쓰는지 브라우저가 대신하는지 알지 못한다.
+ *
+ * 서버가 답을 준 경우에는 그 답이 옳다. 400·401 같은 거절은 그대로 전한다.
+ * 대신 나서는 것은 "닿지도 못했을 때"뿐이다.
+ */
+const sendOverHttp = axios.getAdapter(axios.defaults.adapter)
+
+/** 한 번 닿지 못했으면 매 요청마다 다시 기다릴 이유가 없다 */
+let serverUnreachable = false
+
+api.defaults.adapter = async (config) => {
+  if (!serverUnreachable) {
+    try {
+      return await sendOverHttp(config)
+    } catch (error) {
+      if (error.response) throw error // 서버가 답했다 — 그 답이 맞다
+      serverUnreachable = true
+    }
+  }
+  return handleLocally(config)
+}
 
 /*
  * 토큰은 이 모듈이 들고 있는다.
