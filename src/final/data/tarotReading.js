@@ -1,5 +1,3 @@
-import OpenAI from 'openai'
-
 /**
  * 오늘의 운세 — 3장 스프레드와 AI 해석
  * ------------------------------------------------------------------
@@ -76,54 +74,6 @@ export const buildLocalReading = (picks) => {
 타로는 결정을 대신하지 않습니다. 오늘의 방향을 잡는 참고로 봐주세요.`
 }
 
-/**
- * AI 해석을 받아 온다.
- *
- * 글이 다 만들어질 때까지 기다리면 몇 초 동안 화면이 비므로,
- * 스트리밍으로 받아 도착하는 대로 흘려 보낸다(onText).
- *
- * @param {object} options
- * @param {string} options.apiKey  사용자가 넣은 키. 저장소에도 번들에도 없다.
- * @param {Array}  options.picks   [{ card, reversed }, ...] 세 장
- * @param {Function} options.onText 글자가 도착할 때마다 부른다
- * @returns {Promise<string>} 완성된 해석 전문
- */
-export const streamReading = async ({ apiKey, picks, onText }) => {
-  const client = new OpenAI({
-    apiKey,
-    /**
-     * 브라우저에서 직접 부르겠다는 뜻이다. 이름 그대로 위험한 설정이라,
-     * "내 키를 내 브라우저에서 쓴다"는 지금 구조에서만 쓸 수 있다.
-     * 남의 키를 대신 들고 부르는 서비스라면 서버를 한 겹 둬야 한다.
-     */
-    dangerouslyAllowBrowser: true,
-  })
-
-  const stream = await client.chat.completions.create({
-    model: MODEL,
-    // 400자짜리 짧은 글이라 넉넉히 잡아도 남는다
-    max_tokens: 700,
-    // 매번 같은 카드에 같은 문장이 나오지 않도록 약간의 변주를 준다
-    temperature: 0.8,
-    stream: true,
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: buildUserPrompt(picks) },
-    ],
-  })
-
-  let full = ''
-  for await (const chunk of stream) {
-    const delta = chunk.choices?.[0]?.delta?.content
-    if (!delta) continue
-    full += delta
-    if (onText) onText(delta)
-  }
-
-  if (!full.trim()) throw new Error('모델이 빈 응답을 보냈습니다. 다시 시도해 주세요.')
-  return full
-}
-
 /* ── 프록시로 받아 오기 ─────────────────────────────────────────── */
 
 /**
@@ -190,15 +140,4 @@ export const streamReadingViaProxy = async ({ picks, onText, signal }) => {
 
   if (!full.trim()) throw new Error('모델이 빈 응답을 보냈습니다. 다시 시도해 주세요.')
   return full
-}
-
-/** SDK 오류를 화면에 그대로 띄울 수 있는 문장으로 바꾼다 */
-export const describeError = (error) => {
-  const status = error?.status
-  if (status === 401) return 'API 키가 올바르지 않습니다. 키를 다시 확인해 주세요.'
-  if (status === 403) return '이 키에는 사용 권한이 없습니다.'
-  if (status === 404) return `모델 '${MODEL}' 을(를) 찾을 수 없습니다. 모델 이름을 확인해 주세요.`
-  if (status === 429) return '요청이 잠시 몰렸거나 사용 한도를 넘었습니다. 잠깐 뒤에 다시 시도해 주세요.'
-  if (status >= 500) return '모델 서버가 응답하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'
-  return error?.message ?? '해석을 받아 오지 못했습니다.'
 }
