@@ -42,10 +42,14 @@ const routes = [
      */
     children: [
       {
-        // 기본 화면 — /project/4 로 들어오면 이게 뜬다
+        /**
+         * 기본 화면 — /project/4 로 들어오면 이게 뜬다.
+         * 4~8단계가 같은 홈을 쓰고, 단계에 따라 켜지는 기능만 달라진다.
+         * (단계가 올라갈 때 기능이 사라지지 않도록 화면을 하나로 둔다)
+         */
         path: '',
         name: 'a4-home',
-        component: () => import('../components/assignments/router4/WeatherHomeView.vue'),
+        component: () => import('../components/assignments/stages/StageHomeView.vue'),
       },
       {
         path: 'about',
@@ -55,7 +59,13 @@ const routes = [
       {
         path: 'weather/:cityId',
         name: 'a4-detail',
-        component: () => import('../components/assignments/router4/WeatherDetailView.vue'),
+        component: () => import('../components/assignments/stages/StageDetailView.vue'),
+      },
+      {
+        // 8단계에서 늘어난 메뉴. 그 전 단계에서는 내비게이션에 나오지 않는다.
+        path: 'tarot',
+        name: 'a4-tarot',
+        component: () => import('../components/assignments/stages/StageTarotView.vue'),
       },
       {
         // 과제 4 안에서만 쓰는 Catch-all. 반드시 형제들 뒤에 와야 한다.

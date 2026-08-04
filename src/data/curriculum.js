@@ -2447,8 +2447,8 @@ const { count } = storeToRefs(store)   // 반응성 유지`,
       'Vue Devtools의 Pinia 탭에서 state를 직접 수정하고 화면이 따라 바뀌는지 확인해 보세요.',
       '스토어를 두 개(예: authStore, configStore) 만들고 역할을 나눠 보세요.',
     ],
-    practices: [],
-    status: 'todo',
+    practices: ['StoreCounterPractice'],
+    status: 'done',
   },
 
   /* ---------------- CH07 ---------------- */
@@ -3330,7 +3330,7 @@ export const assignments = [
       '각 컴포넌트 디자인을 <style scoped>로 분리',
     ],
     result: 'WeatherParent',
-    resultNote: 'Open-Meteo API 실시간 데이터 · 하위 컴포넌트는 src/components/assignments/weather/ 에 있습니다',
+    resultNote: 'Open-Meteo API 로 받은 오늘 날씨 · 하위 컴포넌트는 src/components/assignments/weather/ 에 있습니다',
 
     /* 결과물 아래에 붙는 컴포넌트 구조 · 이벤트 흐름 설명 */
     anatomy: {
@@ -3438,7 +3438,7 @@ export const assignments = [
           title: '화면이 처음 열리면',
           steps: [
             { who: 'WeatherParent', dir: 'own', label: 'onMounted(load)', desc: '화면이 붙는 순간 딱 한 번 실행된다.' },
-            { who: 'weatherApi.js', dir: 'own', label: 'fetch(open-meteo)', desc: '전국 45개 지역 좌표를 한 번의 요청으로 보낸다. 컴포넌트가 아니라 별도 파일이 맡는다.' },
+            { who: 'weatherApi.js', dir: 'own', label: 'axios.get(open-meteo)', desc: '전국 45개 지역 좌표를 한 번의 요청으로 보낸다. 컴포넌트가 아니라 별도 파일이 맡는다.' },
             { who: 'WeatherParent', dir: 'own', label: 'weatherList = 받아온 배열', desc: '실패하면 errorMessage에 담아 화면에 다시 시도 버튼을 띄운다.' },
             { who: 'WeatherCard', dir: 'down', label: ':city-item 으로 45장 생성', desc: 'v-for가 배열을 보고 카드를 만든다. 데이터가 오면 화면은 알아서 따라온다.' },
           ],
@@ -3503,7 +3503,7 @@ export const assignments = [
       'WeatherAboutView.vue에 서비스 설명과 메인 이동',
       'NotFoundView.vue에 잘못된 주소 안내와 메인 이동',
     ],
-    result: 'WeatherRouterApp',
+    result: 'WeatherStackedApp',
     resultNote:
       '실제 라우터로 동작합니다 — 위 메뉴를 누르면 주소가 바뀌고, 그 주소를 그대로 복사해 보낼 수 있습니다',
     status: 'done',
@@ -3524,7 +3524,10 @@ export const assignments = [
       '메인과 상세 화면에 단위 변경 적용',
       '변환식: (섭씨 × 9) / 5 + 32',
     ],
-    status: 'todo',
+    result: 'WeatherStackedApp',
+    resultNote:
+      '내비게이션 바 오른쪽의 ℃ 버튼을 눌러 보세요 — 목록과 상세 화면의 기온이 함께 바뀝니다. 버튼과 화면은 서로를 모르고, 같은 Store 만 보고 있습니다',
+    status: 'done',
   },
   {
     id: 6,
@@ -3538,8 +3541,11 @@ export const assignments = [
       'OpenWeatherMap 가입 및 API Key 발급',
       'API Key를 .env의 VITE_ 변수로 분리',
     ],
-    note: '교안 209쪽은 제목이 "날씨 데이터 연동"이지만 본문 요구사항이 191쪽 UnitToggler 과제와 동일합니다. Axios 연동의 상세 범위는 강사 안내를 확인하세요.',
-    status: 'todo',
+    result: 'WeatherStackedApp',
+    resultNote:
+      '5단계 앱 그대로인데 목록만 Mock 에서 실제 API 응답으로 바뀌었습니다. 카드 위 배지가 지금 어느 제공자에서 받아 왔는지 알려 줍니다',
+    note: 'Axios 인스턴스와 인터셉터로 교체 완료 — components/assignments/weather/weatherApi.js. 날씨 제공자는 OpenWeatherMap 대신 Open-Meteo를 씁니다(키가 필요 없고 CORS가 열려 있어 브라우저에서 바로 호출됩니다). 그래서 API Key를 .env로 분리하는 항목은 해당 사항이 없습니다. 교안 209쪽은 제목이 "날씨 데이터 연동"이지만 본문 요구사항이 191쪽 UnitToggler 과제와 겹쳐, 연동 범위는 강사 안내를 확인하세요.',
+    status: 'done',
   },
   {
     id: 7,
@@ -3549,7 +3555,11 @@ export const assignments = [
     scope: '8장 UI 라이브러리 전체 · 211~227쪽',
     goal: '완성된 날씨 화면에 Element Plus 컴포넌트를 입힙니다.',
     requirements: ['기존 날씨 과제에 Element Plus 컴포넌트를 자유롭게 적용'],
-    status: 'todo',
+    result: 'WeatherStackedApp',
+    resultNote:
+      '6단계 앱에서 검색창·새로고침·로딩·알림만 Element Plus 부품으로 바뀌었습니다. 날씨 카드는 직접 만든 것을 그대로 뒀습니다',
+    note: '최종 결과물의 "조작 요소"에 적용했습니다 — 검색창 el-input(clearable), 보기 전환 el-segmented, 내 위치·새로고침 el-button(loading·circle), 첫 로딩 el-skeleton, 새로고침·위치 실패 알림 ElMessage. 날씨 카드와 배경 연출은 직접 만든 것을 그대로 두었습니다. 라이브러리 기본 색은 :deep() 으로 이 사이트의 디자인 토큰에 맞췄습니다.',
+    status: 'done',
   },
   {
     id: 8,
@@ -3559,8 +3569,11 @@ export const assignments = [
     scope: '9장 Modern JavaScript 전체 및 7장 Axios',
     goal: '메뉴를 추가하고 활용할 API를 늘려 기존 과제를 확장합니다.',
     requirements: ['메뉴 추가', '활용할 API 추가'],
-    note: '구체적인 메뉴 수와 API 종류는 교안에 지정되어 있지 않습니다.',
-    status: 'todo',
+    result: 'WeatherStackedApp',
+    resultNote:
+      '7단계 앱에 운세 메뉴가 하나 더 붙었습니다. 내비게이션에 홈·소개·운세가 나란히 섭니다',
+    note: '메뉴 추가 — 날씨 외에 "운세(타로 78장)" 메뉴를 새로 만들었습니다(/final/tarot). API 추가 — Open-Meteo 가 막혔을 때를 대비해 노르웨이 기상청(MET Norway) 을 두 번째 제공자로 붙였고, 시간별 예보(/forecast?hourly=…)까지 호출 종류를 늘렸습니다. 구체적인 메뉴 수와 API 종류는 교안에 지정되어 있지 않습니다.',
+    status: 'done',
   },
   {
     id: 9,

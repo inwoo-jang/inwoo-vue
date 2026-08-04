@@ -8,7 +8,7 @@ import { link } from '../routes'
     <section class="home-hero">
       <p class="home-eyebrow">TODAY, AT A GLANCE</p>
       <h1>오늘을 조금 더<br />기분 좋게 시작해요.</h1>
-      <p>실시간 날씨를 확인하고, 오늘의 타로 카드로 가벼운 힌트도 받아 보세요.</p>
+      <p>오늘 날씨를 확인하고, 타로 카드로 가벼운 힌트도 받아 보세요.</p>
     </section>
 
     <section class="home-links" aria-label="서비스 바로가기">

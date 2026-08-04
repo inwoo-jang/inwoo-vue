@@ -2,28 +2,31 @@
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import WeatherBackdrop from '../weather/WeatherBackdrop.vue'
-import { backdropStatus } from './backdropState'
+import UnitToggler from '../pinia5/UnitToggler.vue'
+import { backdropStatus } from '../router4/backdropState'
+import { featuresOf, stageNumber } from './stageFeatures'
 
 /**
- * 과제 4 결과물의 껍데기 — 교안의 App.vue 역할.
+ * 6~8단계 결과물의 껍데기 — 5단계 껍데기 위에 한 겹씩 더 얹은 것.
  *
- *   내비게이션 바 : <RouterLink>
- *   메인 콘텐츠   : <RouterView />
+ *   4단계 껍데기 : 홈 · 소개 (RouterLink + RouterView)
+ *   5단계        + 단위 토글
+ *   6단계        + 실제 API (목록을 Mock 이 아니라 서버에서 받는다)
+ *   7단계        + Element Plus 조작 요소 (본문 화면에서)
+ *   8단계        + 운세 메뉴
  *
- * 이 사이트 안에서 돌아가야 하므로, 과제의 화면들은
- * /project/:stageId 아래의 자식 경로로 등록되어 있다.
- * 원리는 교안과 같다 — 주소가 바뀌면 RouterView 자리가 갈아끼워진다.
+ * 단계마다 앱을 통째로 복사하지 않고, "몇 단계부터 켜지는가"만
+ * stageFeatures.js 에서 읽어 껍데기와 본문이 함께 참고한다.
  */
 const route = useRoute()
 
-/** 자식 경로로 이동할 때 stageId 를 유지해야 한다 */
-const stageId = computed(() => route.params.stageId ?? '4')
+const stage = computed(() => stageNumber(route.params.stageId))
+const stageId = computed(() => String(stage.value))
+const features = computed(() => featuresOf(route.params.stageId))
 
-/**
- * 소개를 뺀 나머지(홈 · 상세 · 없는 주소)는 전부 홈 갈래로 본다.
- * exact-active-class 만 쓰면 상세 화면에서 아무 탭도 안 눌린 상태가 된다.
- */
 const isAbout = computed(() => route.name === 'a4-about')
+const isTarot = computed(() => route.name === 'a4-tarot')
+const isHome = computed(() => !isAbout.value && !isTarot.value)
 </script>
 
 <template>
@@ -31,27 +34,35 @@ const isAbout = computed(() => route.name === 'a4-about')
     <!-- 보고 있는 도시의 날씨가 배경이 된다 -->
     <WeatherBackdrop :status="backdropStatus" />
 
-    <!-- 최종 결과물과 같은 형태 — 내비게이션과 본문이 한 기둥 안에서 같은 폭을 쓴다 -->
     <div class="column">
-      <!-- 내비게이션 바 -->
       <nav class="nav" role="tablist">
-        <RouterLink :to="{ name: 'a4-home', params: { stageId } }" :class="{ on: !isAbout }">
+        <RouterLink :to="{ name: 'a4-home', params: { stageId } }" :class="{ on: isHome }">
           홈
         </RouterLink>
         <RouterLink :to="{ name: 'a4-about', params: { stageId } }" active-class="on">
           소개
         </RouterLink>
+        <!-- 8단계에서 늘어난 메뉴 -->
+        <RouterLink
+          v-if="features.fortune"
+          :to="{ name: 'a4-tarot', params: { stageId } }"
+          active-class="on"
+        >
+          운세
+        </RouterLink>
+
         <code class="url">{{ route.path }}</code>
+
+        <!-- 5단계에서 붙인 단위 토글 -->
+        <UnitToggler v-if="features.unitToggle" />
       </nav>
 
-      <!-- 메인 콘텐츠 — 주소에 맞는 화면이 여기 놓인다 -->
       <RouterView />
     </div>
   </div>
 </template>
 
 <style scoped>
-/* ── 여기부터는 최종 결과물(final/index.vue)과 같은 규격이다 ── */
 .app {
   position: relative;
   display: grid;
@@ -63,11 +74,6 @@ const isAbout = computed(() => route.name === 'a4-about')
   z-index: 1;
 }
 
-/*
- * 화면의 폭을 여기 한 곳에서 정한다.
- * minmax(0, 1fr) 이 없으면 가로로 긴 내용이 들어왔을 때 칸이 벌어져
- * max-width 를 넘어간다. 0 을 최소로 못박아야 그 안에서 스크롤된다.
- */
 .column {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -122,6 +128,10 @@ const isAbout = computed(() => route.name === 'a4-about')
 @media (max-width: 620px) {
   .url {
     display: none;
+  }
+
+  .nav :deep(.unit-toggler) {
+    margin-left: auto;
   }
 }
 </style>

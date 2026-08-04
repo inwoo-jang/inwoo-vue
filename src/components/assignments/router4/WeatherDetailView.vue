@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useConfigStore } from '../../../stores/configStore'
 import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
 import WeatherIcon from '../weather/WeatherIcon.vue'
 import UiIcon from '../weather/UiIcon.vue'
@@ -32,6 +34,18 @@ const tone = computed(() => {
   return 'neutral'
 })
 
+/**
+ * 과제 5 — 메인 화면과 똑같은 Store 를 본다.
+ * 메인에서 화씨로 바꾸고 상세로 들어와도 화씨가 그대로 유지되는 이유다.
+ */
+const { unit, unitSymbol } = storeToRefs(useConfigStore())
+
+/** 교안 191쪽 — 화씨 환산식 (섭씨 × 9) / 5 + 32 */
+const displayTemp = computed(() => {
+  const celsius = city.value?.temp ?? 0
+  return unit.value === 'celsius' ? celsius : Math.round((celsius * 9) / 5 + 32)
+})
+
 /** 교안 172쪽 handleGoBack — 1단계 이전 주소 기록으로 */
 const goBack = () => router.go(-1)
 </script>
@@ -50,7 +64,7 @@ const goBack = () => router.go(-1)
           <h3>{{ city.name }}</h3>
           <p class="status">{{ city.status }}</p>
         </div>
-        <p class="temp">{{ city.temp }}<span class="unit">°C</span></p>
+        <p class="temp">{{ displayTemp }}<span class="unit">{{ unitSymbol }}</span></p>
       </header>
 
       <dl class="observation">

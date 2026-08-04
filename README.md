@@ -22,10 +22,9 @@ SKALA Full-stack Engineering · Frontend Framework (Vue.js) 과정의 **학습 �
 | 경로 | 화면 |
 |---|---|
 | `/final` | 홈 — 오늘 한눈에 |
-| `/final/weather` | 날씨 — 전국 도시 실시간 현황 (지역별 · 날씨별) |
+| `/final/weather` | 날씨 — 전국 도시 오늘 현황 (지역별 · 날씨별) |
 | `/final/weather/:cityId` | 도시 상세 — 시간별 예보 (과거 90일 ~ 미래 14일) |
 | `/final/tarot` | 운세 — 타로 78장 중 오늘의 한 장 |
-| `/final/about` | 소개 |
 
 껍데기(`src/final/index.vue`)가 메뉴를 그리고, 그 안의 `<RouterView />` 자리에
 `src/final/routes.js` 가 정한 화면이 들어온다.
@@ -41,6 +40,7 @@ src/
 │   ├── ui/                   화면 뼈대 (ChallengeCard · LectureBrief · CodeSnippet)
 │   ├── practices/            실습 컴포넌트 — 파일을 넣으면 자동 등록
 │   └── ConceptHelp.vue       개념 설명 툴팁
+├── stores/                   Pinia Store (counter · configStore)
 ├── views/                    페이지 5개
 └── assets/main.css           전역 스타일 · 디자인 토큰
 ```

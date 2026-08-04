@@ -38,9 +38,19 @@ const current = computed(() => {
   return list.find((s) => String(s.id) === props.stageId) ?? list[list.length - 1]
 })
 
+/**
+ * 단계 주소는 이름(name)이 아니라 경로 문자열로 옮긴다.
+ *
+ * { name: 'project' } 는 부모 줄 하나만 콕 집어 가리키기 때문에,
+ * 그 아래 기본 자식(path: '' → 과제 4·5의 홈)이 matched 에 들어오지 않는다.
+ * 그러면 껍데기의 <RouterView /> 자리가 빈 채로 남아 내비게이션만 보인다.
+ * 경로로 옮기면 라우터가 주소를 처음부터 다시 해석해 기본 자식까지 찾아낸다.
+ */
+const stagePath = (id) => `/project/${id}`
+
 /** 단계를 고르면 주소를 바꾼다 */
 const selectStage = (id) => {
-  router.push({ name: 'project', params: { stageId: String(id) } })
+  router.push(stagePath(id))
 }
 
 /** 주소가 비어 있으면 지금 보고 있는 단계를 주소에 채워 링크를 복사할 수 있게 한다 */
@@ -48,7 +58,7 @@ watch(
   [() => props.stageId, current],
   ([stageId, stage]) => {
     if (!stageId && stage) {
-      router.replace({ name: 'project', params: { stageId: String(stage.id) } })
+      router.replace(stagePath(stage.id))
     }
   },
   { immediate: true },
@@ -391,8 +401,9 @@ h2 {
   font-size: 11.5px;
 }
 
+/* 최종 결과물(/final)의 판과 같은 여백 — 배경이 판 끝까지 닿는다 */
 .stage-body {
-  padding: 30px;
+  padding: 12px;
   background: var(--paper);
 }
 

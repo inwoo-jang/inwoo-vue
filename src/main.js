@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 import App from './App.vue'
 import './assets/main.css'
 import router from './router'
@@ -14,6 +17,19 @@ const app = createApp(App)
 // 여기서 한 번 등록해 두면 어느 컴포넌트에서든 import 없이 <GlobalBadge />를 쓸 수 있다.
 // (CH04 "Component 등록" 실습에서 이 차이를 눈으로 확인한다)
 app.component('GlobalBadge', GlobalBadge)
+
+// 전역 상태 저장소 등록 — 교안 181쪽.
+// 이 한 줄이 없으면 useConfigStore() 를 부르는 순간 "no active Pinia" 오류가 난다.
+app.use(createPinia())
+
+/**
+ * UI 라이브러리 등록 — 교안 8장(213쪽).
+ *
+ * 최종 결과물의 "조작 요소"(검색창 · 버튼 · 보기 전환 · 로딩 · 알림)만
+ * Element Plus 로 바꿨다. 날씨 카드와 배경 연출은 직접 만든 것을 그대로 둔다.
+ * CSS 를 assets/main.css 보다 먼저 불러야 우리 디자인 토큰이 위에 덮인다.
+ */
+app.use(ElementPlus)
 
 // 주소 ↔ 화면 연결
 app.use(router)

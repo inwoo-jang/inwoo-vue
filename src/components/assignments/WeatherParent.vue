@@ -439,16 +439,22 @@ const showDetail = (cityName) => {
 </template>
 
 <style scoped>
+/*
+ * 최종 결과물과 같은 규격 — 배경은 판 전체를 채우고, 내용만 가운데 기둥에 담긴다.
+ * 그래서 바깥은 폭을 열어 두고 max-width 는 아래 자식 쪽에 건다.
+ */
 .dashboard-wrapper {
-  /* 원본은 width: 600px 고정이지만, 좁은 화면에서 넘치지 않도록 max-width로 바꿈 */
-  max-width: 660px;
-  margin: 0 auto;
+  position: relative;
 }
 
 /* 배경(z-index 0) 위에 카드가 오도록 */
 .dashboard-wrapper > *:not(.backdrop) {
   position: relative;
   z-index: 1;
+  /* 원본은 width: 600px 고정이지만, 좁은 화면에서 넘치지 않도록 max-width로 바꿈 */
+  max-width: 660px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 /* ── 보기 방식 탭 ── */

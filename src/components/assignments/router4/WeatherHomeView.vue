@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useConfigStore } from '../../../stores/configStore'
 import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
 import SearchBar from '../weather/SearchBar.vue'
 import WeatherCard from '../weather/WeatherCard.vue'
@@ -20,6 +22,19 @@ import { backdropStatus } from './backdropState'
  */
 const route = useRoute()
 const router = useRouter()
+
+/**
+ * 과제 5 — 온도 단위는 Store 에서 읽는다.
+ *
+ * 단위를 바꾸는 버튼(UnitToggler)은 이 화면이 아니라 껍데기의 내비게이션 바에 있다.
+ * 서로 남남인 두 컴포넌트가 같은 값을 보는 방법이 Store 다.
+ * 과제 4까지는 이 값을 건드릴 버튼 자체가 없어 늘 섭씨(초깃값)로 남는다.
+ */
+const { unit, unitSymbol } = storeToRefs(useConfigStore())
+
+/** 교안 191쪽 — 섭씨 원본은 그대로 두고, 화씨는 (섭씨 × 9) / 5 + 32 로 환산해 보여 준다 */
+const toUnit = (celsius) =>
+  unit.value === 'celsius' ? celsius : Math.round((celsius * 9) / 5 + 32)
 
 const searchQuery = ref('')
 const selectedId = ref('')
@@ -68,6 +83,8 @@ const goDetail = (cityName) => {
         :key="city.id"
         :city-item="city"
         :selected="city.id === selectedId"
+        :temp-value="toUnit(city.temp)"
+        :temp-unit="unitSymbol"
         detail-label="상세보기"
         @select-card="(id) => (selectedId = selectedId === id ? '' : id)"
         @click-detail="goDetail"

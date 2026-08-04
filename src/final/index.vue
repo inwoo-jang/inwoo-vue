@@ -23,8 +23,7 @@ const route = useRoute()
 /** 상세 화면에서도 '날씨' 탭이 눌린 채로 남아야 한다 */
 const isWeather = computed(() => route.name === 'final-weather' || route.name === 'final-detail')
 const isTarot = computed(() => route.name === 'final-tarot')
-const isAbout = computed(() => route.name === 'final-about')
-const isHome = computed(() => !isWeather.value && !isTarot.value && !isAbout.value)
+const isHome = computed(() => !isWeather.value && !isTarot.value)
 </script>
 
 <template>
@@ -38,7 +37,6 @@ const isHome = computed(() => !isWeather.value && !isTarot.value && !isAbout.val
         <RouterLink :to="link('home')" :class="{ on: isHome }">홈</RouterLink>
         <RouterLink :to="link('weather')" :class="{ on: isWeather }">날씨</RouterLink>
         <RouterLink :to="link('tarot')" :class="{ on: isTarot }">운세</RouterLink>
-        <RouterLink :to="link('about')" :class="{ on: isAbout }">소개</RouterLink>
         <code class="url">{{ route.path }}</code>
       </nav>
 
