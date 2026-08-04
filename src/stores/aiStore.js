@@ -17,14 +17,19 @@ import { defineStore } from 'pinia'
  * 대신 쓰는 사람이 자기 키를 화면에서 넣고, 그 값은 이 브라우저의
  * localStorage 에만 남는다. 키가 없으면 AI 대신 카드 기본 해설이 나온다.
  */
-const STORAGE_KEY = 'inwoo-anthropic-key'
+const STORAGE_KEY = 'inwoo-openai-key'
 
 export const useAiStore = defineStore('ai', () => {
   /**
-   * 개발할 때만 .env.local 의 값을 기본으로 쓴다.
+   * 개발 서버에서만 .env.local 의 값을 기본으로 쓴다.
+   *
+   * import.meta.env.DEV 는 빌드할 때 false 라는 글자로 치환되고, 그러면
+   * 이 삼항식이 통째로 접혀 키 문자열이 번들에 아예 남지 않는다.
+   * (그냥 VITE_ 변수만 읽으면 dist/assets/*.js 안에 키가 그대로 박힌다)
+   *
    * 이 값은 localStorage 에 옮겨 적지 않는다 — 저장할 값은 사용자가 넣은 것뿐이다.
    */
-  const devKey = import.meta.env.VITE_ANTHROPIC_API_KEY ?? ''
+  const devKey = import.meta.env.DEV ? (import.meta.env.VITE_OPENAI_API_KEY ?? '') : ''
 
   const apiKey = ref(localStorage.getItem(STORAGE_KEY) ?? devKey)
 

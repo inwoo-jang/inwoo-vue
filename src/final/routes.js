@@ -6,7 +6,7 @@
  *   /final                  홈 — 오늘 한눈에
  *   /final/weather          날씨 — 전국 도시 오늘 현황
  *   /final/weather/:cityId  도시 상세 + 시간별 예보
- *   /final/tarot            운세 — 오늘의 타로 한 장
+ *   /final/tarot            운세 — 타로 세 장으로 보는 오늘
  *
  * 이름 앞에 'final-' 을 붙여 학습 페이지 쪽 이름과 섞이지 않게 한다.
  * 화면에서 부를 때는 규칙을 외우지 말고 아래 link() 를 쓴다.

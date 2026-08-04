@@ -352,6 +352,7 @@ const goDetail = (cityName) => {
           @select-card="selectCity"
           @click-detail="goDetail"
           @toggle-favorite="toggleFavorite"
+          @dblclick="goDetail(city.name)"
         />
         <p v-if="!filtered.length" class="notice">
           <UiIcon name="empty" :size="22" /> 검색 결과와 일치하는 도시가 없습니다.

@@ -67,6 +67,7 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
   <div
     class="weather-card"
     :class="{ here, open, selected }"
+    :title="`두 번 누르면 ${cityItem.name} 상세로 갑니다`"
     @click="emit('select-card', cityItem.id)"
   >
     <!-- ① 날씨 — 하늘 상태 -->

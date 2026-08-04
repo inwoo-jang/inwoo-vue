@@ -420,6 +420,7 @@ const showDetail = (cityName) => {
           @select-card="selectCity"
           @click-detail="showDetail"
           @toggle-favorite="toggleFavorite"
+          @dblclick="showDetail(item.name)"
         />
 
         <p v-if="filteredWeatherList.length === 0" class="empty-message">
@@ -465,6 +466,7 @@ const showDetail = (cityName) => {
           @select-card="selectCity"
           @click-detail="showDetail"
           @toggle-favorite="toggleFavorite"
+          @dblclick="showDetail(selectedCity.name)"
         />
 
         <WeatherByStatus

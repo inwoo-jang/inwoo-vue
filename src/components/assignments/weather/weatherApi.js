@@ -670,7 +670,7 @@ const clockOf = (isoLike) => (isoLike ? String(isoLike).slice(11, 16) : '')
  * 실패해도 화면이 죽으면 안 되므로 빈 객체를 돌려준다 — 표에서 그 줄만 빠진다.
  *
  * @param {object} city CITIES 의 항목 (좌표가 있어야 한다)
- * @returns {Promise<{visibility?: number, sunrise?: string, sunset?: string, dust?: string}>}
+ * @returns {Promise<object>} visibility · sunrise · sunset · tempMin · tempMax · rainChance · dust …
  */
 export const fetchCityDetail = async (city) => {
   if (!city) return {}
@@ -678,56 +678,67 @@ export const fetchCityDetail = async (city) => {
   const extras = {}
 
   /*
-   * 도시 하나면 OpenWeather 가 가장 알뜰하다 — 가시거리·일출·일몰·풍속·기압이
-   * 한 응답에 다 들어 있다. 키가 없거나 막혔을 때만 Open-Meteo 의
-   * hourly/daily 로 같은 값을 모은다.
+   * 세 곳에 나란히 물어본다. 서로를 기다릴 이유가 없으니 걸리는 시간은
+   * 셋 중 가장 느린 하나뿐이다.
+   *
+   *   ① OpenWeather  가시거리·일출·일몰·풍속·기압 (키가 있을 때만)
+   *   ② Open-Meteo   오늘 최저/최고·강수 확률, 그리고 ①이 못 준 값
+   *   ③ Air Quality  미세먼지 (창구가 아예 다르다)
    */
   const useOpenWeather = isOpenWeatherUsable()
 
-  // 두 요청은 서로를 기다릴 이유가 없다. 나란히 보내면 둘 중 느린 쪽만 기다린다.
-  const [weather, air] = await Promise.allSettled([
+  const [own, meteo, air] = await Promise.allSettled([
     useOpenWeather
       ? openWeather.get('/weather', { params: { lat: city.lat, lon: city.lon } })
-      : openMeteo.get('/forecast', {
-          params: {
-            latitude: city.lat,
-            longitude: city.lon,
-            hourly: 'visibility',
-            daily: 'sunrise,sunset',
-            forecast_days: 1,
-          },
-        }),
+      : Promise.reject(new Error('키 없음')),
+    openMeteo.get('/forecast', {
+      params: {
+        latitude: city.lat,
+        longitude: city.lon,
+        hourly: 'visibility',
+        daily: 'sunrise,sunset,temperature_2m_min,temperature_2m_max,precipitation_probability_max',
+        forecast_days: 1,
+      },
+    }),
     airQuality.get('/air-quality', {
       params: { latitude: city.lat, longitude: city.lon, current: 'pm10,pm2_5' },
     }),
   ])
 
-  // ① 가시거리 · 일출 · 일몰 (+ OpenWeather 면 풍속 · 기압까지)
-  if (weather.status === 'fulfilled') {
-    const data = weather.value
+  // ② 먼저 Open-Meteo 로 채운다
+  if (meteo.status === 'fulfilled') {
+    const data = meteo.value
 
-    if (useOpenWeather) {
-      if (data.visibility != null) extras.visibility = Math.round(data.visibility / 100) / 10
-      if (data.sys?.sunrise) extras.sunrise = toClock(data.sys.sunrise)
-      if (data.sys?.sunset) extras.sunset = toClock(data.sys.sunset)
-      if (data.wind?.speed != null) extras.wind = Math.round(data.wind.speed * 10) / 10
-      if (data.main?.pressure != null) extras.pressure = data.main.pressure
-    } else {
-      // 지금 시각에 가장 가까운 칸을 고른다
-      const hours = data.hourly?.time ?? []
-      const nowHour = new Date().getHours()
-      const index = hours.findIndex((time) => Number(time.slice(11, 13)) === nowHour)
-      const meters = data.hourly?.visibility?.[index >= 0 ? index : 0]
-      if (meters != null) extras.visibility = Math.round(meters / 100) / 10
+    // 가시거리는 시간별로 오므로 지금 시각에 가장 가까운 칸을 고른다
+    const hours = data.hourly?.time ?? []
+    const nowHour = new Date().getHours()
+    const index = hours.findIndex((time) => Number(time.slice(11, 13)) === nowHour)
+    const meters = data.hourly?.visibility?.[index >= 0 ? index : 0]
+    if (meters != null) extras.visibility = Math.round(meters / 100) / 10
 
-      extras.sunrise = clockOf(data.daily?.sunrise?.[0])
-      extras.sunset = clockOf(data.daily?.sunset?.[0])
+    const daily = data.daily ?? {}
+    if (daily.temperature_2m_min?.[0] != null) extras.tempMin = Math.round(daily.temperature_2m_min[0])
+    if (daily.temperature_2m_max?.[0] != null) extras.tempMax = Math.round(daily.temperature_2m_max[0])
+    if (daily.precipitation_probability_max?.[0] != null) {
+      extras.rainChance = daily.precipitation_probability_max[0]
     }
+    extras.sunrise = clockOf(daily.sunrise?.[0])
+    extras.sunset = clockOf(daily.sunset?.[0])
   } else {
-    console.warn('[weather] 추가 관측값을 받지 못했습니다.', weather.reason)
+    console.warn('[weather] 오늘 예보를 받지 못했습니다.', meteo.reason)
   }
 
-  // ② 미세먼지 — 창구가 다르다
+  // ① OpenWeather 가 있으면 그쪽 값을 덮어쓴다 (관측소 값이라 더 가깝다)
+  if (own.status === 'fulfilled') {
+    const data = own.value
+    if (data.visibility != null) extras.visibility = Math.round(data.visibility / 100) / 10
+    if (data.sys?.sunrise) extras.sunrise = toClock(data.sys.sunrise)
+    if (data.sys?.sunset) extras.sunset = toClock(data.sys.sunset)
+    if (data.wind?.speed != null) extras.wind = Math.round(data.wind.speed * 10) / 10
+    if (data.main?.pressure != null) extras.pressure = data.main.pressure
+  }
+
+  // ③ 미세먼지
   if (air.status === 'fulfilled') {
     const dust = describeDust(air.value.current?.pm10)
     if (dust) extras.dust = dust

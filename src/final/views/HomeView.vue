@@ -19,7 +19,14 @@ const toUnit = (celsius) =>
   unit.value === 'celsius' ? celsius : Math.round((celsius * 9) / 5 + 32)
 
 const here = ref(null)
-/** idle → locating → ready | denied | failed */
+/**
+ * idle      아직 아무것도 하지 않음
+ * locating  위치를 찾는 중
+ * ready     현재 위치 날씨를 받아 옴
+ * ask       아직 허용받지 못함 — 버튼으로 다시 물어볼 수 있다
+ * blocked   브라우저가 이 사이트의 위치 권한을 막아 둠 — 버튼으로는 못 푼다
+ * failed    위치는 알았는데 날씨를 못 받음
+ */
 const state = ref('idle')
 
 /** 위치를 못 받아도 화면이 막히면 안 되므로, 실패를 null 로 돌려준다 */
@@ -39,7 +46,8 @@ const load = async () => {
     // 위치와 날씨는 서로를 기다릴 이유가 없다
     const [near, weather] = await Promise.all([locate(), fetchWeather()])
     if (!near) {
-      state.value = 'denied'
+      // 거절했거나 시간 안에 못 받았다. 다시 물어볼 수 있는 상태로 둔다.
+      state.value = 'ask'
       return
     }
     here.value = weather.rows.find((row) => row.id === near.id) ?? null
@@ -54,7 +62,7 @@ onMounted(async () => {
   // 한 번 거절한 사용자를 다시 귀찮게 하지는 않는다
   const permission = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null)
   if (permission?.state === 'denied') {
-    state.value = 'denied'
+    state.value = 'blocked'
     return
   }
   load()
@@ -73,8 +81,8 @@ const tone = computed(() => {
   <main class="home-page">
     <section class="home-hero">
       <p class="home-eyebrow">TODAY, AT A GLANCE</p>
-      <h1>오늘을 조금 더<br />기분 좋게 시작해요.</h1>
-      <p>오늘 날씨를 확인하고, 타로 카드로 가벼운 힌트도 받아 보세요.</p>
+      <h1>오늘 하루를<br />가볍게 준비해요.</h1>
+      <p>지금 계신 곳의 날씨부터 확인하고, 타로 세 장으로 오늘의 흐름도 살펴보세요.</p>
     </section>
 
     <!-- 현재 위치 한 곳 -->
@@ -98,10 +106,24 @@ const tone = computed(() => {
 
       <p v-else-if="state === 'locating'" class="here-note">현재 위치의 날씨를 찾는 중입니다…</p>
 
-      <p v-else-if="state === 'denied'" class="here-note">
-        위치를 알 수 없어 현재 위치 날씨는 건너뛰었습니다.
+      <div v-else-if="state === 'ask'" class="here-note ask">
+        <div>
+          <b>현재 위치를 허용해 주세요.</b>
+          <span>허용하면 지금 계신 곳의 날씨를 여기에 먼저 보여 드립니다.</span>
+        </div>
+        <button type="button" class="allow" @click="load">
+          <UiIcon name="location" :size="14" /> 위치 허용
+        </button>
         <RouterLink :to="link('weather')">전국 날씨 보기 →</RouterLink>
-      </p>
+      </div>
+
+      <div v-else-if="state === 'blocked'" class="here-note ask">
+        <div>
+          <b>이 사이트의 위치 권한이 꺼져 있습니다.</b>
+          <span>주소창의 자물쇠 아이콘에서 위치를 '허용'으로 바꾸면 여기에 표시됩니다.</span>
+        </div>
+        <RouterLink :to="link('weather')">전국 날씨 보기 →</RouterLink>
+      </div>
 
       <p v-else class="here-note">
         현재 위치의 날씨를 불러오지 못했습니다.
@@ -118,7 +140,7 @@ const tone = computed(() => {
       <RouterLink :to="link('tarot')" class="home-link tarot-link">
         <span>✶</span>
         <strong>운세</strong>
-        <small>오늘의 타로 한 장 뽑기</small>
+        <small>타로로 오늘의 운세 보기</small>
       </RouterLink>
     </section>
   </main>
@@ -150,6 +172,13 @@ h1 { margin: 0; color: var(--ink); font-size: clamp(30px, 7vw, 42px); font-weigh
 .here-note a { color: var(--accent); font-weight: 600; text-decoration: none; }
 .here-note button { padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; }
 .here-note button:hover { border-color: var(--accent); color: var(--accent); }
+.here-note.ask { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 14px; align-items: center; }
+.here-note.ask > div { display: grid; gap: 3px; }
+.here-note.ask b { color: var(--ink); font-size: 13.5px; }
+.here-note.ask span { color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.here-note .allow { display: inline-flex; gap: 6px; align-items: center; padding: 9px 16px; border: 0; border-radius: 999px; color: var(--on-accent); background: var(--accent); font-size: 12.5px; font-weight: 600; }
+.here-note .allow:hover { border: 0; color: var(--on-accent); opacity: .9; }
+@media (max-width: 560px) { .here-note.ask { grid-template-columns: 1fr; } }
 
 .home-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .home-link { display: grid; gap: 8px; min-height: 170px; padding: 22px; color: var(--ink); text-decoration: none; transition: transform .2s ease, background .2s ease; }

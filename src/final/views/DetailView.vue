@@ -83,18 +83,26 @@ const observations = computed(() => {
     ),
   }
   return [
+    {
+      label: '오늘 최저 · 최고',
+      value:
+        c.tempMin != null && c.tempMax != null
+          ? `${toUnit.value(c.tempMin)} · ${toUnit.value(c.tempMax)}${unitSymbol.value}`
+          : null,
+      unit: '',
+    },
+    { label: '강수 확률', value: c.rainChance, unit: '%' },
     { label: '습도', value: c.humidity, unit: '%' },
-    { label: '풍속', value: c.wind, unit: 'm/s' },
-    { label: '기압', value: c.pressure, unit: 'hPa' },
-    { label: '가시거리', value: c.visibility, unit: 'km' },
     { label: '미세먼지', value: c.dust, unit: '' },
+    { label: '풍속', value: c.wind, unit: 'm/s' },
+    { label: '가시거리', value: c.visibility, unit: 'km' },
+    { label: '기압', value: c.pressure, unit: 'hPa' },
     {
       label: '일출 · 일몰',
       value: c.sunrise && c.sunset ? `${c.sunrise} · ${c.sunset}` : null,
       unit: '',
       small: true,
     },
-    { label: '권역', value: c.group, unit: '', small: true },
   ].filter((item) => item.value !== null && item.value !== undefined && item.value !== '')
 })
 
@@ -175,10 +183,6 @@ const goBack = () => router.go(-1)
       />
 
       <footer class="foot">
-        <p v-if="route.query.from" class="from">
-          <span class="tag">route.query</span>
-          <code>{{ route.query }}</code>
-        </p>
         <el-button round size="small" @click="goBack">← 이전 화면으로</el-button>
       </footer>
     </template>
@@ -227,8 +231,7 @@ const goBack = () => router.go(-1)
   font-size: 11.5px;
 }
 
-.eyebrow code,
-.from code {
+.eyebrow code {
   padding: 1px 5px;
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -346,25 +349,6 @@ dd.small {
   align-items: center;
   justify-content: space-between;
   margin-top: 18px;
-}
-
-.from {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin: 0;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.tag {
-  padding: 2px 7px;
-  border-radius: 999px;
-  color: var(--slate);
-  background: var(--slate-tint);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
 }
 
 .missing {

@@ -111,11 +111,20 @@ const observations = computed(() => {
     Object.entries(city.value).filter(([, value]) => value !== null && value !== undefined && value !== ''),
   ) }
   return [
+    {
+      label: '오늘 최저 · 최고',
+      value:
+        c.tempMin != null && c.tempMax != null
+          ? `${toUnit(c.tempMin)} · ${toUnit(c.tempMax)}${unitSymbol.value}`
+          : null,
+      unit: '',
+    },
+    { label: '강수 확률', value: c.rainChance, unit: '%' },
     { label: '습도', value: c.humidity, unit: '%' },
-    { label: '풍속', value: c.wind, unit: 'm/s' },
-    { label: '기압', value: c.pressure, unit: 'hPa' },
-    { label: '가시거리', value: c.visibility, unit: 'km' },
     { label: '미세먼지', value: c.dust, unit: '' },
+    { label: '풍속', value: c.wind, unit: 'm/s' },
+    { label: '가시거리', value: c.visibility, unit: 'km' },
+    { label: '기압', value: c.pressure, unit: 'hPa' },
     {
       label: '일출 · 일몰',
       value: c.sunrise && c.sunset ? `${c.sunrise} · ${c.sunset}` : null,
@@ -295,14 +304,19 @@ h3 {
   font-weight: 500;
 }
 
+/*
+ * grid 로 칸을 못박으면 항목 수가 열 수의 배수가 아닐 때 마지막 줄에 빈 칸이 남는다.
+ * flex 로 두면 남는 폭을 마지막 줄 항목들이 나눠 가져 빈 자리가 생기지 않는다.
+ */
 .observation {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 0;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
 }
 
 .observation > div {
+  flex: 1 1 148px;
   padding: 12px 15px;
   border-radius: 13px;
   background: var(--paper);

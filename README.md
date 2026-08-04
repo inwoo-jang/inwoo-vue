@@ -24,7 +24,7 @@ SKALA Full-stack Engineering · Frontend Framework (Vue.js) 과정의 **학습 �
 | `/final` | 홈 — 오늘 한눈에 |
 | `/final/weather` | 날씨 — 전국 도시 오늘 현황 (지역별 · 날씨별) |
 | `/final/weather/:cityId` | 도시 상세 — 시간별 예보 (과거 90일 ~ 미래 14일) |
-| `/final/tarot` | 운세 — 타로 78장 중 오늘의 한 장 |
+| `/final/tarot` | 운세 — 타로 세 장으로 보는 오늘 (AI 해석) |
 
 껍데기(`src/final/index.vue`)가 메뉴를 그리고, 그 안의 `<RouterView />` 자리에
 `src/final/routes.js` 가 정한 화면이 들어온다.
