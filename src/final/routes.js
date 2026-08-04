@@ -7,6 +7,11 @@
  *   /final/weather          날씨 — 전국 도시 오늘 현황
  *   /final/weather/:cityId  도시 상세 + 시간별 예보
  *   /final/tarot            운세 — 타로 세 장으로 보는 오늘
+ *   /final/login            로그인 — 운세 기록을 남기려면 필요하다
+ *   /final/records          내 운세 기록 (로그인한 사람만)
+ *
+ * meta.requiresAuth 를 적어 두면 router/index.js 의 가드가 로그인을 확인한다.
+ * 화면마다 "로그인했나?"를 따로 검사하지 않기 위해서다.
  *
  * 이름 앞에 'final-' 을 붙여 학습 페이지 쪽 이름과 섞이지 않게 한다.
  * 화면에서 부를 때는 규칙을 외우지 말고 아래 link() 를 쓴다.
@@ -41,6 +46,18 @@ export default [
     path: 'tarot',
     name: 'final-tarot',
     component: () => import('./views/TarotView.vue'),
+  },
+  {
+    path: 'login',
+    name: 'final-login',
+    component: () => import('./views/LoginView.vue'),
+  },
+  {
+    path: 'records',
+    name: 'final-records',
+    component: () => import('./views/RecordsView.vue'),
+    // 로그인하지 않았다면 가드가 로그인 화면으로 보낸다
+    meta: { requiresAuth: true },
   },
   {
     // 이 영역 안에서만 도는 Catch-all. 반드시 형제들 뒤에 와야 한다

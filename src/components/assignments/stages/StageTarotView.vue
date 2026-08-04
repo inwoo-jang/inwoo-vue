@@ -7,7 +7,7 @@ import { tarotCards, cardBack } from '../../../final/data/tarotCards'
  * 8단계에서 늘어난 메뉴 — 운세.
  *
  * 날씨 하나뿐이던 서비스에 두 번째 메뉴가 붙었다는 것을 보여 주는 자리다.
- * 세 장 스프레드와 AI 해석까지 붙은 완성형은 최종 결과물(/final/tarot)에 있다.
+ * 세 장 스프레드까지 갖춘 완성형은 최종 결과물(/final/tarot)에 있다.
  */
 const picked = ref(null)
 

@@ -1,10 +1,15 @@
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ElMessage } from 'element-plus'
 import { cardBack, tarotCards } from '../data/tarotCards'
-import { SPREAD, buildLocalReading, streamReadingViaProxy } from '../data/tarotReading'
+import { SPREAD, buildReading } from '../data/tarotReading'
+import { useAuthStore } from '../../stores/authStore'
+import { RECORD_TYPES, useRecordStore } from '../../stores/recordStore'
+import { link } from '../routes'
 
 /**
- * 오늘의 운세 — 78장에서 세 장을 뽑아 AI 해석을 받는다.
+ * 오늘의 운세 — 78장에서 세 장을 뽑아 오늘의 흐름을 읽는다.
  *
  *   1번 카드  오늘의 전반적 흐름
  *   2번 카드  오늘 마주할 변수 또는 주의점
@@ -43,9 +48,6 @@ const introMessage = computed(() => {
   }
   if (left > 0) {
     return `${picks.value.length}장을 골랐습니다. ${left}장을 더 고르면 해석이 시작됩니다.`
-  }
-  if (reading.value.status === 'loading') {
-    return '세 장이 모두 놓였습니다. 카드를 읽는 중입니다…'
   }
   return '세 장이 모두 놓였습니다. 아래에서 오늘의 흐름 · 변수 · 조언을 확인해 보세요.'
 })
@@ -87,51 +89,62 @@ const shuffleCards = () => {
 onBeforeUnmount(() => window.clearTimeout(shuffleTimer))
 
 /* ── 해석 ───────────────────────────────────────────────────────── */
-const reading = ref({ status: 'idle', text: '', source: '', error: '' })
-
-const resetReading = () => {
-  reading.value = { status: 'idle', text: '', source: '', error: '' }
-}
-
-/** 기본 해설로 내려앉는다 — 화면이 비는 것만은 막는다 */
-const fallBackToLocal = () => {
-  reading.value = {
-    status: 'done',
-    text: buildLocalReading(picks.value),
-    source: 'local',
-    error: '',
-  }
-}
 
 /**
- * 세 장이 모이면 해석을 받는다.
+ * 세 장이 모이면 그 자리에서 글이 나온다.
  *
- * AI 해석은 서버(api/tarot.js)가 자기 키로 받아 온다. 브라우저는 뽑은 카드
- * 세 장만 보낸다 — 브라우저는 비밀을 가질 수 없으니 키를 여기 두지 않는다.
- *
- * 서버가 없든, 키가 아직 없든, 모델이 답을 못 하든 — 이유를 따지지 않고
- * 카드에 딸린 기본 해설로 넘어간다. 운세를 보러 온 사람에게 API 사정을
- * 설명하는 화면은 아무 쓸모가 없다.
+ * 카드마다 가진 뜻을 놓인 자리(흐름 · 변수 · 조언)에 맞춰 엮는다.
+ * 기다릴 것도, 실패할 것도 없어서 상태를 따로 들고 있지 않는다.
  */
-const requestReading = async () => {
-  if (!isComplete.value) return
+const readingText = computed(() => (isComplete.value ? buildReading(picks.value) : ''))
 
-  reading.value = { status: 'loading', text: '', source: 'ai', error: '' }
+const resetReading = () => {
+  // 새로 뽑으면 방금 저장한 기록과는 다른 운세다. 저장 표시도 함께 지운다.
+  savedRecordId.value = 0
+}
 
-  try {
-    await streamReadingViaProxy({
-      picks: picks.value,
-      onText: (chunk) => {
-        reading.value.text += chunk
-      },
-    })
-    if (!reading.value.text.trim()) throw new Error('빈 응답')
-    reading.value.status = 'done'
-  } catch (error) {
-    // 원인은 콘솔에만 남긴다. 화면에는 읽을 거리가 있으면 된다.
-    console.warn('[tarot] AI 해석을 받지 못해 기본 해설로 대신합니다.', error)
-    fallBackToLocal()
+/* ── 기록 남기기 ────────────────────────────────────────────────── */
+
+/**
+ * 해석이 끝나면 서버에 남길 수 있다.
+ *
+ * 기록은 "내 것"이라 로그인해야 한다. 로그인하지 않았다고 화면을 막지는 않는다 —
+ * 운세는 그대로 보고, 저장 자리에만 로그인 안내를 둔다.
+ */
+const auth = useAuthStore()
+const { isLoggedIn } = storeToRefs(auth)
+
+const recordStore = useRecordStore()
+const { isSaving } = storeToRefs(recordStore)
+
+/** 서버가 받는 종류는 셋뿐이다 (mock-api 의 validateRecord) */
+const saveType = ref(RECORD_TYPES[0])
+
+/** 0 이면 아직 저장 전, 값이 있으면 그 기록의 id */
+const savedRecordId = ref(0)
+
+const saveReading = async () => {
+  if (!isComplete.value || !readingText.value.trim()) return
+
+  const saved = await recordStore.add({
+    type: saveType.value,
+    // 서버는 세 장을 그대로 보관한다. 나중에 목록에서 다시 보여 줘야 하므로
+    // 이미지 경로 대신 "무슨 카드가 어느 방향이었는지"만 담는다.
+    cards: picks.value.map((pick) => ({
+      id: pick.card.id,
+      name: pick.card.name,
+      reversed: pick.reversed,
+    })),
+    reading: readingText.value.trim(),
+  })
+
+  if (!saved) {
+    ElMessage.error(recordStore.errorMessage)
+    return
   }
+
+  savedRecordId.value = saved.id
+  ElMessage.success({ message: '운세를 기록했습니다.', duration: 1800 })
 }
 
 const chooseCard = (card) => {
@@ -143,7 +156,6 @@ const chooseCard = (card) => {
     { card, reversed: allowReversed.value && Math.random() >= 0.5 },
   ]
 
-  if (isComplete.value) requestReading()
 }
 
 const drawAgain = () => {
@@ -209,24 +221,41 @@ const drawAgain = () => {
     <!-- 해석 -->
     <section v-if="isComplete" class="reading" aria-live="polite">
       <header class="reading-head">
-        <p class="tarot-kind">
-          READING
-          <span v-if="reading.source === 'ai'" class="tag ai">AI 해석</span>
-          <span v-else-if="reading.source === 'local'" class="tag local">카드 기본 해설</span>
-        </p>
+        <p class="tarot-kind">READING</p>
         <button type="button" class="ghost-button" @click="drawAgain">다시 뽑기</button>
       </header>
 
-      <p v-if="reading.status === 'loading' && !reading.text" class="reading-wait">
-        카드를 읽는 중입니다…
-      </p>
 
-      <p v-if="reading.text" class="reading-text">{{ reading.text }}</p>
+      <p class="reading-text">{{ readingText }}</p>
 
 
-      <p v-if="reading.source === 'local'" class="reading-hint">
-        카드에 딸린 기본 해설입니다. 세 장을 함께 읽는 AI 해석은 지금 잠시 쉬고 있습니다.
-      </p>
+
+      <div class="save-row">
+        <template v-if="!isLoggedIn">
+          <p class="save-hint">
+            <RouterLink :to="link('login')">로그인</RouterLink>하면 이 운세를 기록으로 남길 수 있습니다.
+          </p>
+        </template>
+
+        <template v-else-if="savedRecordId">
+          <p class="save-hint done">
+            기록했습니다.
+            <RouterLink :to="link('records')">내 기록에서 보기 →</RouterLink>
+          </p>
+        </template>
+
+        <template v-else>
+          <label class="save-type">
+            <span class="sr-only">운세 종류</span>
+            <select v-model="saveType">
+              <option v-for="type in RECORD_TYPES" :key="type" :value="type">{{ type }}</option>
+            </select>
+          </label>
+          <button type="button" class="save-button" :disabled="isSaving" @click="saveReading">
+            {{ isSaving ? '남기는 중…' : '이 운세 기록하기' }}
+          </button>
+        </template>
+      </div>
     </section>
 
     <!-- 카드 고르기 -->
@@ -343,13 +372,8 @@ h2 { font-size: 24px; line-height: 1.25; }
 .reading-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .reading-head .tarot-kind { margin: 0; }
 .tag { padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0; }
-.tag.ai { color: #fff; background: var(--mystic); }
-.tag.local { color: var(--slate); background: var(--slate-tint); }
 .reading-text { margin: 0; color: var(--ink-soft); font-size: 14.5px; line-height: 1.9; white-space: pre-wrap; }
-.reading-wait { margin: 0; color: var(--muted); font-size: 13.5px; }
-.reading-wait::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--mystic); animation: pulse 1.1s ease-in-out infinite; vertical-align: middle; }
 @keyframes pulse { 50% { opacity: .25; } }
-.reading-hint { margin: 0; padding: 11px 14px; border-radius: 10px; background: var(--paper); color: var(--muted); font-size: 12.5px; line-height: 1.7; }
 
 /* ── 카드 고르기 ── */
 .tarot-deck { position: relative; display: grid; gap: 18px; padding: 26px 28px; }
@@ -387,10 +411,20 @@ h2 { font-size: 24px; line-height: 1.25; }
 @keyframes drop-right { from { transform: translate3d(0, calc(var(--order) * -3px), 0) rotate(calc(var(--order) * .6deg)); } to { transform: translate3d(-63px, calc(7.6px + var(--slot) * -1.4px), 0) rotate(-7deg); } }
 @keyframes square-up { 0%, 88% { transform: scale(1); } 94% { transform: scale(.955); } 100% { transform: scale(1); } }
 
-/* ── API 키 ── */
 
 .ghost-button { padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--surface); cursor: pointer; font: inherit; font-size: 12.5px; }
 .ghost-button:hover { border-color: var(--mystic); color: var(--mystic); }
+
+/* ── 기록 남기기 ── */
+.save-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--mystic-line, var(--line)); }
+.save-hint { margin: 0; color: var(--muted); font-size: 12.5px; }
+.save-hint.done { color: var(--mystic); font-weight: 600; }
+.save-hint a { color: var(--mystic); font-weight: 600; }
+.save-type select { padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-soft); cursor: pointer; font: inherit; font-size: 12.5px; }
+.save-button { padding: 7px 16px; border: 1px solid var(--mystic); border-radius: 999px; background: var(--mystic); color: var(--on-accent); cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600; }
+.save-button:disabled { opacity: 0.6; cursor: progress; }
+/* 화면 낭독기에만 읽히는 라벨 */
+.sr-only { position: absolute; overflow: hidden; width: 1px; height: 1px; clip-path: inset(50%); white-space: nowrap; }
 
 @media (max-width: 640px) {
   .spread { grid-template-columns: 1fr; }

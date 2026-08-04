@@ -116,4 +116,28 @@ const router = createRouter({
   },
 })
 
+/**
+ * 로그인 가드
+ * ------------------------------------------------------------------
+ * meta.requiresAuth 가 붙은 화면(지금은 /final/records)은 로그인해야 들어간다.
+ *
+ * 새로고침 직후에는 토큰만 있고 "내가 누구인지"는 아직 모른다.
+ * 그래서 들어가기 전에 restore() 로 서버에 한 번 물어본다.
+ * 토큰이 만료됐다면 그 안에서 정리되어 아래 isLoggedIn 이 false 가 된다.
+ *
+ * 막을 때는 그냥 돌려보내지 않고 ?redirect= 에 가려던 주소를 적어 둔다.
+ * 로그인하면 그 자리로 이어서 보내 주기 위해서다.
+ */
+router.beforeEach(async (to) => {
+  if (!to.meta.requiresAuth) return true
+
+  // Pinia 는 main.js 에서 router 보다 먼저 등록되므로 여기서 꺼내 써도 된다
+  const { useAuthStore } = await import('../stores/authStore')
+  const auth = useAuthStore()
+  await auth.restore()
+
+  if (auth.isLoggedIn) return true
+  return { name: 'final-login', query: { redirect: to.fullPath } }
+})
+
 export default router
