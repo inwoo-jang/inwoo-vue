@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { tarotCards } from '../data/tarotCards'
+import { cardBack, tarotCards } from '../data/tarotCards'
 
 const selectedCard = ref(null)
 const isReversed = ref(false)
@@ -62,7 +62,9 @@ const readingMessage = computed(() => {
 </script>
 
 <template>
-  <main class="tarot-page">
+  <!-- 뒷면 그림은 세 곳(카드 자리 · 고르는 카드 · 섞이는 카드)에서 쓰므로
+       CSS 변수로 한 번만 넘겨 준다 -->
+  <main class="tarot-page" :style="{ '--card-back': `url(${cardBack})` }">
     <section class="tarot-intro">
       <p class="tarot-eyebrow">DAILY TAROT · 78 CARDS</p>
       <h1>오늘의 운세</h1>
@@ -77,7 +79,7 @@ const readingMessage = computed(() => {
           :alt="`${selectedCard.name} 타로 카드`"
           class="tarot-card-image"
         />
-        <div v-else class="tarot-card-back" aria-hidden="true"><span>✶</span></div>
+        <div v-else class="tarot-card-back" aria-hidden="true"></div>
       </div>
 
       <div class="tarot-copy" aria-live="polite">
@@ -126,9 +128,7 @@ const readingMessage = computed(() => {
           :aria-label="`${index + 1}번째 카드 뽑기`"
           :disabled="isShuffling"
           @click="chooseCard(card)"
-        >
-          <span>✶</span>
-        </button>
+        ></button>
       </div>
       <div v-if="isShuffling" class="tarot-shuffle-overlay" aria-label="카드를 섞는 중">
         <div class="tarot-shuffle-stage">
@@ -139,7 +139,7 @@ const readingMessage = computed(() => {
             :class="card.side"
             :style="shuffleCardStyle(card)"
           >
-            <i class="shuffle-card-face">✶</i>
+            <i class="shuffle-card-face"></i>
           </span>
         </div>
       </div>
@@ -157,10 +157,9 @@ h1 { font-size: 34px; line-height: 1.15; }
 h2 { font-size: 28px; line-height: 1.2; }
 .tarot-intro > p:last-child, .tarot-copy > p:not(.tarot-kind) { margin: 12px 0 0; color: var(--ink-soft); line-height: 1.65; }
 .tarot-reading { display: grid; grid-template-columns: minmax(180px, 230px) 1fr; gap: 30px; align-items: center; min-height: 390px; padding: 28px; }
-.tarot-card-frame { width: 100%; aspect-ratio: 5 / 8; overflow: hidden; border-radius: 15px; box-shadow: 0 18px 32px #17132540; transform: rotate(-2deg); transition: transform .35s ease; }
+.tarot-card-frame { width: 100%; aspect-ratio: 1144 / 1919; overflow: hidden; border-radius: 15px; box-shadow: 0 18px 32px #17132540; transform: rotate(-2deg); transition: transform .35s ease; }
 .tarot-card-image { display: block; width: 100%; height: 100%; object-fit: cover; }
-.tarot-card-back { display: grid; width: 100%; height: 100%; place-items: center; border: 4px solid #e7c978; color: #fff4cc; background: repeating-radial-gradient(circle at center, #262044 0 9px, #16142c 10px 22px); }
-.tarot-card-back span { display: grid; width: 72px; height: 72px; place-items: center; border: 2px solid #e7c978; border-radius: 50%; font-size: 34px; }
+.tarot-card-back { width: 100%; height: 100%; border: 4px solid #e7c978; background: var(--card-back) center / 100% 100% no-repeat; }
 .tarot-copy { display: grid; align-content: center; justify-items: start; }
 .tarot-copy strong { display: inline-block; margin-top: 16px; padding: 6px 10px; border-radius: 999px; color: var(--accent); background: var(--accent-tint); font-size: 13px; }
 .tarot-draw-button { margin-top: 26px; padding: 11px 17px; border: 0; border-radius: 999px; color: #fff; background: #352b5b; cursor: pointer; font: inherit; transition: transform .2s ease, opacity .2s ease; }
@@ -179,7 +178,7 @@ h2 { font-size: 28px; line-height: 1.2; }
 .tarot-shuffle-button:disabled { cursor: wait; opacity: .6; }
 .tarot-card-grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 7px; overflow: hidden; transition: opacity .4s ease, transform .4s ease, filter .4s ease; }
 .tarot-card-grid.shuffling { opacity: .1; transform: scale(.97); filter: blur(1.5px); }
-.tarot-choice { aspect-ratio: 5 / 8; padding: 0; border: 2px solid #e7c978; border-radius: 5px; color: #fff4cc; background: repeating-radial-gradient(circle at center, #262044 0 3px, #16142c 4px 8px); cursor: pointer; font-size: clamp(9px, 1.8vw, 17px); transition: transform .18s ease, box-shadow .18s ease; animation: deal-in .42s cubic-bezier(.22, 1, .36, 1) backwards; animation-delay: var(--deal-delay, 0ms); }
+.tarot-choice { aspect-ratio: 5 / 8; padding: 0; border: 1px solid #e7c978; border-radius: 5px; background: var(--card-back) center / 100% 100% no-repeat; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; animation: deal-in .42s cubic-bezier(.22, 1, .36, 1) backwards; animation-delay: var(--deal-delay, 0ms); }
 .tarot-choice:hover, .tarot-choice:focus-visible { z-index: 1; outline: 0; box-shadow: 0 6px 15px #17132555; transform: translateY(-8px) scale(1.12); }
 @keyframes deal-in { from { opacity: 0; transform: translateY(14px) scale(.86); } to { opacity: 1; transform: none; } }
 
@@ -192,7 +191,7 @@ h2 { font-size: 28px; line-height: 1.2; }
 .shuffle-card { position: absolute; inset: 0; will-change: transform; }
 .shuffle-card.left { animation: half-left 1.3s cubic-bezier(.3, 0, .18, 1) both; }
 .shuffle-card.right { animation: half-right 1.3s cubic-bezier(.3, 0, .18, 1) both; }
-.shuffle-card-face { display: grid; width: 100%; height: 100%; place-items: center; border: 2px solid #e7c978; border-radius: 7px; color: #fff4cc; background: repeating-radial-gradient(circle at center, #262044 0 4px, #16142c 5px 10px); box-shadow: 0 4px 10px #1713253d; font-size: 18px; font-style: normal; will-change: transform; }
+.shuffle-card-face { display: grid; width: 100%; height: 100%; place-items: center; border: 2px solid #e7c978; border-radius: 7px; background: var(--card-back) center / 100% 100% no-repeat; box-shadow: 0 4px 10px #1713253d; will-change: transform; }
 .left .shuffle-card-face { animation: drop-left .34s cubic-bezier(.3, 1.35, .5, 1) calc(500ms + var(--slot) * 22ms) backwards; }
 .right .shuffle-card-face { animation: drop-right .34s cubic-bezier(.3, 1.35, .5, 1) calc(500ms + var(--slot) * 22ms) backwards; }
 @keyframes half-left { 0% { transform: translate3d(0, 4px, 0) rotate(0deg); } 28%, 100% { transform: translate3d(-63px, -6px, 0) rotate(-7deg); } }
