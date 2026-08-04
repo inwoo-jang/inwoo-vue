@@ -1,4 +1,4 @@
-import{t as e}from"./rolldown-runtime-DK3Fl9T5.js";import{A as t,I as n,M as r,S as i,T as a,_ as o,a as s,at as c,c as l,f as u,it as d,j as f,k as p,l as m,n as h,o as g,p as _,rt as v,s as y,t as b,v as x,w as S,y as C,z as w}from"./_plugin-vue_export-helper-CoO-E1Sm.js";import{i as T,v as E,x as D}from"./index-BCJq7Z9W.js";import{a as O,c as k,i as A,l as ee,n as j,o as M,r as N,s as P,t as F}from"./weatherApi-D01IqwYo.js";var I=e({default:()=>G}),L={class:`dashboard-wrapper`},R={class:`search-box`},te=[`value`],z={class:`list-box`},B=[`onClick`],V={key:0,class:`badge hot`},ne={key:1,class:`badge cool`},H=[`onClick`],U={key:0,class:`empty-message`},W={class:`status-bar`},G=b({__name:`WeatherComposition`,setup(e){let r=n([{id:`city_01`,name:`서울`,temp:28,status:`맑음`},{id:`city_02`,name:`수원`,temp:24,status:`비`},{id:`city_03`,name:`부산`,temp:26,status:`구름`}]),a=n(``),o=n(`카드를 클릭하거나 검색해 보세요.`),d=s(()=>{let e=a.value.trim();return e?r.value.filter(t=>t.name.includes(e)):r.value});p(o,e=>{console.log(`👁️‍🗨️ [watch 감지] 상태 바 문구가 업데이트되었습니다 -> "${e}"`)}),t(()=>{console.log(`🤖 [watchEffect 자동 호출] 현재 검색어 '${a.value}'에 매칭되는 API 데이터를 필터링합니다.`)});let f=(e,t)=>{window.alert(`${e}의 현재 날씨는 [${t}] 상태입니다.`)};return(e,t)=>(i(),m(`div`,L,[g(`section`,R,[t[2]||=g(`h3`,null,`🔍 도시 검색`,-1),g(`input`,{type:`text`,value:a.value,placeholder:`검색할 도시 이름 입력`,onInput:t[0]||=e=>a.value=e.target.value},null,40,te),g(`p`,null,[t[1]||=u(` 검색 중인 도시: `,-1),g(`strong`,null,c(a.value),1)])]),g(`section`,z,[t[3]||=g(`h3`,null,`🏙️ 지역별 날씨 현황`,-1),(i(!0),m(h,null,S(d.value,e=>(i(),m(`div`,{key:e.id,class:`weather-card`,onClick:t=>o.value=`${e.name}이 선택되었습니다.`},[g(`h4`,null,c(e.name)+` (`+c(e.status)+`)`,1),g(`p`,null,`현재 기온: `+c(e.temp)+`°C`,1),e.temp>=25?(i(),m(`span`,V,`🔥 더움 (25도 이상)`)):(i(),m(`span`,ne,`❄️ 선선함 (25도 미만)`)),g(`button`,{class:`btn-detail`,onClick:D(t=>f(e.name,e.status),[`stop`])},` 상세보기 `,8,H)],8,B))),128)),d.value.length===0?(i(),m(`p`,U,` 😭 검색 결과와 일치하는 도시가 없습니다. `)):l(``,!0)]),g(`div`,W,c(o.value),1)]))}},[[`__scopeId`,`data-v-6342b841`]]),re=e({default:()=>ue}),K={class:`weather-app`},ie={class:`weather-search`},q=[`value`],ae={class:`status-bar`},oe={class:`weather-grid`},J=[`onClick`],Y={class:`weather-card-header`},X={class:`temperature`},Z={key:0,class:`hot`},se={key:1,class:`cool`},ce=[`onClick`],le={key:0,class:`empty-message`},ue=b({__name:`WeatherMockup`,setup(e){let t=n(``),r=n(`도시 카드를 선택해 주세요.`),a=n([{id:1,city:`서울`,temperature:28,weather:`맑음`},{id:2,city:`부산`,temperature:24,weather:`흐림`},{id:3,city:`제주`,temperature:26,weather:`구름 조금`},{id:4,city:`대전`,temperature:22,weather:`비`},{id:5,city:`광주`,temperature:30,weather:`맑음`}]),o=e=>{t.value=e.target.value},s=()=>{let e=t.value.trim();return e?a.value.filter(t=>t.city.includes(e)):a.value},u=e=>e>=25?`🔥 더움`:`❄️ 선선함`,d=e=>{r.value=`${e}이 선택되었습니다.`},f=(e,t)=>{window.alert(`${e}의 현재 날씨는 [${t}] 상태입니다.`)};return(e,n)=>(i(),m(`main`,K,[n[1]||=g(`h1`,null,`날씨 Mockup`,-1),g(`div`,ie,[n[0]||=g(`label`,{for:`city-search`},`한글 도시 검색`,-1),g(`input`,{id:`city-search`,value:t.value,type:`text`,placeholder:`예: 서울`,onInput:o},null,40,q)]),g(`p`,ae,c(r.value),1),g(`div`,oe,[(i(!0),m(h,null,S(s(),e=>(i(),m(`article`,{key:e.id,class:`weather-card`,onClick:t=>d(e.city)},[g(`div`,Y,[g(`h2`,null,c(e.city),1),g(`span`,null,c(e.weather),1)]),g(`p`,X,c(e.temperature)+`℃`,1),e.temperature>=25?(i(),m(`p`,Z,`🔥 더움`)):(i(),m(`p`,se,`❄️ 선선함`)),g(`button`,{type:`button`,onClick:D(t=>f(e.city,u(e.temperature)),[`stop`])},` 상세보기 `,8,ce)],8,J))),128))]),s().length===0?(i(),m(`p`,le,` 검색 결과와 일치하는 도시가 없습니다. `)):l(``,!0)]))}},[[`__scopeId`,`data-v-a56bc1a5`]]),de={},fe={class:`base-dashboard-card`};function pe(e,t){return i(),m(`div`,fe,[a(e.$slots,`default`,{},void 0,!0)])}var me=b(de,[[`render`,pe],[`__scopeId`,`data-v-242be1a1`]]),he=[`width`,`height`,`fill`],ge={key:3,d:`M12 3.2 6.9 8.6a7 7 0 1 0 10.2 0Z`},_e={key:4,d:`m12 3.6 2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85Z`},ve={key:6,d:`m5 12.5 4.5 4.5L19 7`},Q=b({__name:`UiIcon`,props:{name:{type:String,required:!0},size:{type:Number,default:18},filled:{type:Boolean,default:!1}},setup(e){return(t,n)=>(i(),m(`svg`,{class:`ui-icon`,width:e.size,height:e.size,viewBox:`0 0 24 24`,fill:e.filled?`currentColor`:`none`,stroke:`currentColor`,"stroke-width":`1.7`,"stroke-linecap":`round`,"stroke-linejoin":`round`,"aria-hidden":`true`},[e.name===`search`?(i(),m(h,{key:0},[n[0]||=g(`circle`,{cx:`11`,cy:`11`,r:`7`},null,-1),n[1]||=g(`path`,{d:`m20 20-3.5-3.5`},null,-1)],64)):e.name===`city`?(i(),m(h,{key:1},[n[2]||=g(`path`,{d:`M3 21h18`},null,-1),n[3]||=g(`path`,{d:`M5 21V8l6-4v17`},null,-1),n[4]||=g(`path`,{d:`M11 21V11h8v10`},null,-1),n[5]||=g(`path`,{d:`M8 11v0M8 15v0M15 15v0M15 18v0`},null,-1)],64)):e.name===`thermometer`?(i(),m(h,{key:2},[n[6]||=g(`path`,{d:`M14 14.76V4.5a2.5 2.5 0 0 0-5 0v10.26a4.5 4.5 0 1 0 5 0Z`},null,-1),n[7]||=g(`path`,{d:`M11.5 8v6.5`},null,-1)],64)):e.name===`droplet`?(i(),m(`path`,ge)):e.name===`star`?(i(),m(`path`,_e)):e.name===`location`?(i(),m(h,{key:5},[n[8]||=g(`path`,{d:`M20 10c0 5.2-8 12-8 12s-8-6.8-8-12a8 8 0 0 1 16 0Z`},null,-1),n[9]||=g(`circle`,{cx:`12`,cy:`10`,r:`2.6`},null,-1)],64)):e.name===`check`?(i(),m(`path`,ve)):e.name===`empty`?(i(),m(h,{key:7},[n[10]||=g(`circle`,{cx:`11`,cy:`11`,r:`7`},null,-1),n[11]||=g(`path`,{d:`m20 20-3.5-3.5`},null,-1),n[12]||=g(`path`,{d:`M8.5 11h5`},null,-1)],64)):l(``,!0)],8,he))}},[[`__scopeId`,`data-v-479a4352`]]),ye={class:`search-inner`},be={class:`field`},xe=[`value`],Se={key:0,class:`echo`},Ce=b({__name:`SearchBar`,props:{currentQuery:{type:String,default:``}},emits:[`update-query`],setup(e){return(t,n)=>(i(),m(`div`,ye,[n[2]||=g(`h3`,null,`도시 검색`,-1),g(`div`,be,[_(Q,{name:`search`,class:`field-icon`}),g(`input`,{type:`text`,value:e.currentQuery,placeholder:`검색할 도시 이름 입력`,onInput:n[0]||=e=>t.$emit(`update-query`,e.target.value)},null,40,xe)]),e.currentQuery?(i(),m(`p`,Se,[n[1]||=u(` 검색 중인 도시: `,-1),g(`strong`,null,c(e.currentQuery),1)])):l(``,!0)]))}},[[`__scopeId`,`data-v-ea78255f`]]),we={class:`tabs`,role:`tablist`},Te=[`aria-selected`,`onClick`],Ee={key:0,class:`count`},De=b({__name:`RegionTabs`,props:{regions:{type:Array,required:!0},current:{type:String,default:`전체`},counts:{type:Object,default:()=>({})}},emits:[`select-region`],setup(e){return(t,n)=>(i(),m(`div`,we,[(i(!0),m(h,null,S([`전체`,...e.regions],n=>(i(),m(`button`,{key:n,type:`button`,role:`tab`,class:v([`tab`,{active:n===e.current}]),"aria-selected":n===e.current,onClick:e=>t.$emit(`select-region`,n)},[u(c(n)+` `,1),e.counts[n]?(i(),m(`span`,Ee,c(e.counts[n]),1)):l(``,!0)],10,Te))),128))]))}},[[`__scopeId`,`data-v-9f28431c`]]),Oe=`/inwoo-vue/assets/cloudy-2E7sEDOx.png`,ke=`/inwoo-vue/assets/cyclone-aIHj9EYY.png`,Ae=`/inwoo-vue/assets/fog-CgKfDHh6.png`,je=`/inwoo-vue/assets/heavy-rain-BB9-6u3z.png`,Me=`/inwoo-vue/assets/high-voltage-MVrtm2Cl.png`,Ne=`/inwoo-vue/assets/lightning-GnlRTz7K.png`,Pe=`/inwoo-vue/assets/mostly-cloudy-Bz6ZXwtr.png`,Fe=`/inwoo-vue/assets/mostly-sunny-DO6Rb_QD.png`,Ie=`/inwoo-vue/assets/partly-cloudy-CwLdcgX4.png`,Le=`/inwoo-vue/assets/rain-CAwRObws.png`,Re=`/inwoo-vue/assets/snow-czBjwpY6.png`,ze=`/inwoo-vue/assets/snowflake-BN0VQHwI.png`,Be=`/inwoo-vue/assets/snowman-BIgeyGRZ.png`,Ve=`/inwoo-vue/assets/sun-shower-ClQNSOjq.png`,He=`/inwoo-vue/assets/sunny-DThjelya.png`,Ue=`/inwoo-vue/assets/thermometer-V3UvkbrT.png`,We=`/inwoo-vue/assets/thunderstorm-BwXzlJQ7.png`,Ge=`/inwoo-vue/assets/tornado-BGeVSE-W.png`,Ke=[`src`,`width`,`height`,`alt`,`title`],$=b({__name:`WeatherIcon`,props:{status:{type:String,required:!0},size:{type:Number,default:26}},setup(e){let t=e,n=Object.fromEntries(Object.entries(Object.assign({"../../../assets/weather-icons/cloudy.png":Oe,"../../../assets/weather-icons/cyclone.png":ke,"../../../assets/weather-icons/fog.png":Ae,"../../../assets/weather-icons/heavy-rain.png":je,"../../../assets/weather-icons/high-voltage.png":Me,"../../../assets/weather-icons/lightning.png":Ne,"../../../assets/weather-icons/mostly-cloudy.png":Pe,"../../../assets/weather-icons/mostly-sunny.png":Fe,"../../../assets/weather-icons/partly-cloudy.png":Ie,"../../../assets/weather-icons/rain.png":Le,"../../../assets/weather-icons/snow.png":Re,"../../../assets/weather-icons/snowflake.png":ze,"../../../assets/weather-icons/snowman.png":Be,"../../../assets/weather-icons/sun-shower.png":Ve,"../../../assets/weather-icons/sunny.png":He,"../../../assets/weather-icons/thermometer.png":Ue,"../../../assets/weather-icons/thunderstorm.png":We,"../../../assets/weather-icons/tornado.png":Ge})).map(([e,t])=>[e.split(`/`).pop().replace(`.png`,``),t])),r=[[`대체로 맑`,`mostly-sunny`],[`소나기`,`sun-shower`],[`뇌우`,`thunderstorm`],[`천둥`,`thunderstorm`],[`번개`,`lightning`],[`폭설`,`snowman`],[`한파`,`snowflake`],[`눈보라`,`snow`],[`싸락눈`,`snow`],[`눈`,`snow`],[`호우`,`heavy-rain`],[`장마`,`heavy-rain`],[`이슬비`,`rain`],[`어는 비`,`rain`],[`비`,`rain`],[`안개`,`fog`],[`미세먼지`,`fog`],[`태풍`,`cyclone`],[`돌풍`,`tornado`],[`구름조금`,`partly-cloudy`],[`구름 조금`,`partly-cloudy`],[`구름많`,`mostly-cloudy`],[`흐림`,`cloudy`],[`구름`,`cloudy`],[`맑음`,`sunny`],[`맑`,`sunny`]],a=s(()=>{let e=r.find(([e])=>t.status.includes(e));return e?e[1]:`thermometer`}),o=s(()=>n[a.value]??n.thermometer);return(t,n)=>(i(),m(`img`,{class:v([`weather-icon`,a.value]),src:o.value,width:e.size,height:e.size,alt:e.status,title:e.status,decoding:`async`},null,10,Ke))}},[[`__scopeId`,`data-v-ea83332f`]]),qe={class:`sky`},Je={class:`sky-text`},Ye={key:0,class:`badge here-badge`},Xe={key:1,class:`pick`,title:`배경이 이 지역을 따릅니다`},Ze={key:2,class:`badge demo-badge`},Qe={class:`status`},$e={class:`metrics`},et={class:`value`},tt={class:`band`},nt={class:`value`},rt={class:`band`},it=[`aria-pressed`,`title`],at=[`aria-expanded`],ot=b({__name:`WeatherCard`,props:{cityItem:{type:Object,required:!0},favorite:{type:Boolean,default:!1},here:{type:Boolean,default:!1},open:{type:Boolean,default:!1},selected:{type:Boolean,default:!1}},emits:[`select-card`,`click-detail`,`toggle-favorite`],setup(e,{emit:t}){let n=e,r=t,a=s(()=>{let e=n.cityItem.status;return e.includes(`맑`)?`warm`:e.includes(`비`)||e.includes(`눈`)?`cool`:`neutral`}),o=[{min:30,key:`scorching`,label:`무더워요`},{min:25,key:`hot`,label:`더워요`},{min:20,key:`mild`,label:`선선해요`},{min:10,key:`cool`,label:`쌀쌀해요`},{min:-1/0,key:`cold`,label:`추워요`}],d=[{min:80,key:`wet`,label:`눅눅해요`},{min:60,key:`humid`,label:`습해요`},{min:40,key:`nice`,label:`쾌적해요`},{min:-1/0,key:`dry`,label:`건조해요`}],f=s(()=>o.find(e=>n.cityItem.temp>=e.min)),p=s(()=>d.find(e=>n.cityItem.humidity>=e.min));return(t,n)=>(i(),m(`div`,{class:v([`weather-card`,{here:e.here,open:e.open,selected:e.selected}]),onClick:n[2]||=t=>r(`select-card`,e.cityItem.id)},[g(`div`,qe,[g(`div`,{class:v([`icon-tile`,a.value])},[_($,{status:e.cityItem.status,size:32},null,8,[`status`])],2),g(`div`,Je,[g(`h4`,null,[u(c(e.cityItem.name)+` `,1),e.here?(i(),m(`span`,Ye,[_(Q,{name:`location`,size:11}),n[3]||=u(` 현재 위치 `,-1)])):l(``,!0),e.selected?(i(),m(`span`,Xe,[_(Q,{name:`check`,size:13})])):l(``,!0),e.cityItem.demo?(i(),m(`span`,Ze,`데모`)):l(``,!0)]),g(`p`,Qe,c(e.cityItem.status),1)])]),g(`div`,$e,[g(`p`,{class:v([`metric`,f.value.key])},[_(Q,{name:`thermometer`,size:15}),g(`b`,et,[u(c(e.cityItem.temp),1),n[4]||=g(`span`,{class:`unit`},`°C`,-1)]),g(`span`,tt,c(f.value.label),1)],2),g(`p`,{class:v([`metric`,p.value.key])},[_(Q,{name:`droplet`,size:15}),g(`b`,nt,[u(c(e.cityItem.humidity),1),n[5]||=g(`span`,{class:`unit`},`%`,-1)]),g(`span`,rt,c(p.value.label),1)],2)]),g(`button`,{class:v([`star`,{on:e.favorite}]),type:`button`,"aria-pressed":e.favorite,title:e.favorite?`즐겨찾기 해제`:`즐겨찾기에 추가`,onClick:n[0]||=D(t=>r(`toggle-favorite`,e.cityItem.id),[`stop`])},[_(Q,{name:`star`,size:17,filled:e.favorite},null,8,[`filled`])],10,it),e.cityItem.demo?l(``,!0):(i(),m(`button`,{key:0,class:v([`btn-detail`,{on:e.open}]),"aria-expanded":e.open,onClick:n[1]||=D(t=>r(`click-detail`,e.cityItem.name,e.cityItem.status),[`stop`])},c(e.open?`닫기`:`시간별`),11,at))],2))}},[[`__scopeId`,`data-v-12b51248`]]),st={class:`by-status`},ct={class:`group-head`},lt={class:`status-name`},ut={class:`count`},dt={class:`chips`},ft=[`onClick`],pt={class:`chip-name`},mt={class:`chip-temp`},ht={class:`chip-region`},gt=[`title`,`onClick`],_t={key:0,class:`empty-message`},vt=b({__name:`WeatherByStatus`,props:{list:{type:Array,required:!0},favorites:{type:Array,default:()=>[]},hereId:{type:String,default:``},selectedId:{type:String,default:``}},emits:[`select-card`,`toggle-favorite`],setup(e){let t=e,n=s(()=>{let e=new Map;for(let n of t.list)e.has(n.status)||e.set(n.status,[]),e.get(n.status).push(n);return[...e.entries()].map(([e,t])=>({status:e,cities:[...t].sort((e,t)=>t.temp-e.temp)})).sort((e,t)=>t.cities.length-e.cities.length)});return(t,r)=>(i(),m(`div`,st,[(i(!0),m(h,null,S(n.value,n=>(i(),m(`div`,{key:n.status,class:`group`},[g(`p`,ct,[_($,{status:n.status,size:26},null,8,[`status`]),g(`b`,lt,c(n.status),1),g(`span`,ut,c(n.cities.length)+`곳`,1)]),g(`ul`,dt,[(i(!0),m(h,null,S(n.cities,n=>(i(),m(`li`,{key:n.id},[g(`button`,{type:`button`,class:v([`chip`,{here:n.id===e.hereId,selected:n.id===e.selectedId}]),onClick:e=>t.$emit(`select-card`,n.id)},[n.id===e.hereId?(i(),y(Q,{key:0,name:`location`,size:11})):l(``,!0),g(`span`,pt,c(n.name),1),n.id===e.selectedId?(i(),y(Q,{key:1,name:`check`,size:12,class:`chip-check`})):l(``,!0),g(`span`,mt,c(n.temp)+`°`,1),g(`span`,ht,c(n.region),1)],10,ft),g(`button`,{type:`button`,class:v([`chip-star`,{on:e.favorites.includes(n.id)}]),title:e.favorites.includes(n.id)?`즐겨찾기 해제`:`즐겨찾기에 추가`,onClick:e=>t.$emit(`toggle-favorite`,n.id)},[_(Q,{name:`star`,size:13,filled:e.favorites.includes(n.id)},null,8,[`filled`])],10,gt)]))),128))])]))),128)),n.value.length?l(``,!0):(i(),m(`p`,_t,[_(Q,{name:`empty`,size:22}),r[0]||=u(` 표시할 날씨가 없습니다. `,-1)]))]))}},[[`__scopeId`,`data-v-968dcb10`]]),yt={key:0,class:`detail`},bt={class:`detail-head`},xt={key:0,class:`sido`},St={class:`current`},Ct={class:`date-bar`},wt=[`disabled`],Tt={class:`date-field`},Et={class:`date-label`},Dt={key:0,class:`tag today`},Ot={key:1,class:`tag past`},kt={key:2,class:`tag future`},At=[`min`,`max`],jt=[`disabled`],Mt={key:0,class:`state`},Nt={key:1,class:`state error`},Pt={class:`axis`},Ft={key:0},It={class:`bar-slot`},Lt={class:`temp`},Rt={key:0,class:`rain`},zt={key:1,class:`rain none`},Bt={class:`hour`},Vt={key:2,class:`daymark`},Ht=6,Ut=12,Wt=b({__name:`HourlyDetail`,props:{city:{type:Object,default:null}},emits:[`close`],setup(e,{emit:t}){let a=e,f=t,y=n([]),b=n(!1),x=n(``),C=ee(new Date),T=new Date().getHours(),D=n(C),O=n(null),j=s(()=>D.value===C),N=s(()=>D.value<C);p(()=>[a.city?.id,D.value],async()=>{if(a.city){b.value=!0,x.value=``;try{let e=M(a.city.id);if(j.value){let t=await A(e,D.value,k(D.value,1)),n=new Date,r=new Date(n).setHours(n.getHours()-Ht,0,0,0),i=new Date(n).setHours(n.getHours()+Ut,0,0,0);y.value=t.filter(e=>{let t=new Date(e.time).getTime();return t>=r&&t<=i})}else y.value=await A(e,D.value)}catch(e){x.value=`시간별 날씨를 불러오지 못했습니다.`,y.value=[],console.error(`[weather] 시간별 조회 실패`,e)}finally{b.value=!1}if(j.value){await o();let e=O.value,t=e?.querySelector(`.now`);e&&t&&(e.scrollLeft=t.offsetLeft-e.clientWidth/2+t.offsetWidth/2)}}},{immediate:!0}),p(()=>a.city?.id,()=>D.value=C);let P=e=>{let t=k(D.value,e);t>=F.min&&t<=F.max&&(D.value=t)},I=s(()=>{let e=new Date(`${D.value}T00:00:00`),t=[`일`,`월`,`화`,`수`,`목`,`금`,`토`][e.getDay()];return`${e.getMonth()+1}월 ${e.getDate()}일 (${t})`}),L=s(()=>{if(!y.value.length)return{min:0,max:1};let e=y.value.map(e=>e.temp),t=Math.min(...e),n=Math.max(...e);return{min:t,max:n===t?t+1:n}}),R=e=>Math.round(26+(e-L.value.min)/(L.value.max-L.value.min)*34);return(t,n)=>e.city?(i(),m(`section`,yt,[g(`header`,bt,[_($,{status:e.city.status,size:26},null,8,[`status`]),g(`div`,null,[g(`h4`,null,[u(c(e.city.name)+` `,1),e.city.region===e.city.name?l(``,!0):(i(),m(`span`,xt,c(e.city.region),1))]),g(`p`,St,`지금 `+c(e.city.temp)+`°C · 습도 `+c(e.city.humidity)+`% · `+c(e.city.status),1)]),g(`button`,{class:`close`,type:`button`,"aria-label":`닫기`,onClick:n[0]||=e=>f(`close`)},`✕`)]),g(`div`,Ct,[g(`button`,{type:`button`,class:`step`,disabled:w(k)(D.value,-1)<w(F).min,"aria-label":`하루 전`,onClick:n[1]||=e=>P(-1)},` ‹ `,8,wt),g(`label`,Tt,[g(`span`,Et,[u(c(I.value)+` `,1),j.value?(i(),m(`b`,Dt,`오늘`)):N.value?(i(),m(`b`,Ot,`지난 날씨`)):(i(),m(`b`,kt,`예보`))]),r(g(`input`,{"onUpdate:modelValue":n[2]||=e=>D.value=e,type:`date`,min:w(F).min,max:w(F).max},null,8,At),[[E,D.value]])]),g(`button`,{type:`button`,class:`step`,disabled:w(k)(D.value,1)>w(F).max,"aria-label":`하루 뒤`,onClick:n[3]||=e=>P(1)},` › `,8,jt),j.value?l(``,!0):(i(),m(`button`,{key:0,type:`button`,class:`today-btn`,onClick:n[4]||=e=>D.value=w(C)},` 오늘로 `))]),b.value?(i(),m(`p`,Mt,`시간별 예보를 불러오는 중…`)):x.value?(i(),m(`p`,Nt,c(x.value),1)):y.value.length?(i(),m(h,{key:2},[g(`p`,Pt,[j.value?(i(),m(`span`,Ft,`지금 기준 앞뒤 시간 · `)):l(``,!0),u(`최저 `+c(L.value.min)+`°C ~ 최고 `+c(L.value.max)+`°C `,1)]),g(`ul`,{ref_key:`hoursEl`,ref:O,class:`hours`},[(i(!0),m(h,null,S(y.value,e=>(i(),m(`li`,{key:e.time,class:v({now:j.value&&e.hour===w(T)})},[g(`span`,It,[g(`span`,Lt,c(e.temp)+`°`,1),g(`span`,{class:`bar`,style:d({height:R(e.temp)+`px`})},null,4)]),_($,{status:e.status,size:18},null,8,[`status`]),e.rainChance>0?(i(),m(`span`,Rt,[_(Q,{name:`droplet`,size:10}),u(c(e.rainChance)+`% `,1)])):(i(),m(`span`,zt,`–`)),g(`span`,Bt,c(j.value&&e.hour===w(T)?`지금`:e.hour+`시`),1),e.hour===0?(i(),m(`span`,Vt,`다음날`)):l(``,!0)],2))),128))],512)],64)):l(``,!0)])):l(``,!0)}},[[`__scopeId`,`data-v-ab3056f6`]]),Gt={key:0,class:`mist`},Kt={key:0,class:`blizzard`},qt=.618033988749895,Jt=b({__name:`WeatherBackdrop`,props:{status:{type:String,default:``}},setup(e){let t=e,r=Object.fromEntries(Object.entries(Object.assign({"../../../assets/photos/cloudy.jpg":()=>T(()=>import(`./cloudy-79FvOUrg.js`).then(e=>e.default),[]),"../../../assets/photos/lightning.jpg":()=>T(()=>import(`./lightning-BiLOcaih.js`).then(e=>e.default),[]),"../../../assets/photos/mostly-sunny.jpg":()=>T(()=>import(`./mostly-sunny-ia0xcVKP.js`).then(e=>e.default),[]),"../../../assets/photos/overcast.jpg":()=>T(()=>import(`./overcast-hCz2yzGp.js`).then(e=>e.default),[]),"../../../assets/photos/partly-cloudy.jpg":()=>T(()=>import(`./partly-cloudy-BCMTYjrN.js`).then(e=>e.default),[]),"../../../assets/photos/rain.jpg":()=>T(()=>import(`./rain-CRgnNhCC.js`).then(e=>e.default),[]),"../../../assets/photos/storm.jpg":()=>T(()=>import(`./storm-5A07q_Yo.js`).then(e=>e.default),[]),"../../../assets/photos/sunny.jpg":()=>T(()=>import(`./sunny-BxS2j8Tt.js`).then(e=>e.default),[])})).map(([e,t])=>[e.split(`/`).pop().replace(`.jpg`,``),t])),a={},o=async e=>(a[e]||(a[e]=await r[e]?.()),a[e]),c=[[`뇌우`,{photo:`storm`,effect:`storm`}],[`번개`,{photo:`lightning`,effect:`lightning`}],[`폭설`,{photo:`overcast`,effect:`snow-heavy`}],[`눈보라`,{photo:`overcast`,effect:`snow-heavy`}],[`싸락눈`,{photo:`overcast`,effect:`snow`}],[`눈`,{photo:`overcast`,effect:`snow`}],[`한파`,{photo:`overcast`,effect:`snow`}],[`소나기`,{photo:`rain`,effect:`shower`}],[`호우`,{photo:`rain`,effect:`rain-heavy`}],[`이슬비`,{photo:`rain`,effect:`drizzle`}],[`어는 비`,{photo:`rain`,effect:`rain`}],[`비`,{photo:`rain`,effect:`rain`}],[`안개`,{photo:`overcast`,effect:`fog`}],[`미세먼지`,{photo:`overcast`,effect:`fog`}],[`흐림`,{photo:`overcast`,effect:`clouds-slow`}],[`구름조금`,{photo:`partly-cloudy`,effect:`clouds`}],[`구름많`,{photo:`cloudy`,effect:`clouds`}],[`구름`,{photo:`cloudy`,effect:`clouds`}],[`대체로 맑`,{photo:`mostly-sunny`,effect:`sun-clouds`}],[`맑`,{photo:`sunny`,effect:`sun`}]],u={photo:`partly-cloudy`,effect:`clouds`},f=s(()=>{if(!t.status)return u;let e=c.find(([e])=>t.status.includes(e));return e?e[1]:u}),_=n([``,``]),y=n(0),b=0;p(()=>f.value.photo,async e=>{let t=++b,n=await o(e);if(!n||t!==b||_.value[y.value]===n)return;let r=1-y.value;_.value[r]=n,y.value=r},{immediate:!0});let w=n(null),E=n(1),D=null;C(()=>{let e=()=>{let e=w.value?.offsetHeight??0;E.value=Math.min(4,Math.max(1,Math.ceil(e/window.innerHeight)))};D=new ResizeObserver(e),w.value&&D.observe(w.value),window.addEventListener(`resize`,e),e(),x(()=>window.removeEventListener(`resize`,e))}),x(()=>D?.disconnect());let O=(e,{minDur:t,maxDur:n,minLen:r,maxLen:i,minOp:a,maxOp:o,width:s})=>Array.from({length:e},(e,c)=>{let l=c*qt%1,u=c*37%100/100,d=c*61%100/100,f=c*83%100/100,p=t+d*(n-t);return{left:u*106-3,dur:p,len:r+f*(i-r),delay:-l*p,opacity:a+f*(o-a),width:f>.7?s+.6:s}}),k=O(95,{minDur:1.8,maxDur:2.9,minLen:8,maxLen:22,minOp:.16,maxOp:.4,width:1}),A=O(150,{minDur:.7,maxDur:1.1,minLen:28,maxLen:70,minOp:.3,maxOp:.75,width:1.3}),ee=O(200,{minDur:.5,maxDur:.78,minLen:42,maxLen:100,minOp:.34,maxOp:.85,width:1.6}),j=O(280,{minDur:.28,maxDur:.46,minLen:75,maxLen:175,minOp:.4,maxOp:.95,width:2.2}),M=(e,{minDur:t,maxDur:n,minSize:r,maxSize:i,swayMin:a,swayMax:o})=>Array.from({length:e},(e,s)=>{let c=s*qt%1,l=s*41%100/100,u=s*67%100/100,d=s*89%100/100,f=t+u*(n-t);return{left:l*106-3,dur:f,size:r+d*(i-r),delay:-c*f,opacity:.45+d*.5,sway:a+l*(o-a),swayDur:1.8+d*2.6}}),N=M(120,{minDur:4.5,maxDur:8,minSize:3,maxSize:8,swayMin:24,swayMax:70}),P=M(230,{minDur:1.6,maxDur:3.2,minSize:4,maxSize:13,swayMin:60,swayMax:150}),F=s(()=>{let e=f.value.effect===`snow-heavy`?P:N;return E.value>=3?e.filter((e,t)=>t%2==0):e}),I=s(()=>{let e={drizzle:k,shower:ee,"rain-heavy":j}[f.value.effect]??A;return E.value>=3?e.filter((e,t)=>t%2==0):e}),L=s(()=>[`storm`,`lightning`,`rain-heavy`,`rain`,`shower`].includes(f.value.effect));return(e,t)=>(i(),m(`div`,{ref_key:`rootEl`,ref:w,class:v([`backdrop`,[`fx-${f.value.effect}`,{dark:L.value}]]),"aria-hidden":`true`},[(i(!0),m(h,null,S(_.value,(e,t)=>(i(),m(`div`,{key:t,class:v([`photo`,{on:t===y.value}]),style:d(e?{backgroundImage:`url(${e})`}:null)},null,6))),128)),f.value.effect===`sun`||f.value.effect===`sun-clouds`?(i(),m(h,{key:0},[t[0]||=g(`div`,{class:`glow`},null,-1),t[1]||=g(`div`,{class:`rays`},null,-1)],64)):l(``,!0),[`clouds`,`clouds-slow`,`sun-clouds`,`fog`,`overcast`].includes(f.value.effect)?(i(),m(h,{key:1},[t[2]||=g(`div`,{class:`cloud-layer a`},null,-1),t[3]||=g(`div`,{class:`cloud-layer b`},null,-1)],64)):l(``,!0),[`rain`,`rain-heavy`,`drizzle`,`shower`,`storm`].includes(f.value.effect)?(i(),m(h,{key:2},[(i(!0),m(h,null,S(E.value,e=>(i(),m(`div`,{key:e,class:`rain-field`,style:d({top:(e-1)*100+`vh`})},[(i(!0),m(h,null,S(I.value,(e,t)=>(i(),m(`span`,{key:t,class:`drop`,style:d({left:e.left+`%`,height:e.len+`px`,width:e.width+`px`,opacity:e.opacity,animationDuration:e.dur+`s`,animationDelay:e.delay+`s`})},null,4))),128))],4))),128)),f.value.effect===`drizzle`?l(``,!0):(i(),m(`div`,Gt))],64)):l(``,!0),[`snow`,`snow-heavy`].includes(f.value.effect)?(i(),m(h,{key:3},[(i(!0),m(h,null,S(E.value,e=>(i(),m(`div`,{key:e,class:`snow-field`,style:d({top:(e-1)*100+`vh`})},[(i(!0),m(h,null,S(F.value,(e,t)=>(i(),m(`span`,{key:t,class:`flake-fall`,style:d({left:e.left+`%`,animationDuration:e.dur+`s`,animationDelay:e.delay+`s`})},[g(`span`,{class:`flake`,style:d({width:e.size+`px`,height:e.size+`px`,opacity:e.opacity,animationDuration:e.swayDur+`s`,"--sway":e.sway+`px`})},null,4)],4))),128))],4))),128)),f.value.effect===`snow-heavy`?(i(),m(`div`,Kt)):l(``,!0)],64)):l(``,!0),f.value.effect===`fog`?(i(),m(h,{key:4},[t[4]||=g(`div`,{class:`fog-layer a`},null,-1),t[5]||=g(`div`,{class:`fog-layer b`},null,-1)],64)):l(``,!0),[`storm`,`lightning`].includes(f.value.effect)?(i(),m(h,{key:5},[t[7]||=g(`div`,{class:`flash`},null,-1),(i(),m(h,null,S(2,e=>g(`svg`,{key:e,class:v([`bolt`,e===1?`a`:`b`]),viewBox:`0 0 200 300`,preserveAspectRatio:`xMidYMin meet`},[...t[6]||=[g(`path`,{d:`M96 0 78 96 112 88 66 210`,fill:`none`,stroke:`#bfe0ff`,"stroke-width":`11`,"stroke-linejoin":`round`,"stroke-linecap":`round`,opacity:`0.55`},null,-1),g(`path`,{d:`M96 0 78 96 112 88 66 210 90 128 58 138Z`,fill:`#f2f9ff`},null,-1),g(`path`,{d:`M96 0 78 96 112 88 66 210`,fill:`none`,stroke:`#fff`,"stroke-width":`2.4`,"stroke-linejoin":`round`,"stroke-linecap":`round`},null,-1),g(`path`,{d:`M84 62 46 104M104 108 142 142M74 150 44 188`,fill:`none`,stroke:`#eaf5ff`,"stroke-width":`2.2`,"stroke-linecap":`round`},null,-1)]],2)),64))],64)):l(``,!0),t[8]||=g(`div`,{class:`veil`},null,-1)],2))}},[[`__scopeId`,`data-v-30c4148e`]]),Yt=e({default:()=>bn}),Xt={class:`dashboard-wrapper`},Zt={class:`view-tabs`,role:`tablist`},Qt=[`aria-selected`],$t=[`aria-selected`],en={class:`tool-row`},tn={class:`summary`},nn={key:0,class:`fav-count`},rn=[`disabled`],an=[`disabled`],on={key:0,class:`hint stale`},sn={key:1,class:`hint`},cn={key:3,class:`error-message`},ln={key:4,class:`skeleton`},un={key:0,class:`empty-message`},dn={key:1,class:`pager`,"aria-label":`목록 페이지`},fn=[`disabled`],pn=[`aria-current`,`onClick`],mn=[`disabled`],hn={class:`status-bar`},gn={key:0,class:`stamp`},_n=`inwoo-weather-favorites`,vn=5,yn=6e5,bn=b({__name:`WeatherParent`,setup(e){let t=n([]),r=n(!1),a=n(``),o=n(!1),d=n(``),b=n(``),T=n(`전체`),E=n(`region`),D=n(`카드를 클릭하거나 검색해 보세요.`),k=n(``),A=n(1),ee=()=>{k.value=``,D.value=`카드를 클릭하거나 검색해 보세요.`},M=e=>{if(k.value===e){ee();return}k.value=e;let n=t.value.find(t=>t.id===e);D.value=n?`${n.name} · ${n.status} · ${n.temp}°C · 습도 ${n.humidity}%`:`카드를 클릭하거나 검색해 보세요.`},F=n(JSON.parse(localStorage.getItem(_n)??`[]`)),I=e=>{F.value=F.value.includes(e)?F.value.filter(t=>t!==e):[...F.value,e]};p(F,e=>localStorage.setItem(_n,JSON.stringify(e)),{deep:!0});let L=n(``),R=n(`idle`),te=()=>{if(!navigator.geolocation){R.value=`denied`;return}R.value=`asking`,navigator.geolocation.getCurrentPosition(({coords:e})=>{let t=P(e.latitude,e.longitude);L.value=t?.id??``,R.value=`done`},()=>{R.value=`denied`},{timeout:8e3})},z=async(e=!1)=>{r.value=!0,a.value=``;try{let{rows:n,at:r,stale:i}=await O(void 0,e);t.value=[...n,...j],o.value=i,i&&setTimeout(()=>z(!0),0),V=r,d.value=new Date(r).toLocaleTimeString(`ko-KR`,{hour:`2-digit`,minute:`2-digit`})}catch(e){a.value=`날씨를 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.`,o.value=!1,console.error(`[weather] 불러오기 실패`,e)}finally{r.value=!1}},B=null,V=0,ne=()=>{H(),B=setInterval(()=>{document.visibilityState===`visible`&&z(!0)},yn)},H=()=>{B&&clearInterval(B),B=null},U=()=>{document.visibilityState===`visible`&&Date.now()-V>yn&&z(!0)};x(()=>{H(),document.removeEventListener(`visibilitychange`,U)}),C(async()=>{z(),ne(),document.addEventListener(`visibilitychange`,U),(await navigator.permissions?.query({name:`geolocation`}).catch(()=>null))?.state===`granted`&&te()});let W=s(()=>{let e=b.value.trim();return t.value.filter(t=>!e||t.name.includes(e))}),G=s(()=>{let e=W.value.filter(e=>T.value===`전체`||e.group===T.value),t=e=>e.id===L.value?0:F.value.includes(e.id)?1:2;return[...e].sort((e,n)=>t(e)-t(n))}),re=s(()=>W.value.reduce((e,t)=>(e[t.group]=(e[t.group]??0)+1,e),{전체:W.value.length})),K=s(()=>Math.max(1,Math.ceil(G.value.length/vn))),ie=s(()=>G.value.slice((A.value-1)*vn,A.value*vn));p([b,T,E],()=>A.value=1),p(K,e=>{A.value>e&&(A.value=e)});let q=s(()=>t.value.find(e=>e.id===k.value)??null),ae=s(()=>t.value.find(e=>e.id===k.value)??t.value.find(e=>e.id===L.value)??null),oe=s(()=>ae.value?.status??``),J=s(()=>W.value.filter(e=>F.value.includes(e.id)).length);p(D,e=>{console.log(`👁️‍🗨️ [watch 감지] 상태 바 문구가 업데이트되었습니다 -> "${e}"`)});let Y=n(``),X=s(()=>t.value.find(e=>e.id===Y.value)??null),Z=e=>{let n=t.value.find(t=>t.name===e);Y.value=Y.value===n?.id?``:n?.id??``};return(e,n)=>(i(),m(`div`,Xt,[_(Jt,{status:oe.value},null,8,[`status`]),_(me,null,{default:f(()=>[_(Ce,{"current-query":b.value,onUpdateQuery:n[0]||=e=>b.value=e},null,8,[`current-query`])]),_:1}),_(me,null,{default:f(()=>[g(`div`,Zt,[g(`button`,{type:`button`,role:`tab`,"aria-selected":E.value===`region`,class:v({active:E.value===`region`}),onClick:n[1]||=e=>E.value=`region`},[_(Q,{name:`city`,size:16}),n[10]||=u(` 지역별 날씨 현황 `,-1)],10,Qt),g(`button`,{type:`button`,role:`tab`,"aria-selected":E.value===`status`,class:v({active:E.value===`status`}),onClick:n[2]||=e=>E.value=`status`},[_(Q,{name:`droplet`,size:16}),n[11]||=u(` 날씨별 지역 현황 `,-1)],10,$t)]),g(`div`,en,[g(`p`,tn,[g(`b`,null,c(W.value.length),1),n[12]||=u(`곳 `,-1),J.value?(i(),m(`span`,nn,[_(Q,{name:`star`,size:12,filled:!0}),u(` `+c(J.value),1)])):l(``,!0)]),g(`button`,{class:`tool`,type:`button`,disabled:R.value===`asking`,onClick:te},[_(Q,{name:`location`,size:14}),u(` `+c(R.value===`asking`?`찾는 중…`:`내 위치`),1)],8,rn),g(`button`,{class:`tool`,type:`button`,disabled:r.value,onClick:n[3]||=e=>z(!0)},c(r.value?`불러오는 중…`:`새로고침`),9,an)]),o.value?(i(),m(`p`,on,[n[13]||=u(` 지금 서버 응답을 받지 못해 `,-1),g(`b`,null,c(d.value)+`에 받아 둔 값`,1),n[14]||=u(`을 보여 주고 있습니다. 잠시 뒤 새로고침을 눌러 보세요. `,-1)])):l(``,!0),R.value===`denied`?(i(),m(`p`,sn,` 위치 권한이 없어 현재 위치를 표시하지 못했습니다. 나머지 기능은 그대로 쓸 수 있습니다. `)):l(``,!0),E.value===`region`?(i(),y(De,{key:2,regions:[...w(N),`데모`],current:T.value,counts:re.value,onSelectRegion:n[4]||=e=>T.value=e},null,8,[`regions`,`current`,`counts`])):l(``,!0),a.value?(i(),m(`p`,cn,[u(c(a.value)+` `,1),g(`button`,{type:`button`,onClick:n[5]||=e=>z(!0)},`다시 시도`)])):r.value&&!t.value.length?(i(),m(`div`,ln,[(i(),m(h,null,S(5,e=>g(`div`,{key:e,class:`skeleton-card`},[...n[15]||=[g(`span`,{class:`sk-tile`},null,-1),g(`span`,{class:`sk-lines`},[g(`i`,{class:`sk-line wide`}),g(`i`,{class:`sk-line`})],-1),g(`span`,{class:`sk-metrics`},[g(`i`,{class:`sk-pill`}),g(`i`,{class:`sk-pill`})],-1)]])),64))])):E.value===`region`?(i(),m(h,{key:5},[(i(!0),m(h,null,S(ie.value,e=>(i(),m(h,{key:e.id},[_(ot,{"city-item":e,favorite:F.value.includes(e.id),here:e.id===L.value,open:e.id===Y.value,selected:e.id===k.value,onSelectCard:M,onClickDetail:Z,onToggleFavorite:I},null,8,[`city-item`,`favorite`,`here`,`open`,`selected`]),e.id===Y.value?(i(),y(Wt,{key:0,city:X.value,onClose:n[6]||=e=>Y.value=``},null,8,[`city`])):l(``,!0)],64))),128)),G.value.length===0?(i(),m(`p`,un,[_(Q,{name:`empty`,size:22}),n[16]||=u(` 검색 결과와 일치하는 도시가 없습니다. `,-1)])):l(``,!0),K.value>1?(i(),m(`nav`,dn,[g(`button`,{type:`button`,disabled:A.value===1,"aria-label":`이전`,onClick:n[7]||=e=>A.value--},`‹`,8,fn),(i(!0),m(h,null,S(K.value,e=>(i(),m(`button`,{key:e,type:`button`,class:v({active:e===A.value}),"aria-current":e===A.value?`page`:void 0,onClick:t=>A.value=e},c(e),11,pn))),128)),g(`button`,{type:`button`,disabled:A.value===K.value,"aria-label":`다음`,onClick:n[8]||=e=>A.value++},` › `,8,mn)])):l(``,!0)],64)):(i(),m(h,{key:6},[q.value?(i(),m(h,{key:0},[_(ot,{"city-item":q.value,favorite:F.value.includes(q.value.id),here:q.value.id===L.value,open:q.value.id===Y.value,selected:!0,onSelectCard:M,onClickDetail:Z,onToggleFavorite:I},null,8,[`city-item`,`favorite`,`here`,`open`]),q.value.id===Y.value?(i(),y(Wt,{key:0,city:X.value,onClose:n[9]||=e=>Y.value=``},null,8,[`city`])):l(``,!0)],64)):l(``,!0),_(vt,{list:W.value,favorites:F.value,"here-id":L.value,"selected-id":k.value,onSelectCard:M,onToggleFavorite:I},null,8,[`list`,`favorites`,`here-id`,`selected-id`])],64))]),_:1}),g(`div`,hn,[g(`span`,null,c(D.value),1),d.value?(i(),m(`small`,gn,c(d.value)+` 기준 · Open-Meteo`,1)):l(``,!0)])]))}},[[`__scopeId`,`data-v-dba696e8`]]),xn=`<script setup>
+import{t as e}from"./rolldown-runtime-DK3Fl9T5.js";import{A as t,I as n,M as r,S as i,T as a,_ as o,a as s,at as c,c as l,f as u,it as d,j as f,k as p,l as m,n as h,o as g,p as _,rt as v,s as y,t as b,v as x,w as S,y as C,z as w}from"./_plugin-vue_export-helper-CoO-E1Sm.js";import{S as T,f as E,i as D,m as O,p as k,y as A}from"./index-DMnzHjCb.js";import{t as j}from"./WeatherAboutView-cfWecTLe.js";import{t as M}from"./WeatherDetailView-C5qv8Zpi.js";import{t as N}from"./WeatherHomeView-D5UnokuS.js";import{t as P}from"./WeatherNotFoundView-Ctk5KKDI.js";import{a as ee,c as F,i as I,l as L,n as te,o as R,r as ne,s as re,t as z}from"./weatherApi-D01IqwYo.js";var ie=e({default:()=>G}),ae={class:`dashboard-wrapper`},B={class:`search-box`},V=[`value`],H={class:`list-box`},oe=[`onClick`],U={key:0,class:`badge hot`},se={key:1,class:`badge cool`},W=[`onClick`],ce={key:0,class:`empty-message`},le={class:`status-bar`},G=b({__name:`WeatherComposition`,setup(e){let r=n([{id:`city_01`,name:`서울`,temp:28,status:`맑음`},{id:`city_02`,name:`수원`,temp:24,status:`비`},{id:`city_03`,name:`부산`,temp:26,status:`구름`}]),a=n(``),o=n(`카드를 클릭하거나 검색해 보세요.`),d=s(()=>{let e=a.value.trim();return e?r.value.filter(t=>t.name.includes(e)):r.value});p(o,e=>{console.log(`👁️‍🗨️ [watch 감지] 상태 바 문구가 업데이트되었습니다 -> "${e}"`)}),t(()=>{console.log(`🤖 [watchEffect 자동 호출] 현재 검색어 '${a.value}'에 매칭되는 API 데이터를 필터링합니다.`)});let f=(e,t)=>{window.alert(`${e}의 현재 날씨는 [${t}] 상태입니다.`)};return(e,t)=>(i(),m(`div`,ae,[g(`section`,B,[t[2]||=g(`h3`,null,`🔍 도시 검색`,-1),g(`input`,{type:`text`,value:a.value,placeholder:`검색할 도시 이름 입력`,onInput:t[0]||=e=>a.value=e.target.value},null,40,V),g(`p`,null,[t[1]||=u(` 검색 중인 도시: `,-1),g(`strong`,null,c(a.value),1)])]),g(`section`,H,[t[3]||=g(`h3`,null,`🏙️ 지역별 날씨 현황`,-1),(i(!0),m(h,null,S(d.value,e=>(i(),m(`div`,{key:e.id,class:`weather-card`,onClick:t=>o.value=`${e.name}이 선택되었습니다.`},[g(`h4`,null,c(e.name)+` (`+c(e.status)+`)`,1),g(`p`,null,`현재 기온: `+c(e.temp)+`°C`,1),e.temp>=25?(i(),m(`span`,U,`🔥 더움 (25도 이상)`)):(i(),m(`span`,se,`❄️ 선선함 (25도 미만)`)),g(`button`,{class:`btn-detail`,onClick:T(t=>f(e.name,e.status),[`stop`])},` 상세보기 `,8,W)],8,oe))),128)),d.value.length===0?(i(),m(`p`,ce,` 😭 검색 결과와 일치하는 도시가 없습니다. `)):l(``,!0)]),g(`div`,le,c(o.value),1)]))}},[[`__scopeId`,`data-v-6342b841`]]),K=e({default:()=>be}),q={class:`weather-app`},J={class:`weather-search`},ue=[`value`],de={class:`status-bar`},fe={class:`weather-grid`},pe=[`onClick`],me={class:`weather-card-header`},he={class:`temperature`},ge={key:0,class:`hot`},_e={key:1,class:`cool`},ve=[`onClick`],ye={key:0,class:`empty-message`},be=b({__name:`WeatherMockup`,setup(e){let t=n(``),r=n(`도시 카드를 선택해 주세요.`),a=n([{id:1,city:`서울`,temperature:28,weather:`맑음`},{id:2,city:`부산`,temperature:24,weather:`흐림`},{id:3,city:`제주`,temperature:26,weather:`구름 조금`},{id:4,city:`대전`,temperature:22,weather:`비`},{id:5,city:`광주`,temperature:30,weather:`맑음`}]),o=e=>{t.value=e.target.value},s=()=>{let e=t.value.trim();return e?a.value.filter(t=>t.city.includes(e)):a.value},u=e=>e>=25?`🔥 더움`:`❄️ 선선함`,d=e=>{r.value=`${e}이 선택되었습니다.`},f=(e,t)=>{window.alert(`${e}의 현재 날씨는 [${t}] 상태입니다.`)};return(e,n)=>(i(),m(`main`,q,[n[1]||=g(`h1`,null,`날씨 Mockup`,-1),g(`div`,J,[n[0]||=g(`label`,{for:`city-search`},`한글 도시 검색`,-1),g(`input`,{id:`city-search`,value:t.value,type:`text`,placeholder:`예: 서울`,onInput:o},null,40,ue)]),g(`p`,de,c(r.value),1),g(`div`,fe,[(i(!0),m(h,null,S(s(),e=>(i(),m(`article`,{key:e.id,class:`weather-card`,onClick:t=>d(e.city)},[g(`div`,me,[g(`h2`,null,c(e.city),1),g(`span`,null,c(e.weather),1)]),g(`p`,he,c(e.temperature)+`℃`,1),e.temperature>=25?(i(),m(`p`,ge,`🔥 더움`)):(i(),m(`p`,_e,`❄️ 선선함`)),g(`button`,{type:`button`,onClick:T(t=>f(e.city,u(e.temperature)),[`stop`])},` 상세보기 `,8,ve)],8,pe))),128))]),s().length===0?(i(),m(`p`,ye,` 검색 결과와 일치하는 도시가 없습니다. `)):l(``,!0)]))}},[[`__scopeId`,`data-v-a56bc1a5`]]),xe=e({default:()=>Y}),Se={},Ce={class:`base-dashboard-card`};function we(e,t){return i(),m(`div`,Ce,[a(e.$slots,`default`,{},void 0,!0)])}var Y=b(Se,[[`render`,we],[`__scopeId`,`data-v-242be1a1`]]),Te=e({default:()=>X}),Ee=[`width`,`height`,`fill`],De={key:3,d:`M12 3.2 6.9 8.6a7 7 0 1 0 10.2 0Z`},Oe={key:4,d:`m12 3.6 2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85Z`},ke={key:6,d:`m5 12.5 4.5 4.5L19 7`},X=b({__name:`UiIcon`,props:{name:{type:String,required:!0},size:{type:Number,default:18},filled:{type:Boolean,default:!1}},setup(e){return(t,n)=>(i(),m(`svg`,{class:`ui-icon`,width:e.size,height:e.size,viewBox:`0 0 24 24`,fill:e.filled?`currentColor`:`none`,stroke:`currentColor`,"stroke-width":`1.7`,"stroke-linecap":`round`,"stroke-linejoin":`round`,"aria-hidden":`true`},[e.name===`search`?(i(),m(h,{key:0},[n[0]||=g(`circle`,{cx:`11`,cy:`11`,r:`7`},null,-1),n[1]||=g(`path`,{d:`m20 20-3.5-3.5`},null,-1)],64)):e.name===`city`?(i(),m(h,{key:1},[n[2]||=g(`path`,{d:`M3 21h18`},null,-1),n[3]||=g(`path`,{d:`M5 21V8l6-4v17`},null,-1),n[4]||=g(`path`,{d:`M11 21V11h8v10`},null,-1),n[5]||=g(`path`,{d:`M8 11v0M8 15v0M15 15v0M15 18v0`},null,-1)],64)):e.name===`thermometer`?(i(),m(h,{key:2},[n[6]||=g(`path`,{d:`M14 14.76V4.5a2.5 2.5 0 0 0-5 0v10.26a4.5 4.5 0 1 0 5 0Z`},null,-1),n[7]||=g(`path`,{d:`M11.5 8v6.5`},null,-1)],64)):e.name===`droplet`?(i(),m(`path`,De)):e.name===`star`?(i(),m(`path`,Oe)):e.name===`location`?(i(),m(h,{key:5},[n[8]||=g(`path`,{d:`M20 10c0 5.2-8 12-8 12s-8-6.8-8-12a8 8 0 0 1 16 0Z`},null,-1),n[9]||=g(`circle`,{cx:`12`,cy:`10`,r:`2.6`},null,-1)],64)):e.name===`check`?(i(),m(`path`,ke)):e.name===`empty`?(i(),m(h,{key:7},[n[10]||=g(`circle`,{cx:`11`,cy:`11`,r:`7`},null,-1),n[11]||=g(`path`,{d:`m20 20-3.5-3.5`},null,-1),n[12]||=g(`path`,{d:`M8.5 11h5`},null,-1)],64)):l(``,!0)],8,Ee))}},[[`__scopeId`,`data-v-479a4352`]]),Ae=e({default:()=>Fe}),je={class:`search-inner`},Me={class:`field`},Ne=[`value`],Pe={key:0,class:`echo`},Fe=b({__name:`SearchBar`,props:{currentQuery:{type:String,default:``}},emits:[`update-query`],setup(e){return(t,n)=>(i(),m(`div`,je,[n[2]||=g(`h3`,null,`도시 검색`,-1),g(`div`,Me,[_(X,{name:`search`,class:`field-icon`}),g(`input`,{type:`text`,value:e.currentQuery,placeholder:`검색할 도시 이름 입력`,onInput:n[0]||=e=>t.$emit(`update-query`,e.target.value)},null,40,Ne)]),e.currentQuery?(i(),m(`p`,Pe,[n[1]||=u(` 검색 중인 도시: `,-1),g(`strong`,null,c(e.currentQuery),1)])):l(``,!0)]))}},[[`__scopeId`,`data-v-ea78255f`]]),Ie=e({default:()=>Be}),Le={class:`tabs`,role:`tablist`},Re=[`aria-selected`,`onClick`],ze={key:0,class:`count`},Be=b({__name:`RegionTabs`,props:{regions:{type:Array,required:!0},current:{type:String,default:`전체`},counts:{type:Object,default:()=>({})}},emits:[`select-region`],setup(e){return(t,n)=>(i(),m(`div`,Le,[(i(!0),m(h,null,S([`전체`,...e.regions],n=>(i(),m(`button`,{key:n,type:`button`,role:`tab`,class:v([`tab`,{active:n===e.current}]),"aria-selected":n===e.current,onClick:e=>t.$emit(`select-region`,n)},[u(c(n)+` `,1),e.counts[n]?(i(),m(`span`,ze,c(e.counts[n]),1)):l(``,!0)],10,Re))),128))]))}},[[`__scopeId`,`data-v-9f28431c`]]),Ve=`/inwoo-vue/assets/cloudy-2E7sEDOx.png`,He=`/inwoo-vue/assets/cyclone-aIHj9EYY.png`,Ue=`/inwoo-vue/assets/fog-CgKfDHh6.png`,We=`/inwoo-vue/assets/heavy-rain-BB9-6u3z.png`,Ge=`/inwoo-vue/assets/high-voltage-MVrtm2Cl.png`,Ke=`/inwoo-vue/assets/lightning-GnlRTz7K.png`,qe=`/inwoo-vue/assets/mostly-cloudy-Bz6ZXwtr.png`,Je=`/inwoo-vue/assets/mostly-sunny-DO6Rb_QD.png`,Ye=`/inwoo-vue/assets/partly-cloudy-CwLdcgX4.png`,Xe=`/inwoo-vue/assets/rain-CAwRObws.png`,Ze=`/inwoo-vue/assets/snow-czBjwpY6.png`,Qe=`/inwoo-vue/assets/snowflake-BN0VQHwI.png`,$e=`/inwoo-vue/assets/snowman-BIgeyGRZ.png`,et=`/inwoo-vue/assets/sun-shower-ClQNSOjq.png`,tt=`/inwoo-vue/assets/sunny-DThjelya.png`,nt=`/inwoo-vue/assets/thermometer-V3UvkbrT.png`,rt=`/inwoo-vue/assets/thunderstorm-BwXzlJQ7.png`,it=`/inwoo-vue/assets/tornado-BGeVSE-W.png`,at=e({default:()=>Z}),ot=[`src`,`width`,`height`,`alt`,`title`],Z=b({__name:`WeatherIcon`,props:{status:{type:String,required:!0},size:{type:Number,default:26}},setup(e){let t=e,n=Object.fromEntries(Object.entries(Object.assign({"../../../assets/weather-icons/cloudy.png":Ve,"../../../assets/weather-icons/cyclone.png":He,"../../../assets/weather-icons/fog.png":Ue,"../../../assets/weather-icons/heavy-rain.png":We,"../../../assets/weather-icons/high-voltage.png":Ge,"../../../assets/weather-icons/lightning.png":Ke,"../../../assets/weather-icons/mostly-cloudy.png":qe,"../../../assets/weather-icons/mostly-sunny.png":Je,"../../../assets/weather-icons/partly-cloudy.png":Ye,"../../../assets/weather-icons/rain.png":Xe,"../../../assets/weather-icons/snow.png":Ze,"../../../assets/weather-icons/snowflake.png":Qe,"../../../assets/weather-icons/snowman.png":$e,"../../../assets/weather-icons/sun-shower.png":et,"../../../assets/weather-icons/sunny.png":tt,"../../../assets/weather-icons/thermometer.png":nt,"../../../assets/weather-icons/thunderstorm.png":rt,"../../../assets/weather-icons/tornado.png":it})).map(([e,t])=>[e.split(`/`).pop().replace(`.png`,``),t])),r=[[`대체로 맑`,`mostly-sunny`],[`소나기`,`sun-shower`],[`뇌우`,`thunderstorm`],[`천둥`,`thunderstorm`],[`번개`,`lightning`],[`폭설`,`snowman`],[`한파`,`snowflake`],[`눈보라`,`snow`],[`싸락눈`,`snow`],[`눈`,`snow`],[`호우`,`heavy-rain`],[`장마`,`heavy-rain`],[`이슬비`,`rain`],[`어는 비`,`rain`],[`비`,`rain`],[`안개`,`fog`],[`미세먼지`,`fog`],[`태풍`,`cyclone`],[`돌풍`,`tornado`],[`구름조금`,`partly-cloudy`],[`구름 조금`,`partly-cloudy`],[`구름많`,`mostly-cloudy`],[`흐림`,`cloudy`],[`구름`,`cloudy`],[`맑음`,`sunny`],[`맑`,`sunny`]],a=s(()=>{let e=r.find(([e])=>t.status.includes(e));return e?e[1]:`thermometer`}),o=s(()=>n[a.value]??n.thermometer);return(t,n)=>(i(),m(`img`,{class:v([`weather-icon`,a.value]),src:o.value,width:e.size,height:e.size,alt:e.status,title:e.status,decoding:`async`},null,10,ot))}},[[`__scopeId`,`data-v-ea83332f`]]),st=e({default:()=>Q}),ct={class:`sky`},lt={class:`sky-text`},ut={key:0,class:`badge here-badge`},dt={key:1,class:`pick`,title:`배경이 이 지역을 따릅니다`},ft={key:2,class:`badge demo-badge`},pt={class:`status`},mt={class:`metrics`},ht={class:`value`},gt={class:`band`},_t={class:`value`},vt={class:`band`},yt=[`aria-pressed`,`title`],bt=[`aria-expanded`],Q=b({__name:`WeatherCard`,props:{cityItem:{type:Object,required:!0},favorite:{type:Boolean,default:!1},here:{type:Boolean,default:!1},open:{type:Boolean,default:!1},selected:{type:Boolean,default:!1}},emits:[`select-card`,`click-detail`,`toggle-favorite`],setup(e,{emit:t}){let n=e,r=t,a=s(()=>{let e=n.cityItem.status;return e.includes(`맑`)?`warm`:e.includes(`비`)||e.includes(`눈`)?`cool`:`neutral`}),o=[{min:30,key:`scorching`,label:`무더워요`},{min:25,key:`hot`,label:`더워요`},{min:20,key:`mild`,label:`선선해요`},{min:10,key:`cool`,label:`쌀쌀해요`},{min:-1/0,key:`cold`,label:`추워요`}],d=[{min:80,key:`wet`,label:`눅눅해요`},{min:60,key:`humid`,label:`습해요`},{min:40,key:`nice`,label:`쾌적해요`},{min:-1/0,key:`dry`,label:`건조해요`}],f=s(()=>o.find(e=>n.cityItem.temp>=e.min)),p=s(()=>d.find(e=>n.cityItem.humidity>=e.min));return(t,n)=>(i(),m(`div`,{class:v([`weather-card`,{here:e.here,open:e.open,selected:e.selected}]),onClick:n[2]||=t=>r(`select-card`,e.cityItem.id)},[g(`div`,ct,[g(`div`,{class:v([`icon-tile`,a.value])},[_(Z,{status:e.cityItem.status,size:32},null,8,[`status`])],2),g(`div`,lt,[g(`h4`,null,[u(c(e.cityItem.name)+` `,1),e.here?(i(),m(`span`,ut,[_(X,{name:`location`,size:11}),n[3]||=u(` 현재 위치 `,-1)])):l(``,!0),e.selected?(i(),m(`span`,dt,[_(X,{name:`check`,size:13})])):l(``,!0),e.cityItem.demo?(i(),m(`span`,ft,`데모`)):l(``,!0)]),g(`p`,pt,c(e.cityItem.status),1)])]),g(`div`,mt,[g(`p`,{class:v([`metric`,f.value.key])},[_(X,{name:`thermometer`,size:15}),g(`b`,ht,[u(c(e.cityItem.temp),1),n[4]||=g(`span`,{class:`unit`},`°C`,-1)]),g(`span`,gt,c(f.value.label),1)],2),g(`p`,{class:v([`metric`,p.value.key])},[_(X,{name:`droplet`,size:15}),g(`b`,_t,[u(c(e.cityItem.humidity),1),n[5]||=g(`span`,{class:`unit`},`%`,-1)]),g(`span`,vt,c(p.value.label),1)],2)]),g(`button`,{class:v([`star`,{on:e.favorite}]),type:`button`,"aria-pressed":e.favorite,title:e.favorite?`즐겨찾기 해제`:`즐겨찾기에 추가`,onClick:n[0]||=T(t=>r(`toggle-favorite`,e.cityItem.id),[`stop`])},[_(X,{name:`star`,size:17,filled:e.favorite},null,8,[`filled`])],10,yt),e.cityItem.demo?l(``,!0):(i(),m(`button`,{key:0,class:v([`btn-detail`,{on:e.open}]),"aria-expanded":e.open,onClick:n[1]||=T(t=>r(`click-detail`,e.cityItem.name,e.cityItem.status),[`stop`])},c(e.open?`닫기`:`시간별`),11,bt))],2))}},[[`__scopeId`,`data-v-12b51248`]]),xt=e({default:()=>Nt}),St={class:`by-status`},Ct={class:`group-head`},wt={class:`status-name`},Tt={class:`count`},Et={class:`chips`},Dt=[`onClick`],Ot={class:`chip-name`},kt={class:`chip-temp`},At={class:`chip-region`},jt=[`title`,`onClick`],Mt={key:0,class:`empty-message`},Nt=b({__name:`WeatherByStatus`,props:{list:{type:Array,required:!0},favorites:{type:Array,default:()=>[]},hereId:{type:String,default:``},selectedId:{type:String,default:``}},emits:[`select-card`,`toggle-favorite`],setup(e){let t=e,n=s(()=>{let e=new Map;for(let n of t.list)e.has(n.status)||e.set(n.status,[]),e.get(n.status).push(n);return[...e.entries()].map(([e,t])=>({status:e,cities:[...t].sort((e,t)=>t.temp-e.temp)})).sort((e,t)=>t.cities.length-e.cities.length)});return(t,r)=>(i(),m(`div`,St,[(i(!0),m(h,null,S(n.value,n=>(i(),m(`div`,{key:n.status,class:`group`},[g(`p`,Ct,[_(Z,{status:n.status,size:26},null,8,[`status`]),g(`b`,wt,c(n.status),1),g(`span`,Tt,c(n.cities.length)+`곳`,1)]),g(`ul`,Et,[(i(!0),m(h,null,S(n.cities,n=>(i(),m(`li`,{key:n.id},[g(`button`,{type:`button`,class:v([`chip`,{here:n.id===e.hereId,selected:n.id===e.selectedId}]),onClick:e=>t.$emit(`select-card`,n.id)},[n.id===e.hereId?(i(),y(X,{key:0,name:`location`,size:11})):l(``,!0),g(`span`,Ot,c(n.name),1),n.id===e.selectedId?(i(),y(X,{key:1,name:`check`,size:12,class:`chip-check`})):l(``,!0),g(`span`,kt,c(n.temp)+`°`,1),g(`span`,At,c(n.region),1)],10,Dt),g(`button`,{type:`button`,class:v([`chip-star`,{on:e.favorites.includes(n.id)}]),title:e.favorites.includes(n.id)?`즐겨찾기 해제`:`즐겨찾기에 추가`,onClick:e=>t.$emit(`toggle-favorite`,n.id)},[_(X,{name:`star`,size:13,filled:e.favorites.includes(n.id)},null,8,[`filled`])],10,jt)]))),128))])]))),128)),n.value.length?l(``,!0):(i(),m(`p`,Mt,[_(X,{name:`empty`,size:22}),r[0]||=u(` 표시할 날씨가 없습니다. `,-1)]))]))}},[[`__scopeId`,`data-v-968dcb10`]]),Pt=e({default:()=>$}),Ft={key:0,class:`detail`},It={class:`detail-head`},Lt={key:0,class:`sido`},Rt={class:`current`},zt={class:`date-bar`},Bt=[`disabled`],Vt={class:`date-field`},Ht={class:`date-label`},Ut={key:0,class:`tag today`},Wt={key:1,class:`tag past`},Gt={key:2,class:`tag future`},Kt=[`min`,`max`],qt=[`disabled`],Jt={key:0,class:`state`},Yt={key:1,class:`state error`},Xt={class:`axis`},Zt={key:0},Qt={class:`bar-slot`},$t={class:`temp`},en={key:0,class:`rain`},tn={key:1,class:`rain none`},nn={class:`hour`},rn={key:2,class:`daymark`},an=6,on=12,$=b({__name:`HourlyDetail`,props:{city:{type:Object,default:null}},emits:[`close`],setup(e,{emit:t}){let a=e,f=t,y=n([]),b=n(!1),x=n(``),C=L(new Date),T=new Date().getHours(),E=n(C),D=n(null),O=s(()=>E.value===C),k=s(()=>E.value<C);p(()=>[a.city?.id,E.value],async()=>{if(a.city){b.value=!0,x.value=``;try{let e=R(a.city.id);if(O.value){let t=await I(e,E.value,F(E.value,1)),n=new Date,r=new Date(n).setHours(n.getHours()-an,0,0,0),i=new Date(n).setHours(n.getHours()+on,0,0,0);y.value=t.filter(e=>{let t=new Date(e.time).getTime();return t>=r&&t<=i})}else y.value=await I(e,E.value)}catch(e){x.value=`시간별 날씨를 불러오지 못했습니다.`,y.value=[],console.error(`[weather] 시간별 조회 실패`,e)}finally{b.value=!1}if(O.value){await o();let e=D.value,t=e?.querySelector(`.now`);e&&t&&(e.scrollLeft=t.offsetLeft-e.clientWidth/2+t.offsetWidth/2)}}},{immediate:!0}),p(()=>a.city?.id,()=>E.value=C);let j=e=>{let t=F(E.value,e);t>=z.min&&t<=z.max&&(E.value=t)},M=s(()=>{let e=new Date(`${E.value}T00:00:00`),t=[`일`,`월`,`화`,`수`,`목`,`금`,`토`][e.getDay()];return`${e.getMonth()+1}월 ${e.getDate()}일 (${t})`}),N=s(()=>{if(!y.value.length)return{min:0,max:1};let e=y.value.map(e=>e.temp),t=Math.min(...e),n=Math.max(...e);return{min:t,max:n===t?t+1:n}}),P=e=>Math.round(26+(e-N.value.min)/(N.value.max-N.value.min)*34);return(t,n)=>e.city?(i(),m(`section`,Ft,[g(`header`,It,[_(Z,{status:e.city.status,size:26},null,8,[`status`]),g(`div`,null,[g(`h4`,null,[u(c(e.city.name)+` `,1),e.city.region===e.city.name?l(``,!0):(i(),m(`span`,Lt,c(e.city.region),1))]),g(`p`,Rt,`지금 `+c(e.city.temp)+`°C · 습도 `+c(e.city.humidity)+`% · `+c(e.city.status),1)]),g(`button`,{class:`close`,type:`button`,"aria-label":`닫기`,onClick:n[0]||=e=>f(`close`)},`✕`)]),g(`div`,zt,[g(`button`,{type:`button`,class:`step`,disabled:w(F)(E.value,-1)<w(z).min,"aria-label":`하루 전`,onClick:n[1]||=e=>j(-1)},` ‹ `,8,Bt),g(`label`,Vt,[g(`span`,Ht,[u(c(M.value)+` `,1),O.value?(i(),m(`b`,Ut,`오늘`)):k.value?(i(),m(`b`,Wt,`지난 날씨`)):(i(),m(`b`,Gt,`예보`))]),r(g(`input`,{"onUpdate:modelValue":n[2]||=e=>E.value=e,type:`date`,min:w(z).min,max:w(z).max},null,8,Kt),[[A,E.value]])]),g(`button`,{type:`button`,class:`step`,disabled:w(F)(E.value,1)>w(z).max,"aria-label":`하루 뒤`,onClick:n[3]||=e=>j(1)},` › `,8,qt),O.value?l(``,!0):(i(),m(`button`,{key:0,type:`button`,class:`today-btn`,onClick:n[4]||=e=>E.value=w(C)},` 오늘로 `))]),b.value?(i(),m(`p`,Jt,`시간별 예보를 불러오는 중…`)):x.value?(i(),m(`p`,Yt,c(x.value),1)):y.value.length?(i(),m(h,{key:2},[g(`p`,Xt,[O.value?(i(),m(`span`,Zt,`지금 기준 앞뒤 시간 · `)):l(``,!0),u(`최저 `+c(N.value.min)+`°C ~ 최고 `+c(N.value.max)+`°C `,1)]),g(`ul`,{ref_key:`hoursEl`,ref:D,class:`hours`},[(i(!0),m(h,null,S(y.value,e=>(i(),m(`li`,{key:e.time,class:v({now:O.value&&e.hour===w(T)})},[g(`span`,Qt,[g(`span`,$t,c(e.temp)+`°`,1),g(`span`,{class:`bar`,style:d({height:P(e.temp)+`px`})},null,4)]),_(Z,{status:e.status,size:18},null,8,[`status`]),e.rainChance>0?(i(),m(`span`,en,[_(X,{name:`droplet`,size:10}),u(c(e.rainChance)+`% `,1)])):(i(),m(`span`,tn,`–`)),g(`span`,nn,c(O.value&&e.hour===w(T)?`지금`:e.hour+`시`),1),e.hour===0?(i(),m(`span`,rn,`다음날`)):l(``,!0)],2))),128))],512)],64)):l(``,!0)])):l(``,!0)}},[[`__scopeId`,`data-v-ab3056f6`]]),sn=e({default:()=>dn}),cn={key:0,class:`mist`},ln={key:0,class:`blizzard`},un=.618033988749895,dn=b({__name:`WeatherBackdrop`,props:{status:{type:String,default:``}},setup(e){let t=e,r=Object.fromEntries(Object.entries(Object.assign({"../../../assets/photos/cloudy.jpg":()=>D(()=>import(`./cloudy-79FvOUrg.js`).then(e=>e.default),[]),"../../../assets/photos/lightning.jpg":()=>D(()=>import(`./lightning-BiLOcaih.js`).then(e=>e.default),[]),"../../../assets/photos/mostly-sunny.jpg":()=>D(()=>import(`./mostly-sunny-ia0xcVKP.js`).then(e=>e.default),[]),"../../../assets/photos/overcast.jpg":()=>D(()=>import(`./overcast-hCz2yzGp.js`).then(e=>e.default),[]),"../../../assets/photos/partly-cloudy.jpg":()=>D(()=>import(`./partly-cloudy-BCMTYjrN.js`).then(e=>e.default),[]),"../../../assets/photos/rain.jpg":()=>D(()=>import(`./rain-CRgnNhCC.js`).then(e=>e.default),[]),"../../../assets/photos/storm.jpg":()=>D(()=>import(`./storm-5A07q_Yo.js`).then(e=>e.default),[]),"../../../assets/photos/sunny.jpg":()=>D(()=>import(`./sunny-BxS2j8Tt.js`).then(e=>e.default),[])})).map(([e,t])=>[e.split(`/`).pop().replace(`.jpg`,``),t])),a={},o=async e=>(a[e]||(a[e]=await r[e]?.()),a[e]),c=[[`뇌우`,{photo:`storm`,effect:`storm`}],[`번개`,{photo:`lightning`,effect:`lightning`}],[`폭설`,{photo:`overcast`,effect:`snow-heavy`}],[`눈보라`,{photo:`overcast`,effect:`snow-heavy`}],[`싸락눈`,{photo:`overcast`,effect:`snow`}],[`눈`,{photo:`overcast`,effect:`snow`}],[`한파`,{photo:`overcast`,effect:`snow`}],[`소나기`,{photo:`rain`,effect:`shower`}],[`호우`,{photo:`rain`,effect:`rain-heavy`}],[`이슬비`,{photo:`rain`,effect:`drizzle`}],[`어는 비`,{photo:`rain`,effect:`rain`}],[`비`,{photo:`rain`,effect:`rain`}],[`안개`,{photo:`overcast`,effect:`fog`}],[`미세먼지`,{photo:`overcast`,effect:`fog`}],[`흐림`,{photo:`overcast`,effect:`clouds-slow`}],[`구름조금`,{photo:`partly-cloudy`,effect:`clouds`}],[`구름많`,{photo:`cloudy`,effect:`clouds`}],[`구름`,{photo:`cloudy`,effect:`clouds`}],[`대체로 맑`,{photo:`mostly-sunny`,effect:`sun-clouds`}],[`맑`,{photo:`sunny`,effect:`sun`}]],u={photo:`partly-cloudy`,effect:`clouds`},f=s(()=>{if(!t.status)return u;let e=c.find(([e])=>t.status.includes(e));return e?e[1]:u}),_=n([``,``]),y=n(0),b=0;p(()=>f.value.photo,async e=>{let t=++b,n=await o(e);if(!n||t!==b||_.value[y.value]===n)return;let r=1-y.value;_.value[r]=n,y.value=r},{immediate:!0});let w=n(null),T=n(1),E=null;C(()=>{let e=()=>{let e=w.value?.offsetHeight??0;T.value=Math.min(4,Math.max(1,Math.ceil(e/window.innerHeight)))};E=new ResizeObserver(e),w.value&&E.observe(w.value),window.addEventListener(`resize`,e),e(),x(()=>window.removeEventListener(`resize`,e))}),x(()=>E?.disconnect());let O=(e,{minDur:t,maxDur:n,minLen:r,maxLen:i,minOp:a,maxOp:o,width:s})=>Array.from({length:e},(e,c)=>{let l=c*un%1,u=c*37%100/100,d=c*61%100/100,f=c*83%100/100,p=t+d*(n-t);return{left:u*106-3,dur:p,len:r+f*(i-r),delay:-l*p,opacity:a+f*(o-a),width:f>.7?s+.6:s}}),k=O(95,{minDur:1.8,maxDur:2.9,minLen:8,maxLen:22,minOp:.16,maxOp:.4,width:1}),A=O(150,{minDur:.7,maxDur:1.1,minLen:28,maxLen:70,minOp:.3,maxOp:.75,width:1.3}),j=O(200,{minDur:.5,maxDur:.78,minLen:42,maxLen:100,minOp:.34,maxOp:.85,width:1.6}),M=O(280,{minDur:.28,maxDur:.46,minLen:75,maxLen:175,minOp:.4,maxOp:.95,width:2.2}),N=(e,{minDur:t,maxDur:n,minSize:r,maxSize:i,swayMin:a,swayMax:o})=>Array.from({length:e},(e,s)=>{let c=s*un%1,l=s*41%100/100,u=s*67%100/100,d=s*89%100/100,f=t+u*(n-t);return{left:l*106-3,dur:f,size:r+d*(i-r),delay:-c*f,opacity:.45+d*.5,sway:a+l*(o-a),swayDur:1.8+d*2.6}}),P=N(120,{minDur:4.5,maxDur:8,minSize:3,maxSize:8,swayMin:24,swayMax:70}),ee=N(230,{minDur:1.6,maxDur:3.2,minSize:4,maxSize:13,swayMin:60,swayMax:150}),F=s(()=>{let e=f.value.effect===`snow-heavy`?ee:P;return T.value>=3?e.filter((e,t)=>t%2==0):e}),I=s(()=>{let e={drizzle:k,shower:j,"rain-heavy":M}[f.value.effect]??A;return T.value>=3?e.filter((e,t)=>t%2==0):e}),L=s(()=>[`storm`,`lightning`,`rain-heavy`,`rain`,`shower`].includes(f.value.effect));return(e,t)=>(i(),m(`div`,{ref_key:`rootEl`,ref:w,class:v([`backdrop`,[`fx-${f.value.effect}`,{dark:L.value}]]),"aria-hidden":`true`},[(i(!0),m(h,null,S(_.value,(e,t)=>(i(),m(`div`,{key:t,class:v([`photo`,{on:t===y.value}]),style:d(e?{backgroundImage:`url(${e})`}:null)},null,6))),128)),f.value.effect===`sun`||f.value.effect===`sun-clouds`?(i(),m(h,{key:0},[t[0]||=g(`div`,{class:`glow`},null,-1),t[1]||=g(`div`,{class:`rays`},null,-1)],64)):l(``,!0),[`clouds`,`clouds-slow`,`sun-clouds`,`fog`,`overcast`].includes(f.value.effect)?(i(),m(h,{key:1},[t[2]||=g(`div`,{class:`cloud-layer a`},null,-1),t[3]||=g(`div`,{class:`cloud-layer b`},null,-1)],64)):l(``,!0),[`rain`,`rain-heavy`,`drizzle`,`shower`,`storm`].includes(f.value.effect)?(i(),m(h,{key:2},[(i(!0),m(h,null,S(T.value,e=>(i(),m(`div`,{key:e,class:`rain-field`,style:d({top:(e-1)*100+`vh`})},[(i(!0),m(h,null,S(I.value,(e,t)=>(i(),m(`span`,{key:t,class:`drop`,style:d({left:e.left+`%`,height:e.len+`px`,width:e.width+`px`,opacity:e.opacity,animationDuration:e.dur+`s`,animationDelay:e.delay+`s`})},null,4))),128))],4))),128)),f.value.effect===`drizzle`?l(``,!0):(i(),m(`div`,cn))],64)):l(``,!0),[`snow`,`snow-heavy`].includes(f.value.effect)?(i(),m(h,{key:3},[(i(!0),m(h,null,S(T.value,e=>(i(),m(`div`,{key:e,class:`snow-field`,style:d({top:(e-1)*100+`vh`})},[(i(!0),m(h,null,S(F.value,(e,t)=>(i(),m(`span`,{key:t,class:`flake-fall`,style:d({left:e.left+`%`,animationDuration:e.dur+`s`,animationDelay:e.delay+`s`})},[g(`span`,{class:`flake`,style:d({width:e.size+`px`,height:e.size+`px`,opacity:e.opacity,animationDuration:e.swayDur+`s`,"--sway":e.sway+`px`})},null,4)],4))),128))],4))),128)),f.value.effect===`snow-heavy`?(i(),m(`div`,ln)):l(``,!0)],64)):l(``,!0),f.value.effect===`fog`?(i(),m(h,{key:4},[t[4]||=g(`div`,{class:`fog-layer a`},null,-1),t[5]||=g(`div`,{class:`fog-layer b`},null,-1)],64)):l(``,!0),[`storm`,`lightning`].includes(f.value.effect)?(i(),m(h,{key:5},[t[7]||=g(`div`,{class:`flash`},null,-1),(i(),m(h,null,S(2,e=>g(`svg`,{key:e,class:v([`bolt`,e===1?`a`:`b`]),viewBox:`0 0 200 300`,preserveAspectRatio:`xMidYMin meet`},[...t[6]||=[g(`path`,{d:`M96 0 78 96 112 88 66 210`,fill:`none`,stroke:`#bfe0ff`,"stroke-width":`11`,"stroke-linejoin":`round`,"stroke-linecap":`round`,opacity:`0.55`},null,-1),g(`path`,{d:`M96 0 78 96 112 88 66 210 90 128 58 138Z`,fill:`#f2f9ff`},null,-1),g(`path`,{d:`M96 0 78 96 112 88 66 210`,fill:`none`,stroke:`#fff`,"stroke-width":`2.4`,"stroke-linejoin":`round`,"stroke-linecap":`round`},null,-1),g(`path`,{d:`M84 62 46 104M104 108 142 142M74 150 44 188`,fill:`none`,stroke:`#eaf5ff`,"stroke-width":`2.2`,"stroke-linecap":`round`},null,-1)]],2)),64))],64)):l(``,!0),t[8]||=g(`div`,{class:`veil`},null,-1)],2))}},[[`__scopeId`,`data-v-30c4148e`]]),fn=e({default:()=>In}),pn={class:`dashboard-wrapper`},mn={class:`view-tabs`,role:`tablist`},hn=[`aria-selected`],gn=[`aria-selected`],_n={class:`tool-row`},vn={class:`summary`},yn={key:0,class:`fav-count`},bn=[`disabled`],xn=[`disabled`],Sn={key:0,class:`hint stale`},Cn={key:1,class:`hint`},wn={key:3,class:`error-message`},Tn={key:4,class:`skeleton`},En={key:0,class:`empty-message`},Dn={key:1,class:`pager`,"aria-label":`목록 페이지`},On=[`disabled`],kn=[`aria-current`,`onClick`],An=[`disabled`],jn={class:`status-bar`},Mn={key:0,class:`stamp`},Nn=`inwoo-weather-favorites`,Pn=5,Fn=6e5,In=b({__name:`WeatherParent`,setup(e){let t=n([]),r=n(!1),a=n(``),o=n(!1),d=n(``),b=n(``),T=n(`전체`),E=n(`region`),D=n(`카드를 클릭하거나 검색해 보세요.`),O=n(``),k=n(1),A=()=>{O.value=``,D.value=`카드를 클릭하거나 검색해 보세요.`},j=e=>{if(O.value===e){A();return}O.value=e;let n=t.value.find(t=>t.id===e);D.value=n?`${n.name} · ${n.status} · ${n.temp}°C · 습도 ${n.humidity}%`:`카드를 클릭하거나 검색해 보세요.`},M=n(JSON.parse(localStorage.getItem(Nn)??`[]`)),N=e=>{M.value=M.value.includes(e)?M.value.filter(t=>t!==e):[...M.value,e]};p(M,e=>localStorage.setItem(Nn,JSON.stringify(e)),{deep:!0});let P=n(``),F=n(`idle`),I=()=>{if(!navigator.geolocation){F.value=`denied`;return}F.value=`asking`,navigator.geolocation.getCurrentPosition(({coords:e})=>{let t=re(e.latitude,e.longitude);P.value=t?.id??``,F.value=`done`},()=>{F.value=`denied`},{timeout:8e3})},L=async(e=!1)=>{r.value=!0,a.value=``;try{let{rows:n,at:r,stale:i}=await ee(void 0,e);t.value=[...n,...te],o.value=i,i&&setTimeout(()=>L(!0),0),z=r,d.value=new Date(r).toLocaleTimeString(`ko-KR`,{hour:`2-digit`,minute:`2-digit`})}catch(e){a.value=`날씨를 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.`,o.value=!1,console.error(`[weather] 불러오기 실패`,e)}finally{r.value=!1}},R=null,z=0,ie=()=>{ae(),R=setInterval(()=>{document.visibilityState===`visible`&&L(!0)},Fn)},ae=()=>{R&&clearInterval(R),R=null},B=()=>{document.visibilityState===`visible`&&Date.now()-z>Fn&&L(!0)};x(()=>{ae(),document.removeEventListener(`visibilitychange`,B)}),C(async()=>{L(),ie(),document.addEventListener(`visibilitychange`,B),(await navigator.permissions?.query({name:`geolocation`}).catch(()=>null))?.state===`granted`&&I()});let V=s(()=>{let e=b.value.trim();return t.value.filter(t=>!e||t.name.includes(e))}),H=s(()=>{let e=V.value.filter(e=>T.value===`전체`||e.group===T.value),t=e=>e.id===P.value?0:M.value.includes(e.id)?1:2;return[...e].sort((e,n)=>t(e)-t(n))}),oe=s(()=>V.value.reduce((e,t)=>(e[t.group]=(e[t.group]??0)+1,e),{전체:V.value.length})),U=s(()=>Math.max(1,Math.ceil(H.value.length/Pn))),se=s(()=>H.value.slice((k.value-1)*Pn,k.value*Pn));p([b,T,E],()=>k.value=1),p(U,e=>{k.value>e&&(k.value=e)});let W=s(()=>t.value.find(e=>e.id===O.value)??null),ce=s(()=>t.value.find(e=>e.id===O.value)??t.value.find(e=>e.id===P.value)??null),le=s(()=>ce.value?.status??``),G=s(()=>V.value.filter(e=>M.value.includes(e.id)).length);p(D,e=>{console.log(`👁️‍🗨️ [watch 감지] 상태 바 문구가 업데이트되었습니다 -> "${e}"`)});let K=n(``),q=s(()=>t.value.find(e=>e.id===K.value)??null),J=e=>{let n=t.value.find(t=>t.name===e);K.value=K.value===n?.id?``:n?.id??``};return(e,n)=>(i(),m(`div`,pn,[_(dn,{status:le.value},null,8,[`status`]),_(Y,null,{default:f(()=>[_(Fe,{"current-query":b.value,onUpdateQuery:n[0]||=e=>b.value=e},null,8,[`current-query`])]),_:1}),_(Y,null,{default:f(()=>[g(`div`,mn,[g(`button`,{type:`button`,role:`tab`,"aria-selected":E.value===`region`,class:v({active:E.value===`region`}),onClick:n[1]||=e=>E.value=`region`},[_(X,{name:`city`,size:16}),n[10]||=u(` 지역별 날씨 현황 `,-1)],10,hn),g(`button`,{type:`button`,role:`tab`,"aria-selected":E.value===`status`,class:v({active:E.value===`status`}),onClick:n[2]||=e=>E.value=`status`},[_(X,{name:`droplet`,size:16}),n[11]||=u(` 날씨별 지역 현황 `,-1)],10,gn)]),g(`div`,_n,[g(`p`,vn,[g(`b`,null,c(V.value.length),1),n[12]||=u(`곳 `,-1),G.value?(i(),m(`span`,yn,[_(X,{name:`star`,size:12,filled:!0}),u(` `+c(G.value),1)])):l(``,!0)]),g(`button`,{class:`tool`,type:`button`,disabled:F.value===`asking`,onClick:I},[_(X,{name:`location`,size:14}),u(` `+c(F.value===`asking`?`찾는 중…`:`내 위치`),1)],8,bn),g(`button`,{class:`tool`,type:`button`,disabled:r.value,onClick:n[3]||=e=>L(!0)},c(r.value?`불러오는 중…`:`새로고침`),9,xn)]),o.value?(i(),m(`p`,Sn,[n[13]||=u(` 지금 서버 응답을 받지 못해 `,-1),g(`b`,null,c(d.value)+`에 받아 둔 값`,1),n[14]||=u(`을 보여 주고 있습니다. 잠시 뒤 새로고침을 눌러 보세요. `,-1)])):l(``,!0),F.value===`denied`?(i(),m(`p`,Cn,` 위치 권한이 없어 현재 위치를 표시하지 못했습니다. 나머지 기능은 그대로 쓸 수 있습니다. `)):l(``,!0),E.value===`region`?(i(),y(Be,{key:2,regions:[...w(ne),`데모`],current:T.value,counts:oe.value,onSelectRegion:n[4]||=e=>T.value=e},null,8,[`regions`,`current`,`counts`])):l(``,!0),a.value?(i(),m(`p`,wn,[u(c(a.value)+` `,1),g(`button`,{type:`button`,onClick:n[5]||=e=>L(!0)},`다시 시도`)])):r.value&&!t.value.length?(i(),m(`div`,Tn,[(i(),m(h,null,S(5,e=>g(`div`,{key:e,class:`skeleton-card`},[...n[15]||=[g(`span`,{class:`sk-tile`},null,-1),g(`span`,{class:`sk-lines`},[g(`i`,{class:`sk-line wide`}),g(`i`,{class:`sk-line`})],-1),g(`span`,{class:`sk-metrics`},[g(`i`,{class:`sk-pill`}),g(`i`,{class:`sk-pill`})],-1)]])),64))])):E.value===`region`?(i(),m(h,{key:5},[(i(!0),m(h,null,S(se.value,e=>(i(),m(h,{key:e.id},[_(Q,{"city-item":e,favorite:M.value.includes(e.id),here:e.id===P.value,open:e.id===K.value,selected:e.id===O.value,onSelectCard:j,onClickDetail:J,onToggleFavorite:N},null,8,[`city-item`,`favorite`,`here`,`open`,`selected`]),e.id===K.value?(i(),y($,{key:0,city:q.value,onClose:n[6]||=e=>K.value=``},null,8,[`city`])):l(``,!0)],64))),128)),H.value.length===0?(i(),m(`p`,En,[_(X,{name:`empty`,size:22}),n[16]||=u(` 검색 결과와 일치하는 도시가 없습니다. `,-1)])):l(``,!0),U.value>1?(i(),m(`nav`,Dn,[g(`button`,{type:`button`,disabled:k.value===1,"aria-label":`이전`,onClick:n[7]||=e=>k.value--},`‹`,8,On),(i(!0),m(h,null,S(U.value,e=>(i(),m(`button`,{key:e,type:`button`,class:v({active:e===k.value}),"aria-current":e===k.value?`page`:void 0,onClick:t=>k.value=e},c(e),11,kn))),128)),g(`button`,{type:`button`,disabled:k.value===U.value,"aria-label":`다음`,onClick:n[8]||=e=>k.value++},` › `,8,An)])):l(``,!0)],64)):(i(),m(h,{key:6},[W.value?(i(),m(h,{key:0},[_(Q,{"city-item":W.value,favorite:M.value.includes(W.value.id),here:W.value.id===P.value,open:W.value.id===K.value,selected:!0,onSelectCard:j,onClickDetail:J,onToggleFavorite:N},null,8,[`city-item`,`favorite`,`here`,`open`]),W.value.id===K.value?(i(),y($,{key:0,city:q.value,onClose:n[9]||=e=>K.value=``},null,8,[`city`])):l(``,!0)],64)):l(``,!0),_(Nt,{list:V.value,favorites:M.value,"here-id":P.value,"selected-id":O.value,onSelectCard:j,onToggleFavorite:N},null,8,[`list`,`favorites`,`here-id`,`selected-id`])],64))]),_:1}),g(`div`,jn,[g(`span`,null,c(D.value),1),d.value?(i(),m(`small`,Mn,c(d.value)+` 기준 · Open-Meteo`,1)):l(``,!0)])]))}},[[`__scopeId`,`data-v-dba696e8`]]),Ln=e({default:()=>Vn}),Rn={class:`app`},zn={class:`nav`},Bn={class:`url`},Vn=b({__name:`WeatherRouterApp`,setup(e){let t=O(),n=s(()=>t.params.stageId??`4`);return(e,r)=>(i(),m(`div`,Rn,[g(`nav`,zn,[_(w(E),{to:{name:`a4-home`,params:{stageId:n.value}},"exact-active-class":`on`},{default:f(()=>[...r[0]||=[u(` 홈 `,-1)]]),_:1},8,[`to`]),_(w(E),{to:{name:`a4-about`,params:{stageId:n.value}},"active-class":`on`},{default:f(()=>[...r[1]||=[u(` 소개 `,-1)]]),_:1},8,[`to`]),_(w(E),{to:{name:`a4-detail`,params:{stageId:n.value,cityId:`city_03`}},"active-class":`on`},{default:f(()=>[...r[2]||=[u(` 부산 상세 `,-1)]]),_:1},8,[`to`]),_(w(E),{to:{name:`a4-missing`,params:{stageId:n.value,pathMatch:[`없는주소`]}},"active-class":`on`},{default:f(()=>[...r[3]||=[u(` 없는 주소 `,-1)]]),_:1},8,[`to`]),g(`code`,Bn,c(w(t).path),1)]),_(w(k))]))}},[[`__scopeId`,`data-v-1fb5f961`]]),Hn=`<script setup>
 /**
  * 누적 과제 2 — 날씨 컴포지션 (교안 126쪽)
  * 1일차 Mockup에 computed · watch · watchEffect를 얹은 버전.
@@ -265,7 +265,7 @@ h3 {
   content: '';
 }
 </style>
-`,Sn=`<script setup>
+`,Un=`<script setup>
 /**
  * 누적 과제 1 — 날씨 Mockup (교안 98쪽)
  * 원본: weather-mockup/src/App.vue
@@ -533,7 +533,7 @@ const showDetail = (cityName, status) => {
   }
 }
 </style>
-`,Cn=`<script setup>
+`,Wn=`<script setup>
 /**
  * 누적 과제 3 — 날씨 컴포넌트 분리 (교안 158쪽)
  * 기능은 그대로 두고 컴포넌트로 나눈 뒤, 데이터를 실제 API로 바꾼 결과물.
@@ -1291,7 +1291,703 @@ const showDetail = (cityName) => {
   position: relative;
 }
 </style>
-`,wn=`<template>
+`,Gn=`<script setup>
+import { useRoute, useRouter } from 'vue-router'
+
+/**
+ * 과제 4 — 서비스 소개 (/about)
+ * 주소에 직접 연결되는 정적 페이지다.
+ */
+const route = useRoute()
+const router = useRouter()
+
+/** 교안 172쪽 handleGoHome — 메인으로 (push) */
+const goHome = () => {
+  router.push({ name: 'a4-home', params: { stageId: route.params.stageId ?? '4' } })
+}
+<\/script>
+
+<template>
+  <div class="about">
+    <h3>이 서비스는</h3>
+    <p>
+      전국 주요 도시의 날씨를 한 화면에서 보여 주는 대시보드입니다. 도시를 고르면 습도 · 풍속 ·
+      기압 같은 상세 관측값을 확인할 수 있습니다.
+    </p>
+
+    <ul>
+      <li>메인 화면은 <code>/</code>, 상세는 <code>/weather/:cityId</code> 로 이어집니다.</li>
+      <li>주소를 그대로 복사해 보내면 같은 화면이 열립니다.</li>
+      <li>없는 주소로 들어오면 안내 페이지가 대신 나옵니다.</li>
+    </ul>
+
+    <button type="button" @click="goHome">← 메인 대시보드로 돌아가기</button>
+  </div>
+</template>
+
+<style scoped>
+.about {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+h3 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.8;
+}
+
+ul {
+  margin: 0 0 18px;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+li {
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+code {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+button {
+  padding: 9px 15px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+</style>
+`,Kn=`<script setup>
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { findMockCity } from './mockCities'
+
+/**
+ * 과제 4 — 도시 상세 (/weather/:cityId)
+ *
+ * 주소의 :cityId 자리에 들어온 값을 useRoute()로 읽어,
+ * Mount 시점에 Mock Data에서 해당 도시를 고른다.
+ */
+const route = useRoute()
+const router = useRouter()
+
+const city = ref(null)
+
+onMounted(() => {
+  city.value = findMockCity(route.params.cityId)
+})
+
+/** 교안 172쪽 handleGoBack — 1단계 이전 주소 기록으로 */
+const goBack = () => router.go(-1)
+<\/script>
+
+<template>
+  <div class="detail">
+    <template v-if="city">
+      <header class="head">
+        <div>
+          <p class="eyebrow">
+            {{ city.region }} · <code>{{ route.params.cityId }}</code>
+          </p>
+          <h3>{{ city.name }}</h3>
+          <p class="status">{{ city.status }} · {{ city.temp }}°C</p>
+        </div>
+        <button type="button" @click="goBack">← 이전 화면으로</button>
+      </header>
+
+      <dl class="observation">
+        <div><dt>습도</dt><dd>{{ city.humidity }}%</dd></div>
+        <div><dt>풍속</dt><dd>{{ city.wind }} m/s</dd></div>
+        <div><dt>기압</dt><dd>{{ city.pressure }} hPa</dd></div>
+        <div><dt>가시거리</dt><dd>{{ city.visibility }} km</dd></div>
+        <div><dt>미세먼지</dt><dd>{{ city.dust }}</dd></div>
+        <div><dt>일출 · 일몰</dt><dd>{{ city.sunrise }} · {{ city.sunset }}</dd></div>
+      </dl>
+
+      <p v-if="route.query.from" class="from">
+        <span class="tag">route.query</span>
+        <code>{{ route.query }}</code>
+      </p>
+    </template>
+
+    <!-- 주소에 없는 도시 코드가 들어온 경우 -->
+    <div v-else class="missing">
+      <p><code>{{ route.params.cityId }}</code> 에 해당하는 도시가 없습니다.</p>
+      <button type="button" @click="goBack">← 이전 화면으로</button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.detail {
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--faint);
+  font-size: 11.5px;
+}
+
+.eyebrow code,
+.from code {
+  font-family: var(--font-mono);
+}
+
+h3 {
+  margin: 0 0 4px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.head button,
+.missing button {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.head button:hover,
+.missing button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.observation {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.observation > div {
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: var(--paper);
+}
+
+dt {
+  margin-bottom: 4px;
+  color: var(--faint);
+  font-size: 11.5px;
+}
+
+dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.from {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 16px 0 0;
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: var(--paper);
+  font-size: 12px;
+}
+
+.tag {
+  color: var(--faint);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.missing {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.missing p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+</style>
+`,qn=`<script setup>
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { MOCK_CITIES } from './mockCities'
+
+/**
+ * 과제 4 — 메인 대시보드 (/ 경로)
+ * WeatherParent를 대신하는 "페이지 단위 최상위 컴포넌트"다.
+ *
+ * 이전 과제에서 상세보기는 window.alert() 였다.
+ * 이제는 라우터로 상세 페이지에 다녀온다 (Programmatic Navigation).
+ */
+const router = useRouter()
+
+const searchQuery = ref('')
+
+const filteredCities = computed(() => {
+  const query = searchQuery.value.trim()
+  if (!query) return MOCK_CITIES
+  return MOCK_CITIES.filter((city) => city.name.includes(query))
+})
+
+/**
+ * 상세보기 — alert 대신 주소를 옮긴다.
+ * 교안 172쪽의 handleAdvancedMove 와 같은 형태다.
+ */
+const goDetail = (cityId) => {
+  router.push({
+    name: 'a4-detail', // 라우터 설정에 등록된 고유 Name
+    params: { cityId }, // 주소창 :cityId 자리에 매핑
+    query: { from: 'home' }, // 주소창 뒤에 ?from=home
+  })
+}
+<\/script>
+
+<template>
+  <div class="home">
+    <div class="card">
+      <h3>도시 검색</h3>
+      <input v-model="searchQuery" type="text" placeholder="검색할 도시 이름 입력" />
+    </div>
+
+    <div class="card">
+      <h3>지역별 날씨 현황</h3>
+
+      <div v-for="city in filteredCities" :key="city.id" class="city">
+        <div class="city-main">
+          <b class="name">{{ city.name }}</b>
+          <span class="region">{{ city.region }}</span>
+          <span class="status">{{ city.status }}</span>
+        </div>
+        <span class="temp">{{ city.temp }}°C</span>
+        <button type="button" @click="goDetail(city.id)">상세보기</button>
+      </div>
+
+      <p v-if="!filteredCities.length" class="empty">검색 결과와 일치하는 도시가 없습니다.</p>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.home {
+  display: grid;
+  gap: 14px;
+}
+
+.card {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+h3 {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.city {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.city + .city {
+  margin-top: 8px;
+}
+
+.city-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.name {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.region,
+.status {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.temp {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.city button {
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.city button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.empty {
+  margin: 18px 0 0;
+  color: var(--faint);
+  font-size: 13px;
+  text-align: center;
+}
+</style>
+`,Jn=`<script setup>
+import { useRoute, useRouter } from 'vue-router'
+
+/**
+ * 과제 4 — 없는 주소 (Catch-all Route)
+ * routes 배열 맨 마지막의 /:pathMatch(.*)* 가 여기로 보낸다.
+ */
+const route = useRoute()
+const router = useRouter()
+
+const goHome = () => {
+  router.push({ name: 'a4-home', params: { stageId: route.params.stageId ?? '4' } })
+}
+<\/script>
+
+<template>
+  <div class="missing">
+    <p class="code">404</p>
+    <h3>그런 페이지는 없습니다</h3>
+    <p class="path">
+      찾으신 주소 <code>{{ route.fullPath }}</code>
+    </p>
+    <button type="button" @click="goHome">← 메인 대시보드로 돌아가기</button>
+  </div>
+</template>
+
+<style scoped>
+.missing {
+  padding: 46px 24px;
+  border: 1px dashed var(--signal);
+  border-radius: 14px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.code {
+  margin: 0 0 8px;
+  color: var(--signal);
+  font-family: var(--font-mono);
+  font-size: 34px;
+  font-weight: 800;
+}
+
+h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.path {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.path code {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper);
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+button {
+  padding: 9px 15px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+</style>
+`,Yn=`<script setup>
+import { computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+
+/**
+ * 과제 4 결과물의 껍데기 — 교안의 App.vue 역할.
+ *
+ *   내비게이션 바 : <RouterLink>
+ *   메인 콘텐츠   : <RouterView />
+ *
+ * 이 사이트 안에서 돌아가야 하므로, 과제의 화면들은
+ * /project/:stageId 아래의 자식 경로로 등록되어 있다.
+ * 원리는 교안과 같다 — 주소가 바뀌면 RouterView 자리가 갈아끼워진다.
+ */
+const route = useRoute()
+
+/** 자식 경로로 이동할 때 stageId 를 유지해야 한다 */
+const stageId = computed(() => route.params.stageId ?? '4')
+<\/script>
+
+<template>
+  <div class="app">
+    <!-- 내비게이션 바 -->
+    <nav class="nav">
+      <RouterLink :to="{ name: 'a4-home', params: { stageId } }" exact-active-class="on">
+        홈
+      </RouterLink>
+      <RouterLink :to="{ name: 'a4-about', params: { stageId } }" active-class="on">
+        소개
+      </RouterLink>
+      <RouterLink
+        :to="{ name: 'a4-detail', params: { stageId, cityId: 'city_03' } }"
+        active-class="on"
+      >
+        부산 상세
+      </RouterLink>
+      <RouterLink :to="{ name: 'a4-missing', params: { stageId, pathMatch: ['없는주소'] } }" active-class="on">
+        없는 주소
+      </RouterLink>
+
+      <code class="url">{{ route.path }}</code>
+    </nav>
+
+    <!-- 메인 콘텐츠 — 주소에 맞는 화면이 여기 놓인다 -->
+    <RouterView />
+  </div>
+</template>
+
+<style scoped>
+.app {
+  display: grid;
+  gap: 14px;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.nav a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.nav a.on {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.url {
+  margin-left: auto;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+</style>
+`,Xn=`/**
+ * 과제 4용 Mock Data.
+ * 실제 API 대신 도시 코드(cityId)로 찾아 쓰는 임시 데이터다.
+ * WeatherDetailView 가 route.params.cityId 로 여기서 한 건을 골라낸다.
+ */
+export const MOCK_CITIES = [
+  {
+    id: 'city_01',
+    name: '서울',
+    region: '서울',
+    temp: 28,
+    humidity: 45,
+    status: '맑음',
+    wind: 2.4,
+    pressure: 1012,
+    visibility: 12,
+    dust: '보통',
+    sunrise: '05:32',
+    sunset: '19:48',
+  },
+  {
+    id: 'city_02',
+    name: '수원',
+    region: '경기',
+    temp: 24,
+    humidity: 88,
+    status: '비',
+    wind: 3.1,
+    pressure: 1005,
+    visibility: 4,
+    dust: '좋음',
+    sunrise: '05:34',
+    sunset: '19:47',
+  },
+  {
+    id: 'city_03',
+    name: '부산',
+    region: '경남',
+    temp: 26,
+    humidity: 72,
+    status: '구름',
+    wind: 4.6,
+    pressure: 1009,
+    visibility: 9,
+    dust: '보통',
+    sunrise: '05:21',
+    sunset: '19:36',
+  },
+  {
+    id: 'city_04',
+    name: '강릉',
+    region: '강원',
+    temp: 21,
+    humidity: 92,
+    status: '안개',
+    wind: 1.2,
+    pressure: 1011,
+    visibility: 2,
+    dust: '좋음',
+    sunrise: '05:24',
+    sunset: '19:41',
+  },
+  {
+    id: 'city_05',
+    name: '대구',
+    region: '경북',
+    temp: 31,
+    humidity: 33,
+    status: '맑음',
+    wind: 1.8,
+    pressure: 1008,
+    visibility: 14,
+    dust: '나쁨',
+    sunrise: '05:26',
+    sunset: '19:39',
+  },
+  {
+    id: 'city_06',
+    name: '제주',
+    region: '제주',
+    temp: 29,
+    humidity: 64,
+    status: '소나기',
+    wind: 5.2,
+    pressure: 1006,
+    visibility: 6,
+    dust: '좋음',
+    sunrise: '05:38',
+    sunset: '19:44',
+  },
+]
+
+/** 도시 코드로 한 건 찾기. 없으면 null */
+export const findMockCity = (cityId) => MOCK_CITIES.find((c) => c.id === cityId) ?? null
+`,Zn=`<template>
   <div class="base-dashboard-card">
     <slot></slot>
   </div>
@@ -1307,7 +2003,7 @@ const showDetail = (cityName) => {
   background: var(--surface);
 }
 </style>
-`,Tn=`<script setup>
+`,Qn=`<script setup>
 import { computed, nextTick, ref, watch } from 'vue'
 import WeatherIcon from './WeatherIcon.vue'
 import UiIcon from './UiIcon.vue'
@@ -1756,7 +2452,7 @@ const heightOf = (temp) =>
   font-weight: 700;
 }
 </style>
-`,En=`<script setup>
+`,$n=`<script setup>
 /**
  * 지역 선택 탭.
  * 어느 지역이 선택됐는지는 부모가 알고 있고(props),
@@ -1842,7 +2538,7 @@ defineEmits(['select-region'])
   color: var(--on-accent);
 }
 </style>
-`,Dn=`<script setup>
+`,er=`<script setup>
 import UiIcon from './UiIcon.vue'
 
 // 1. 상위로 입력 텍스트를 전달할 커스텀 이벤트 등록 (매크로)
@@ -1941,7 +2637,7 @@ defineProps({
   font-weight: 700;
 }
 </style>
-`,On=`<script setup>
+`,tr=`<script setup>
 /**
  * 화면 조작을 돕는 UI 아이콘.
  *
@@ -2027,7 +2723,7 @@ defineProps({
   vertical-align: -3px;
 }
 </style>
-`,kn=`<script setup>
+`,nr=`<script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 /**
@@ -2888,7 +3584,7 @@ const isDark = computed(() =>
   }
 }
 </style>
-`,An=`<script setup>
+`,rr=`<script setup>
 import { computed } from 'vue'
 import WeatherIcon from './WeatherIcon.vue'
 import UiIcon from './UiIcon.vue'
@@ -3092,7 +3788,7 @@ const groups = computed(() => {
   font-size: 13.5px;
 }
 </style>
-`,jn=`<script setup>
+`,ir=`<script setup>
 import { computed } from 'vue'
 import WeatherIcon from './WeatherIcon.vue'
 import UiIcon from './UiIcon.vue'
@@ -3498,7 +4194,7 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
   }
 }
 </style>
-`,Mn=`<script setup>
+`,ar=`<script setup>
 import { computed } from 'vue'
 
 /**
@@ -3592,7 +4288,7 @@ const src = computed(() => iconUrl[name.value] ?? iconUrl.thermometer)
   transform: scale(0.84);
 }
 </style>
-`,Nn=`/**
+`,or=`/**
  * Open-Meteo 날씨 API
  * ------------------------------------------------------------------
  * 화면(컴포넌트)과 데이터 가져오는 일을 파일부터 분리한다.
@@ -4055,4 +4751,4 @@ export const DEMO_ROWS = [
 
 /** id로 도시 정보(좌표 포함)를 찾는다 */
 export const findCity = (id) => CITIES.find((city) => city.id === id) ?? null
-`,Pn=Object.fromEntries(Object.entries(Object.assign({"./WeatherComposition.vue":I,"./WeatherMockup.vue":re,"./WeatherParent.vue":Yt})).map(([e,t])=>[e.replace(`./`,``).replace(`.vue`,``),t.default]));Object.keys(Pn).sort();var Fn=e=>Pn[e]??null,In=Object.assign({"./WeatherComposition.vue":xn,"./WeatherMockup.vue":Sn,"./WeatherParent.vue":Cn,"./weather/BaseDashboardCard.vue":wn,"./weather/HourlyDetail.vue":Tn,"./weather/RegionTabs.vue":En,"./weather/SearchBar.vue":Dn,"./weather/UiIcon.vue":On,"./weather/WeatherBackdrop.vue":kn,"./weather/WeatherByStatus.vue":An,"./weather/WeatherCard.vue":jn,"./weather/WeatherIcon.vue":Mn,"./weather/weatherApi.js":Nn}),Ln=Object.fromEntries(Object.entries(In).map(([e,t])=>[e.replace(`./`,``).replace(/\.(vue|js)$/,``),t])),Rn=Object.fromEntries(Object.keys(In).map(e=>[e.replace(`./`,``).replace(/\.(vue|js)$/,``),e.replace(`./`,`src/components/assignments/`)])),zn=e=>Ln[e]===void 0?Object.keys(Ln).find(t=>t.endsWith(`/${e}`)):e,Bn=e=>Ln[zn(e)]??``,Vn=e=>Rn[zn(e)]??``;export{Fn as n,Bn as r,Vn as t};
+`,sr=Object.fromEntries(Object.entries(Object.assign({"./WeatherComposition.vue":ie,"./WeatherMockup.vue":K,"./WeatherParent.vue":fn,"./router4/WeatherAboutView.vue":j,"./router4/WeatherDetailView.vue":M,"./router4/WeatherHomeView.vue":N,"./router4/WeatherNotFoundView.vue":P,"./router4/WeatherRouterApp.vue":Ln,"./weather/BaseDashboardCard.vue":xe,"./weather/HourlyDetail.vue":Pt,"./weather/RegionTabs.vue":Ie,"./weather/SearchBar.vue":Ae,"./weather/UiIcon.vue":Te,"./weather/WeatherBackdrop.vue":sn,"./weather/WeatherByStatus.vue":xt,"./weather/WeatherCard.vue":st,"./weather/WeatherIcon.vue":at})).map(([e,t])=>[e.split(`/`).pop().replace(`.vue`,``),t.default]));Object.keys(sr).sort();var cr=e=>sr[e]??null,lr=Object.assign({"./WeatherComposition.vue":Hn,"./WeatherMockup.vue":Un,"./WeatherParent.vue":Wn,"./router4/WeatherAboutView.vue":Gn,"./router4/WeatherDetailView.vue":Kn,"./router4/WeatherHomeView.vue":qn,"./router4/WeatherNotFoundView.vue":Jn,"./router4/WeatherRouterApp.vue":Yn,"./router4/mockCities.js":Xn,"./weather/BaseDashboardCard.vue":Zn,"./weather/HourlyDetail.vue":Qn,"./weather/RegionTabs.vue":$n,"./weather/SearchBar.vue":er,"./weather/UiIcon.vue":tr,"./weather/WeatherBackdrop.vue":nr,"./weather/WeatherByStatus.vue":rr,"./weather/WeatherCard.vue":ir,"./weather/WeatherIcon.vue":ar,"./weather/weatherApi.js":or}),ur=Object.fromEntries(Object.entries(lr).map(([e,t])=>[e.replace(`./`,``).replace(/\.(vue|js)$/,``),t])),dr=Object.fromEntries(Object.keys(lr).map(e=>[e.replace(`./`,``).replace(/\.(vue|js)$/,``),e.replace(`./`,`src/components/assignments/`)])),fr=e=>ur[e]===void 0?Object.keys(ur).find(t=>t.endsWith(`/${e}`)):e,pr=e=>ur[fr(e)]??``,mr=e=>dr[fr(e)]??``;export{cr as n,pr as r,mr as t};
