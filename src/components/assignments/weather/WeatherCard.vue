@@ -17,6 +17,8 @@ const props = defineProps({
   open: { type: Boolean, default: false },
   /** 지금 배경이 따라가는(=사용자가 고른) 도시인지 */
   selected: { type: Boolean, default: false },
+  /** 오른쪽 버튼 문구. 과제 4에서는 '상세보기'로 쓴다 */
+  detailLabel: { type: String, default: '시간별' },
 })
 
 // 2. 상위로 송신할 두 가지 경로의 커스텀 이벤트 식별자 등록 (매크로)
@@ -115,7 +117,7 @@ const humidity = computed(() => HUMIDITY_BANDS.find((b) => props.cityItem.humidi
       :aria-expanded="open"
       @click.stop="emit('click-detail', cityItem.name, cityItem.status)"
     >
-      {{ open ? '닫기' : '시간별' }}
+      {{ open ? '닫기' : detailLabel }}
     </button>
   </div>
 </template>

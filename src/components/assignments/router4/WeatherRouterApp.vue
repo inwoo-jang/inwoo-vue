@@ -21,23 +21,16 @@ const stageId = computed(() => route.params.stageId ?? '4')
 <template>
   <div class="app">
     <!-- 내비게이션 바 -->
-    <nav class="nav">
-      <RouterLink :to="{ name: 'a4-home', params: { stageId } }" exact-active-class="on">
+    <nav class="nav" role="tablist">
+      <RouterLink
+        :to="{ name: 'a4-home', params: { stageId } }"
+        exact-active-class="on"
+      >
         홈
       </RouterLink>
       <RouterLink :to="{ name: 'a4-about', params: { stageId } }" active-class="on">
         소개
       </RouterLink>
-      <RouterLink
-        :to="{ name: 'a4-detail', params: { stageId, cityId: 'city_03' } }"
-        active-class="on"
-      >
-        부산 상세
-      </RouterLink>
-      <RouterLink :to="{ name: 'a4-missing', params: { stageId, pathMatch: ['없는주소'] } }" active-class="on">
-        없는 주소
-      </RouterLink>
-
       <code class="url">{{ route.path }}</code>
     </nav>
 
@@ -55,38 +48,38 @@ const stageId = computed(() => route.params.stageId ?? '4')
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
+  padding: 4px;
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--paper);
 }
 
 .nav a {
-  padding: 7px 14px;
+  padding: 9px 22px;
   border-radius: 999px;
   color: var(--muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .nav a:hover {
   color: var(--accent);
-  background: var(--accent-tint);
 }
 
 .nav a.on {
-  color: var(--on-accent);
-  background: var(--accent);
+  color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 8%);
 }
 
 .url {
   margin-left: auto;
-  padding: 4px 11px;
-  border-radius: 999px;
-  background: var(--paper);
+  padding: 4px 13px;
   color: var(--faint);
   font-family: var(--font-mono);
   font-size: 11.5px;
