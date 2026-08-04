@@ -1,4 +1,4 @@
-import{B as e,Gt as t,Jt as n,M as r,R as i,a,d as o,ft as s,m as c,nt as ee,p as l,qt as u,t as te,u as d,v as f,xt as p}from"./_plugin-vue_export-helper-j367vXl5.js";import{b as ne}from"./index-v37ED-A8.js";import{n as re,t as ie}from"./tarotCards-C_624hGx.js";var m=[{no:1,label:`흐름`,title:`오늘의 전반적 흐름`},{no:2,label:`변수`,title:`오늘 마주할 변수 또는 주의점`},{no:3,label:`조언`,title:`오늘의 조언 (행동 지침)`}],ae=e=>`${e.map((e,t)=>{let n=e.reversed?`${e.card.message} 다만 오늘은 이 기운이 밖으로 뻗기보다 안으로 향합니다.`:e.card.message;return`${m[t].title} — ${e.card.name}(${e.reversed?`역방향`:`정방향`})\n${n}`}).join(`
+import{B as e,Gt as t,Jt as n,M as r,R as i,a,d as o,ft as s,m as c,nt as ee,p as l,qt as u,t as te,u as d,v as f,xt as p}from"./_plugin-vue_export-helper-j367vXl5.js";import{b as ne}from"./index-V79MZW4N.js";import{n as re,t as ie}from"./tarotCards-C_624hGx.js";var m=[{no:1,label:`흐름`,title:`오늘의 전반적 흐름`},{no:2,label:`변수`,title:`오늘 마주할 변수 또는 주의점`},{no:3,label:`조언`,title:`오늘의 조언 (행동 지침)`}],ae=e=>`${e.map((e,t)=>{let n=e.reversed?`${e.card.message} 다만 오늘은 이 기운이 밖으로 뻗기보다 안으로 향합니다.`:e.card.message;return`${m[t].title} — ${e.card.name}(${e.reversed?`역방향`:`정방향`})\n${n}`}).join(`
 
 `)}
 
