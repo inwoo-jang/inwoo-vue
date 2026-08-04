@@ -268,11 +268,6 @@ const selectedCity = computed(
   () => weatherList.value.find((item) => item.id === selectedCityId.value) ?? null,
 )
 
-/** 현재 위치로 잡힌 도시 — 목록 위에 따로 크게 보여 준다 */
-const hereCity = computed(
-  () => weatherList.value.find((item) => item.id === hereId.value) ?? null,
-)
-
 const backdropCity = computed(
   () =>
     weatherList.value.find((item) => item.id === selectedCityId.value) ??
@@ -375,28 +370,6 @@ const showDetail = (cityName) => {
 
       <p v-if="locationState === 'denied'" class="hint">
         위치 권한이 없어 현재 위치를 표시하지 못했습니다. 나머지 기능은 그대로 쓸 수 있습니다.
-      </p>
-
-      <!-- 현재 위치 — 목록보다 먼저 눈에 들어와야 한다 -->
-      <section v-if="hereCity" class="here-card">
-        <p class="here-label">
-          <UiIcon name="location" :size="13" /> 현재 위치
-        </p>
-        <WeatherCard
-          :city-item="hereCity"
-          :favorite="favorites.includes(hereCity.id)"
-          :here="true"
-          :selected="hereCity.id === selectedCityId"
-          :temp-value="toUnit(hereCity.temp)"
-          :temp-unit="unitSymbol"
-          @select-card="selectCity"
-          @click-detail="showDetail"
-          @toggle-favorite="toggleFavorite"
-        />
-      </section>
-
-      <p v-else-if="locationState === 'asking'" class="here-waiting">
-        현재 위치를 찾는 중입니다…
       </p>
 
       <!-- 지역 탭은 지역별 보기에서만 의미가 있다 -->
@@ -626,34 +599,6 @@ const showDetail = (cityName) => {
 
 .btn-label {
   font-size: 12px;
-}
-
-/* ── 현재 위치 ── */
-.here-card {
-  margin-bottom: 14px;
-  padding: 12px;
-  border: 1px solid var(--accent-line);
-  border-radius: 20px;
-  background: var(--accent-tint);
-}
-
-.here-label {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin: 0 0 8px 6px;
-  color: var(--accent);
-  font-size: 11.5px;
-  font-weight: 700;
-}
-
-.here-waiting {
-  margin: 0 0 14px;
-  padding: 11px 14px;
-  border-radius: 12px;
-  background: var(--paper);
-  color: var(--muted);
-  font-size: 12.5px;
 }
 
 /* ── 도구 줄 ── */
