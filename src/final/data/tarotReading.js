@@ -124,6 +124,74 @@ export const streamReading = async ({ apiKey, picks, onText }) => {
   return full
 }
 
+/* ── 프록시로 받아 오기 ─────────────────────────────────────────── */
+
+/**
+ * 키 없이도 AI 해석을 받는 길.
+ *
+ * 브라우저는 비밀을 가질 수 없다. 그래서 키는 서버(api/tarot.js)에만 두고,
+ * 여기서는 뽑은 카드 세 장만 보낸다. 서버가 자기 키로 OpenAI 를 불러
+ * 글자만 돌려준다.
+ *
+ * 주소는 VITE_TAROT_PROXY 로 바꿔 끼운다. 비워 두면 같은 출처의 /api/tarot 다.
+ * GitHub Pages 처럼 서버가 없는 곳에 올릴 때만 Vercel 주소를 적어 주면 된다.
+ */
+export const PROXY_URL = import.meta.env.VITE_TAROT_PROXY || '/api/tarot'
+
+/** 프록시가 준비되지 않았다는 뜻의 오류 — 이건 기본 해설로 넘어가는 신호다 */
+export class ProxyUnavailableError extends Error {}
+
+/**
+ * 프록시에서 해석을 스트리밍으로 받아 온다.
+ *
+ * 서버가 SSE 를 풀어 순수한 글자만 흘려 보내므로 여기서는 그대로 이어 붙이면 된다.
+ * @returns {Promise<string>} 완성된 해석 전문
+ */
+export const streamReadingViaProxy = async ({ picks, onText, signal }) => {
+  let response
+  try {
+    response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal,
+      body: JSON.stringify({
+        picks: picks.map((pick) => ({ name: pick.card.name, reversed: pick.reversed })),
+      }),
+    })
+  } catch (error) {
+    // 주소 자체가 닿지 않는다 — 아직 배포하지 않았거나 네트워크가 끊겼다
+    throw new ProxyUnavailableError(error?.message ?? '프록시에 닿지 못했습니다.')
+  }
+
+  if (!response.ok || !response.body) {
+    // 404: 프록시가 없는 곳(정적 호스팅)
+    // 503: 서버에 키가 아직 설정되지 않음
+    if (response.status === 404 || response.status === 503) {
+      throw new ProxyUnavailableError(`프록시 응답 ${response.status}`)
+    }
+    const detail = await response.json().catch(() => null)
+    const error = new Error(detail?.error ?? '해석을 받아 오지 못했습니다.')
+    error.status = response.status
+    throw error
+  }
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let full = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    const chunk = decoder.decode(value, { stream: true })
+    if (!chunk) continue
+    full += chunk
+    if (onText) onText(chunk)
+  }
+
+  if (!full.trim()) throw new Error('모델이 빈 응답을 보냈습니다. 다시 시도해 주세요.')
+  return full
+}
+
 /** SDK 오류를 화면에 그대로 띄울 수 있는 문장으로 바꾼다 */
 export const describeError = (error) => {
   const status = error?.status

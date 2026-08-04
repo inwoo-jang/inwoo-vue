@@ -2,7 +2,14 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { cardBack, tarotCards } from '../data/tarotCards'
-import { SPREAD, buildLocalReading, describeError, streamReading } from '../data/tarotReading'
+import {
+  ProxyUnavailableError,
+  SPREAD,
+  buildLocalReading,
+  describeError,
+  streamReading,
+  streamReadingViaProxy,
+} from '../data/tarotReading'
 import { useAiStore } from '../../stores/aiStore'
 
 /**
@@ -98,34 +105,51 @@ const resetReading = () => {
   reading.value = { status: 'idle', text: '', source: '', error: '' }
 }
 
+/** 기본 해설로 내려앉는다 — 화면이 비는 것만은 막는다 */
+const fallBackToLocal = () => {
+  reading.value = {
+    status: 'done',
+    text: buildLocalReading(picks.value),
+    source: 'local',
+    error: '',
+  }
+}
+
 /**
  * 세 장이 모이면 해석을 받는다.
- * 키가 있으면 AI, 없으면 카드에 딸린 기본 해설로 대신한다.
+ *
+ * 세 갈래를 차례로 시도한다.
+ *   1. 내가 넣은 키   — 브라우저에서 OpenAI 를 직접 부른다
+ *   2. 프록시        — 키는 서버에만 있고 카드 세 장만 보낸다
+ *   3. 기본 해설      — 둘 다 못 쓰면 카드에 딸린 글로 채운다
+ *
+ * 앞의 것이 없거나 준비되지 않았으면 조용히 다음으로 넘어간다.
+ * 키를 넣지 않은 사람에게 "키를 넣으세요"라고 막아서는 화면은 만들지 않는다.
  */
 const requestReading = async () => {
   if (!isComplete.value) return
 
-  if (!hasKey.value) {
-    reading.value = {
-      status: 'done',
-      text: buildLocalReading(picks.value),
-      source: 'local',
-      error: '',
-    }
-    return
+  reading.value = { status: 'loading', text: '', source: 'ai', error: '' }
+
+  const receive = (chunk) => {
+    reading.value.text += chunk
   }
 
-  reading.value = { status: 'loading', text: '', source: 'ai', error: '' }
   try {
-    await streamReading({
-      apiKey: aiStore.apiKey,
-      picks: picks.value,
-      onText: (chunk) => {
-        reading.value.text += chunk
-      },
-    })
+    if (hasKey.value) {
+      await streamReading({ apiKey: aiStore.apiKey, picks: picks.value, onText: receive })
+    } else {
+      await streamReadingViaProxy({ picks: picks.value, onText: receive })
+    }
     reading.value.status = 'done'
   } catch (error) {
+    // 프록시가 아직 없는 곳(정적 호스팅)이거나 서버에 키가 없는 경우다.
+    // 오류로 볼 일이 아니라 원래 예정된 대비책으로 넘어가면 된다.
+    if (error instanceof ProxyUnavailableError) {
+      fallBackToLocal()
+      return
+    }
+
     console.error('[tarot] 해석 실패', error)
     reading.value = {
       status: 'error',
@@ -248,8 +272,8 @@ const removeKey = () => {
       </p>
 
       <p v-if="reading.source === 'local'" class="reading-hint">
-        지금은 카드에 딸린 기본 해설입니다. 아래에 본인 API 키를 넣으면 세 장을 함께 읽은
-        AI 해석을 받을 수 있습니다.
+        AI 해석 서버에 닿지 못해 카드에 딸린 기본 해설을 보여 드립니다.
+        아래에 본인 API 키를 넣으면 세 장을 함께 읽은 AI 해석을 바로 받을 수 있습니다.
       </p>
     </section>
 
@@ -344,7 +368,8 @@ const removeKey = () => {
         </div>
 
         <p class="key-note faint">
-          키가 없어도 화면은 그대로 동작합니다 — 이때는 카드에 딸린 기본 해설이 나옵니다.
+          키를 넣지 않으면 공용 해석 서버를 거쳐 AI 해석을 받습니다. 그 서버에도 닿지 못할
+          때만 카드에 딸린 기본 해설이 나옵니다. 어느 쪽이든 화면은 그대로 동작합니다.
         </p>
       </div>
     </section>
