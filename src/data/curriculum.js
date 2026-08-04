@@ -1908,6 +1908,156 @@ const safe = inject('globalTheme', '(기본값)')`,
     status: 'done',
   },
 
+  /* ---------------- CH05 ---------------- */
+  {
+    id: 25,
+    chapterId: 5,
+    label: 'Code Challenge 22',
+    title: 'Vue Router Basic',
+    slidePage: '165쪽',
+    studyRange: '160~165쪽',
+    goal: '주소와 화면을 연결하는 라우터를 설정하고, RouterLink · RouterView로 화면을 바꿉니다.',
+    lecture: {
+      intro:
+        '웹사이트를 **벽에 액자 하나 걸린 방**이라고 생각해 보세요. 옛날 방식은 다른 그림을 보려고 방을 통째로 부수고 새로 지었습니다(새로고침). Vue는 방은 그대로 두고 **액자 속 그림만 갈아 끼웁니다.** 그 갈아 끼우는 규칙을 적어 둔 안내판이 라우터입니다.',
+      summary:
+        'Vue는 최초 접속 시 HTML 하나만 내려받는 **SPA(Single Page Application)** 입니다. Vue Router는 브라우저의 URL 변화를 JavaScript가 가로채, 서버에 새 페이지를 요청하지 않고 **주소에 맞는 컴포넌트만 가상 DOM에서 교체**해 주는 공식 라이브러리입니다.',
+      points: [
+        '전통적인 웹은 페이지를 옮길 때마다 서버에 **새 HTML을 요청**해 화면 전체를 새로고침했다.',
+        '설정은 3단계다 — ① `router/index.js`에 주소표 작성 → ② `main.js`에서 `app.use(router)` → ③ 화면에 `<RouterLink>`와 `<RouterView />` 배치.',
+        'routes의 필수 속성은 **path(주소)** 와 **component(그 주소에 걸 컴포넌트)** 둘뿐이다. `name`은 코드에서 부를 별명, `redirect`는 강제로 보낼 경로다.',
+        'component를 넣는 방법이 두 가지다. **정적 import**는 앱 시작 때 미리 싣고, **동적 import는 그 주소로 갈 때 싣는다(Lazy Loading).**',
+        '**`<a href>`는 절대 쓰면 안 된다.** 브라우저를 강제로 새로고침시켜 메모리에 있던 반응형 데이터(ref, computed)를 전부 초기화한다.',
+        'views 폴더는 **주소에 직접 연결되는 페이지**(`~View.vue`), components 폴더는 **여기저기 재사용하는 부품**이다.',
+      ],
+      syntax: [
+        {
+          code: `// src/router/index.js
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', name: 'home', component: HomeView },
+    { path: '/about', name: 'about',
+      component: () => import('../views/AboutView.vue') },
+  ],
+})
+
+export default router`,
+          parts: [
+            { token: 'createRouter({...})', role: "Vue Router 내장 함수. import { createRouter } from 'vue-router' 필요" },
+            { token: 'history', role: '주소를 어떻게 관리할지. createWebHistory()는 /about 처럼 슬래시 주소를 쓴다' },
+            { token: 'import.meta.env.BASE_URL', role: 'Vite가 넣어 주는 배포 기준 경로. 하위 경로에 배포해도 링크가 맞는다' },
+            { token: 'path', role: '**필수**. 브라우저 주소' },
+            { token: 'component', role: '**필수**. 그 주소에 걸 컴포넌트' },
+            { token: 'name', role: '내가 정하는 별명. 주소가 바뀌어도 코드는 이 이름으로 부른다' },
+            { token: "() => import('...')", role: '동적 import. 그 주소로 갈 때 비로소 파일을 받는다(Lazy Loading)' },
+          ],
+          returns:
+            'Router 설정 객체를 돌려준다. export default 로 내보내면 main.js가 가져다 app.use()에 넘긴다.',
+          desc: 'routes는 위에서부터 검사하므로 순서가 중요하다.',
+        },
+        {
+          code: `// src/main.js
+import router from './router'   // 폴더명만 쓰면 그 안의 index.js
+
+const app = createApp(App)
+app.use(router)                 // 앱에 라우터 장착
+app.mount('#app')`,
+          parts: [
+            { token: "from './router'", role: "폴더 경로만 적으면 그 폴더의 index.js를 가리킨다" },
+            { token: 'app.use(...)', role: '플러그인을 앱에 등록하는 메서드. 라우터·Pinia 모두 이걸로 붙인다' },
+          ],
+          returns: '돌려주는 값은 없다. 이 줄이 있어야 앱 전체가 주소를 인식하기 시작한다.',
+          desc: 'app.mount() 보다 먼저 호출해야 한다.',
+        },
+        {
+          code: `<!-- App.vue -->
+<RouterLink to="/about">소개</RouterLink>
+
+<RouterView />`,
+          parts: [
+            { token: '<RouterLink to="...">', role: '새로고침을 막고 주소만 바꾸는 전용 링크 태그' },
+            { token: '<RouterView />', role: '주소에 맞는 컴포넌트가 놓이는 **빈 액자**' },
+          ],
+          returns:
+            'RouterLink는 화면에 <a> 태그를 그리지만 클릭을 가로채 새로고침을 막는다. 현재 주소와 맞으면 router-link-active 클래스가 자동으로 붙는다.',
+          desc: 'RouterView가 없으면 주소만 바뀌고 화면은 그대로다. 가장 흔한 실수다.',
+        },
+      ],
+    },
+    tasks: [
+      'router/index.js에 routes 작성 (path + component)',
+      'main.js에서 app.use(router)',
+      'App.vue에 RouterLink · RouterView 배치',
+      '한 페이지는 동적 import로 Lazy Loading 적용',
+    ],
+    practiceGuide: [
+      {
+        practice: '주소 → 화면, 라우터가 하는 일',
+        do: '②번 주소창 아래의 `/about` 버튼을 눌러 보세요.',
+        see: '①번 주소표에서 `/about` 줄이 초록으로 켜지고, ③번 액자 안의 글자가 "소개"로 바뀝니다.',
+        why: '라우터는 **주소표를 위에서부터 훑어 맞는 줄을 찾고**, 그 줄의 컴포넌트를 액자(RouterView)에 끼웁니다. 이게 전부입니다.',
+      },
+      {
+        do: '`/weather/seoul` 을 누른 뒤, 주소창에서 seoul을 **busan으로 고쳐** Enter를 쳐 보세요.',
+        see: '주소표에서는 같은 줄(`/weather/:cityId`)이 계속 켜져 있는데, 아래 `route.params` 값만 바뀝니다.',
+        why: '`:cityId`는 **빈칸**입니다. 도시가 45개여도 주소표는 한 줄이면 됩니다. 채워진 값은 컴포넌트에서 `route.params.cityId`로 꺼내 씁니다.',
+      },
+      {
+        do: '주소창에 `/hello` 처럼 아무 주소나 쳐 보세요.',
+        see: '액자 테두리가 주황으로 바뀌고 "없는 페이지"가 나옵니다.',
+        why: '맨 마지막 `/:pathMatch(.*)*` 줄이 **나머지를 전부 받는 그물**입니다. 이게 없으면 하얀 화면만 뜹니다. **반드시 맨 마지막**에 둬야 합니다 — 위에 두면 모든 주소를 이게 먼저 낚아챕니다.',
+      },
+      {
+        do: '④번에서 `+1 올리기`를 몇 번 누른 뒤, **RouterLink 로 이동** 버튼을 눌러 보세요.',
+        see: '숫자가 그대로 남아 있습니다.',
+        why: '화면만 갈아 끼웠으므로 메모리의 값은 유지됩니다.',
+      },
+      {
+        do: '이번엔 숫자를 올린 뒤 **&lt;a href&gt; 로 이동** 버튼을 눌러 보세요.',
+        see: '배경이 붉어지며 숫자가 **0으로 초기화**됩니다.',
+        why: '`<a>` 태그는 브라우저를 강제로 새로고침시킵니다. **메모리에 있던 ref · computed가 전부 날아갑니다.** 교안이 `<a>`를 금지하는 이유가 이것입니다.',
+      },
+    ],
+    pitfalls: [
+      {
+        bad: '<a href="/about">About</a>',
+        good: '<RouterLink to="/about">About</RouterLink>',
+        why: '새로고침이 일어나 반응형 데이터가 전부 초기화됩니다. 로그인 상태·장바구니가 날아갑니다.',
+      },
+      {
+        bad: 'routes만 만들고 끝',
+        good: 'App.vue에 <RouterView /> 배치',
+        why: '액자가 없으면 주소만 바뀌고 화면은 그대로입니다. 에러도 안 나서 찾기 어렵습니다.',
+      },
+      {
+        bad: "path: '/:pathMatch(.*)*' 를 배열 위쪽에 둠",
+        good: '항상 배열 맨 마지막',
+        why: 'routes는 위에서부터 검사합니다. 그물을 앞에 두면 모든 주소가 여기 걸려 404만 나옵니다.',
+      },
+      {
+        bad: '모든 페이지를 정적 import',
+        good: "자주 안 쓰는 화면은 () => import('...')",
+        why: '첫 화면을 켤 때 안 쓰는 페이지까지 전부 받아옵니다. 페이지가 많아질수록 첫 로딩이 느려집니다.',
+      },
+      {
+        why: '하위 경로(예: github.io/내프로젝트/)에 배포한다면 `createWebHistory(import.meta.env.BASE_URL)`처럼 BASE_URL을 꼭 넣어야 링크가 맞습니다. 또 서버가 그 주소를 파일로 찾아 404를 내므로, GitHub Pages라면 index.html을 404.html로도 올려 둬야 합니다.',
+      },
+    ],
+    extensions: [
+      'routes에 redirect를 넣어 보세요. `{ path: \'/home\', redirect: \'/\' }` 처럼 옛 주소를 새 주소로 넘길 때 씁니다.',
+      '`useRoute()`로 `route.query`를 찍어 보세요. `/search?city=수원` 의 물음표 뒤 값이 여기 담깁니다.',
+      '`useRouter()`로 `router.push()`와 `router.replace()`를 비교해 보세요. replace는 뒤로가기가 막힙니다.',
+      'RouterLink에 붙는 `router-link-active`와 `router-link-exact-active`의 차이를 개발자 도구로 확인해 보세요.',
+      'views 폴더와 components 폴더에 각각 파일을 하나씩 만들어, 무엇을 어디에 둘지 스스로 기준을 세워 보세요.',
+    ],
+    practices: ['RouterBasicPractice'],
+    status: 'done',
+  },
+
   /* ---------------- CH06 ---------------- */
   {
     id: 10,

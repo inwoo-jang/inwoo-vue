@@ -155,6 +155,41 @@ const RAIN_HEAVY = makeDrops(280, {
   minDur: 0.28, maxDur: 0.46, minLen: 75, maxLen: 175, minOp: 0.4, maxOp: 0.95, width: 2.2,
 })
 
+/**
+ * 눈송이. 비와 달리 좌우로 흔들리며 떨어져야 눈처럼 보인다.
+ * 흔들림과 낙하는 transform 이 충돌하므로 겉/속 두 겹으로 나눈다.
+ */
+const makeFlakes = (count, { minDur, maxDur, minSize, maxSize, swayMin, swayMax }) =>
+  Array.from({ length: count }, (_, i) => {
+    const phase = (i * GOLDEN) % 1
+    const a = ((i * 41) % 100) / 100
+    const b = ((i * 67) % 100) / 100
+    const c = ((i * 89) % 100) / 100
+    const dur = minDur + b * (maxDur - minDur)
+    return {
+      left: a * 106 - 3,
+      dur,
+      size: minSize + c * (maxSize - minSize),
+      delay: -phase * dur,
+      opacity: 0.45 + c * 0.5,
+      sway: swayMin + a * (swayMax - swayMin),
+      swayDur: 1.8 + c * 2.6,
+    }
+  })
+
+const SNOW = makeFlakes(120, {
+  minDur: 4.5, maxDur: 8, minSize: 3, maxSize: 8, swayMin: 24, swayMax: 70,
+})
+const SNOW_HEAVY = makeFlakes(230, {
+  minDur: 1.6, maxDur: 3.2, minSize: 4, maxSize: 13, swayMin: 60, swayMax: 150,
+})
+
+const flakes = computed(() => {
+  const base = scene.value.effect === 'snow-heavy' ? SNOW_HEAVY : SNOW
+  if (fieldCount.value >= 3) return base.filter((_, i) => i % 2 === 0)
+  return base
+})
+
 const drops = computed(() => {
   const base =
     ({ drizzle: DRIZZLE, shower: SHOWER, 'rain-heavy': RAIN_HEAVY })[scene.value.effect] ?? RAIN
@@ -232,11 +267,38 @@ const isDark = computed(() =>
       <div v-if="scene.effect !== 'drizzle'" class="mist" />
     </template>
 
-    <!-- 눈: 크기가 다른 눈송이가 흔들리며 내린다 -->
+    <!-- 눈: 크기가 다른 눈송이가 좌우로 흔들리며 내린다 -->
     <template v-if="['snow', 'snow-heavy'].includes(scene.effect)">
-      <div class="snow-layer a" />
-      <div class="snow-layer b" />
-      <div class="snow-layer c" />
+      <div
+        v-for="k in fieldCount"
+        :key="k"
+        class="snow-field"
+        :style="{ top: (k - 1) * 100 + 'vh' }"
+      >
+        <span
+          v-for="(f, i) in flakes"
+          :key="i"
+          class="flake-fall"
+          :style="{
+            left: f.left + '%',
+            animationDuration: f.dur + 's',
+            animationDelay: f.delay + 's',
+          }"
+        >
+          <span
+            class="flake"
+            :style="{
+              width: f.size + 'px',
+              height: f.size + 'px',
+              opacity: f.opacity,
+              animationDuration: f.swayDur + 's',
+              '--sway': f.sway + 'px',
+            }"
+          />
+        </span>
+      </div>
+      <!-- 폭설은 앞을 가리는 눈보라까지 -->
+      <div v-if="scene.effect === 'snow-heavy'" class="blizzard" />
     </template>
 
     <!-- 안개: 뿌연 띠가 좌우로 천천히 밀린다 -->
@@ -558,60 +620,84 @@ const isDark = computed(() =>
 }
 
 /* ── 눈 (사진이 없어 효과층으로 만든 장면) ── */
-.snow-layer {
+.snow-field {
   position: absolute;
-  inset: -20% 0 0;
-  background-repeat: repeat;
+  right: 0;
+  left: 0;
+  height: 100vh;
+  margin-top: -30vh;
 }
 
-.snow-layer.a {
-  background-image:
-    radial-gradient(circle 3px at 12% 8%, rgb(255 255 255 / 92%), transparent),
-    radial-gradient(circle 2px at 38% 22%, rgb(255 255 255 / 80%), transparent),
-    radial-gradient(circle 3px at 68% 12%, rgb(255 255 255 / 88%), transparent),
-    radial-gradient(circle 2px at 88% 30%, rgb(255 255 255 / 78%), transparent);
-  background-size: 260px 260px;
-  animation: snow-fall 11s linear infinite;
+/* 겉: 아래로 떨어지는 일만 한다 */
+.flake-fall {
+  position: absolute;
+  top: 0;
+  animation-name: flake-drop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
 }
 
-.snow-layer.b {
-  background-image:
-    radial-gradient(circle 2px at 22% 40%, rgb(255 255 255 / 70%), transparent),
-    radial-gradient(circle 4px at 55% 60%, rgb(255 255 255 / 85%), transparent),
-    radial-gradient(circle 2px at 80% 48%, rgb(255 255 255 / 66%), transparent);
-  background-size: 340px 340px;
-  animation:
-    snow-fall 17s linear infinite,
-    sway 7s ease-in-out infinite alternate;
-}
-
-.snow-layer.c {
-  background-image:
-    radial-gradient(circle 5px at 34% 70%, rgb(255 255 255 / 62%), transparent),
-    radial-gradient(circle 4px at 72% 84%, rgb(255 255 255 / 55%), transparent);
-  background-size: 430px 430px;
-  animation:
-    snow-fall 24s linear infinite,
-    sway 11s ease-in-out infinite alternate-reverse;
-}
-
-.fx-snow-heavy .snow-layer {
-  animation-duration: 7s;
-  opacity: 1;
-}
-
-@keyframes snow-fall {
-  to {
-    background-position-y: 130%;
-  }
-}
-
-@keyframes sway {
+@keyframes flake-drop {
   from {
-    transform: translateX(-16px);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(16px);
+    transform: translate3d(0, 130vh, 0);
+  }
+}
+
+/* 속: 좌우로 흔들리는 일만 한다 */
+.flake {
+  display: block;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, rgb(226 240 255 / 85%) 60%, rgb(200 224 248 / 55%));
+  box-shadow: 0 0 6px rgb(255 255 255 / 70%);
+  animation-name: flake-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes flake-sway {
+  from {
+    transform: translateX(calc(var(--sway) * -1));
+  }
+  to {
+    transform: translateX(var(--sway));
+  }
+}
+
+/* 폭설 — 바람에 크게 쓸리고, 앞이 뿌옇게 가린다 */
+.fx-snow-heavy .flake-fall {
+  animation-name: flake-drop-hard;
+}
+
+@keyframes flake-drop-hard {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-260px, 130vh, 0);
+  }
+}
+
+.fx-snow-heavy .flake {
+  box-shadow: 0 0 10px rgb(255 255 255 / 90%);
+}
+
+.blizzard {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, transparent 0 12px, rgb(255 255 255 / 22%) 12px 14px, transparent 14px 30px),
+    linear-gradient(102deg, transparent 0 26px, rgb(255 255 255 / 14%) 26px 29px, transparent 29px 60px);
+  animation: blizzard-rush 0.9s linear infinite;
+}
+
+@keyframes blizzard-rush {
+  to {
+    transform: translate3d(-30px, 60px, 0);
   }
 }
 
