@@ -2058,6 +2058,162 @@ app.mount('#app')`,
     status: 'done',
   },
 
+  {
+    id: 26,
+    chapterId: 5,
+    label: 'Code Challenge 23',
+    title: 'useRoute() · useRouter()',
+    slidePage: '172쪽',
+    studyRange: '166~172쪽',
+    goal: '현재 페이지 정보를 읽고(useRoute), 코드로 페이지를 옮깁니다(useRouter).',
+    lecture: {
+      intro:
+        '이름이 **한 글자 차이**라 가장 많이 헷갈립니다. `useRoute()`는 **지금 이 페이지가 어디인지 읽는 것**이고, `useRouter()`는 **페이지를 옮기는 리모컨**입니다. 읽기냐 동작이냐로 나누면 헷갈리지 않습니다.',
+      summary:
+        '둘 다 `<script setup>` 안에서 쓰는 **Composable 함수**입니다. useRoute()는 경로·파라미터·쿼리를 담은 **반응형 route 객체**를 돌려주고, useRouter()는 push · replace · go 같은 메서드를 가진 **router 인스턴스**를 돌려줍니다.',
+      points: [
+        '`useRoute()`가 주는 route 객체는 **반응형**이라 template과 script에서 바로 쓸 수 있다.',
+        'route의 주요 속성 — **params**(동적 경로 값), **query**(물음표 뒤 값), **path**(순수 경로), **name**(라우트 이름).',
+        '**Dynamic Route Matching** — 주소 뒤에 콜론을 붙여 변수화한다(`/weather/:cityId`). 도시가 45개여도 라우트는 한 줄이면 된다. 이 부분을 **동적 세그먼트**라 한다.',
+        '동적 세그먼트는 **여러 개**(`/category/:categoryId/product/:productId`)도, **경로 중간**(`/user/:userId/posts`)에도 놓을 수 있다.',
+        '**Query String**(`?search=수원&page=2`)은 라우터 설정에 미리 적어 두지 않아도 자유롭게 붙일 수 있다.',
+        '`useRouter()`는 **Programmatic Navigation** — RouterLink 클릭이 아니라 **코드로** 페이지를 옮길 때 쓴다. 로그인 성공 후 이동 같은 경우다.',
+        '**push는 기록을 쌓고(뒤로가기 가능), replace는 지금 기록을 덮어쓴다(뒤로가기 불가).** `go(n)`은 n단계만큼 앞뒤로 움직인다.',
+      ],
+      syntax: [
+        {
+          code: `<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()          // 지금 페이지 정보 (읽기)
+
+console.log(route.path)           // '/weather/seoul'
+console.log(route.params.cityId)  // 'seoul'
+console.log(route.query.search)   // '수원'
+</script>
+
+<template>
+  <p>도시: {{ route.params.cityId }}</p>
+</template>`,
+          parts: [
+            { token: 'useRoute()', role: "Vue Router 내장 함수. import { useRoute } from 'vue-router' 필요" },
+            { token: 'const route', role: '내가 정하는 이름. 관례상 route 라고 쓴다' },
+            { token: 'route.params', role: '주소의 :빈칸에 채워진 값. /weather/:cityId → { cityId: \'seoul\' }' },
+            { token: 'route.query', role: '물음표 뒤 값. /search?q=vue → { q: \'vue\' }' },
+            { token: 'route.path', role: '쿼리를 뺀 순수 경로' },
+          ],
+          returns:
+            '반응형 route 객체를 돌려준다. **읽기 전용**이다 — route.params.cityId = "busan" 처럼 직접 바꿀 수 없다. 주소를 바꾸려면 useRouter()를 써야 한다.',
+          desc: 'route 객체는 반응형이라 주소가 바뀌면 화면도 따라 바뀐다.',
+        },
+        {
+          code: `// router/index.js — 동적 세그먼트
+{ path: '/weather/:cityId',  name: 'WeatherDetail' }        // 하나
+{ path: '/category/:categoryId/product/:productId' }         // 여러 개
+{ path: '/user/:userId/posts' }                              // 경로 중간`,
+          parts: [
+            { token: ':cityId', role: '내가 정하는 이름. 이 이름 그대로 route.params.cityId 로 꺼낸다' },
+            { token: '/user/:userId/posts', role: '동적 세그먼트는 경로 중간에도 놓을 수 있다' },
+          ],
+          returns:
+            '주소가 이 모양과 맞으면 콜론 자리의 값이 route.params 의 속성으로 들어간다.',
+          desc: '도시마다 라우트를 45줄 쓰는 비효율을 막아 준다.',
+        },
+        {
+          code: `<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()        // 페이지를 옮기는 리모컨 (동작)
+
+router.push('/about')                                   // /about
+router.push({ name: 'user', params: { id: 1 } })        // /user/1
+router.push({ name: 'search', query: { q: 'vue' } })    // /search?q=vue
+router.replace('/login')          // 기록을 덮어씀 (뒤로가기 불가)
+router.go(-1)                     // 뒤로 한 칸
+</script>`,
+          parts: [
+            { token: 'useRouter()', role: '라우터 인스턴스를 꺼내는 함수. route(단수 정보)와 헷갈리지 말 것' },
+            { token: '.push(path)', role: '히스토리에 **쌓으며** 이동. 뒤로가기로 돌아올 수 있다' },
+            { token: '.replace(path)', role: '지금 기록을 **덮어쓰며** 이동. 뒤로가기로 못 돌아온다' },
+            { token: '.go(n)', role: 'n단계 앞뒤로. go(-1)은 뒤로가기, back()·forward()도 있다' },
+            { token: '{ name, params, query }', role: '주소 문자열 대신 객체로도 넘길 수 있다. 주소가 바뀌어도 name은 그대로라 안전하다' },
+          ],
+          returns:
+            'push · replace 는 Promise를 돌려준다(이동이 끝난 뒤 할 일이 있으면 await 할 수 있다). go 는 돌려주는 값이 없다.',
+          desc: '로그인 성공 후 이동처럼 클릭이 아닌 상황에서 쓴다.',
+        },
+      ],
+    },
+    tasks: [
+      '동적 세그먼트(:cityId) 라우트 등록',
+      'useRoute()로 route.params · route.query 읽기',
+      'useRouter()로 push · replace · go 사용',
+      '주소에 이미 ?search=값이 있으면 그 값으로 화면 상태 복원',
+    ],
+    practiceGuide: [
+      {
+        practice: 'useRoute() 로 읽고, useRouter() 로 옮긴다',
+        do: '`router.push({ name: \'WeatherDetail\', params: { cityId: \'seoul\' } })` 버튼을 누르세요.',
+        see: '주소가 `/weather/seoul` 로 바뀌고, 위쪽 **route.params** 에 `{ "cityId": "seoul" }` 이 채워집니다.',
+        why: '주소의 `:cityId` **빈칸에 들어간 값**이 params 입니다. 라우트는 한 줄인데 도시는 45개일 수 있는 이유입니다.',
+      },
+      {
+        do: '`router.push({ name: \'Search\', query: { q: \'vue\' } })` 를 눌러 보세요.',
+        see: '주소에 `?q=vue` 가 붙고 **route.query** 만 채워집니다. params 는 비어 있습니다.',
+        why: '**params 는 주소의 일부**(빈칸)이고 **query 는 물음표 뒤 덤**입니다. query는 라우터 설정에 미리 적어 두지 않아도 됩니다.',
+      },
+      {
+        do: '`/user/42/posts` 버튼을 눌러 보세요.',
+        see: 'params에 `{ "userId": "42" }` 가 들어옵니다. 42가 **경로 한가운데**에 있는데도 잡힙니다.',
+        why: '동적 세그먼트는 경로 끝이 아니라 **중간에도** 놓을 수 있습니다(Inline Dynamic Segment).',
+      },
+      {
+        do: '히스토리 스택을 보면서 push 버튼을 두세 번 누른 뒤, `← router.go(-1)` 을 눌러 보세요.',
+        see: '목록이 한 줄씩 쌓이고, go(-1)을 누르면 「지금」 표시가 위로 올라갑니다. 기록은 지워지지 않습니다.',
+        why: '`push`는 **쌓기**입니다. 그래서 뒤로가기가 됩니다.',
+      },
+      {
+        do: '마지막으로 `router.replace(\'/login\')` 을 누르고 스택을 보세요.',
+        see: '줄이 늘지 않고 **마지막 줄이 /login 으로 바뀝니다.**',
+        why: '`replace`는 **덮어쓰기**입니다. 로그인 후 이동에 replace를 쓰는 이유가 이것입니다 — 뒤로가기로 로그인 화면에 다시 돌아가면 곤란하니까요.',
+      },
+    ],
+    pitfalls: [
+      {
+        bad: 'route.params.cityId = "busan"',
+        good: "router.push({ name: 'WeatherDetail', params: { cityId: 'busan' } })",
+        why: 'route는 읽기 전용입니다. 직접 바꿔도 주소는 그대로고 화면도 안 바뀝니다.',
+      },
+      {
+        bad: 'const router = useRoute()',
+        good: 'const route = useRoute() / const router = useRouter()',
+        why: '이름이 한 글자 차이라 가장 많이 하는 실수입니다. router.push가 없다는 에러가 나면 이걸 의심하세요.',
+      },
+      {
+        bad: 'onMounted(() => fetchCity(route.params.cityId))',
+        good: 'watch(() => route.params.cityId, fetchCity, { immediate: true })',
+        why: '/weather/seoul → /weather/busan 처럼 **같은 컴포넌트에서 파라미터만 바뀌면** 컴포넌트가 재사용되어 onMounted가 다시 불리지 않습니다.',
+      },
+      {
+        bad: 'route.params.userId 를 숫자로 계산',
+        good: 'Number(route.params.userId)',
+        why: 'params와 query 값은 **항상 문자열**입니다. 42가 아니라 "42"입니다.',
+      },
+      {
+        why: '주소에 담을지 화면 상태로 둘지 기준은 하나입니다 — **링크로 남에게 보내고 싶은가.** 검색어·선택한 도시는 주소에, 사이드바 접힘 같은 건 ref로 두면 됩니다.',
+      },
+    ],
+    extensions: [
+      '`router.push({ name: \'user\', params: { id: 1 }, query: { tab: \'info\' } })` 처럼 params와 query를 함께 넘겨 보세요.',
+      '`router.back()` · `router.forward()` 를 go(-1) · go(1)과 비교해 보세요. 같은 동작의 다른 이름입니다.',
+      '주소에 `?search=수원` 이 이미 있을 때, onMounted에서 그 값을 읽어 검색창을 복원해 보세요 (교안 169쪽).',
+      '`router.push({ path: \'details\' })` 처럼 슬래시 없이 넘기면 상대 경로가 됩니다. 절대 경로와 어떻게 다른지 확인해 보세요.',
+      '이 사이트의 최종 결과물 화면처럼, 선택한 도시를 `?city=` 쿼리에 넣어 링크로 공유되게 만들어 보세요.',
+    ],
+    practices: ['RouterNavigatePractice'],
+    status: 'done',
+  },
+
   /* ---------------- CH06 ---------------- */
   {
     id: 10,

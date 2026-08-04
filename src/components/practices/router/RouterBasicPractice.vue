@@ -84,11 +84,20 @@ const hardReload = () => {
     <!-- ② 주소창 -->
     <div class="area">
       <h3>② 주소창</h3>
-      <div class="bar">
+      <form class="bar" @submit.prevent="go(typed)">
         <span class="origin">myapp.com</span>
-        <input v-model="typed" @keyup.enter="go(typed)" />
-        <button type="button" @click="go(typed)">이동</button>
-      </div>
+        <input
+          v-model="typed"
+          spellcheck="false"
+          aria-label="주소"
+          placeholder="/about"
+        />
+        <button type="submit" aria-label="이동">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h13M13 6l6 6-6 6" />
+          </svg>
+        </button>
+      </form>
       <p class="links">
         <button type="button" class="link" @click="go('/')">/</button>
         <button type="button" class="link" @click="go('/about')">/about</button>
@@ -220,52 +229,76 @@ h3 {
 
 /* ── 주소창 ── */
 .bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
-  align-items: stretch;
-  overflow: hidden;
+  display: grid;
+  /* 도메인은 글자만큼, 입력창이 남는 폭을 전부, 버튼은 정사각형 */
+  grid-template-columns: max-content minmax(0, 1fr) 40px;
+  align-items: center;
+  height: 42px;
+  padding: 0 5px 0 0;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
+  transition: border-color 0.15s ease;
+}
+
+.bar:focus-within {
+  border-color: var(--accent);
 }
 
 .origin {
-  display: grid;
-  padding: 0 6px 0 15px;
+  padding: 0 2px 0 16px;
   color: var(--faint);
   font-family: var(--font-mono);
-  font-size: 12px;
-  place-items: center;
+  font-size: 12.5px;
+  user-select: none;
 }
 
 .bar input {
   min-width: 0;
-  flex: 1;
-  padding: 10px 4px;
+  height: 100%;
+  padding: 0 8px;
   border: 0;
   background: transparent;
   color: var(--ink);
   font: inherit;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 13.5px;
   outline: none;
 }
 
+.bar input::placeholder {
+  color: var(--line-strong);
+}
+
 .bar button {
-  padding: 0 16px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   border: 0;
-  border-left: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--muted);
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent);
   cursor: pointer;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
+  place-items: center;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .bar button:hover {
-  color: var(--accent);
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.bar button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .links {

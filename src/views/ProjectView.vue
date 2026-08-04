@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { assignments } from '../data/curriculum'
 import { findAssignmentResult } from '../components/assignments'
@@ -53,19 +53,6 @@ watch(
   },
   { immediate: true },
 )
-
-/** 이 화면의 주소를 클립보드로 */
-const copied = ref(false)
-
-const copyLink = async () => {
-  try {
-    await navigator.clipboard.writeText(window.location.href)
-    copied.value = true
-    setTimeout(() => (copied.value = false), 1600)
-  } catch {
-    copied.value = false
-  }
-}
 </script>
 
 <template>
@@ -114,12 +101,7 @@ const copyLink = async () => {
         <h2>{{ current.title }}</h2>
         <p class="stage-goal">{{ current.goal }}</p>
       </div>
-      <div class="head-actions">
-        <button class="copy-link" type="button" @click="copyLink">
-          {{ copied ? '복사됨' : '이 결과물 링크 복사' }}
-        </button>
-        <RouterLink class="to-assignment" to="/assignments">요구사항 보기 →</RouterLink>
-      </div>
+      <RouterLink class="to-assignment" to="/assignments">요구사항 보기 →</RouterLink>
     </div>
 
     <!-- 실제 결과물 -->
@@ -412,34 +394,6 @@ h2 {
 .stage-body {
   padding: 30px;
   background: var(--paper);
-}
-
-.head-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.copy-link {
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  background: var(--surface);
-  cursor: pointer;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  white-space: nowrap;
-  transition:
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.copy-link:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 .stage-note {
