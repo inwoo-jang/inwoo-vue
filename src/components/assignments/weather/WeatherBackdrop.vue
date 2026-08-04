@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 /**
  * 날씨 배경.
@@ -92,6 +92,26 @@ watch(
   { immediate: true },
 )
 
+const rootEl = ref(null)
+const fieldCount = ref(1)
+
+let observer = null
+
+onMounted(() => {
+  const measure = () => {
+    const height = rootEl.value?.offsetHeight ?? 0
+    // 너무 많이 쌓으면 무거워지므로 6개까지만
+    fieldCount.value = Math.min(4, Math.max(1, Math.ceil(height / window.innerHeight)))
+  }
+  observer = new ResizeObserver(measure)
+  if (rootEl.value) observer.observe(rootEl.value)
+  window.addEventListener('resize', measure)
+  measure()
+  onBeforeUnmount(() => window.removeEventListener('resize', measure))
+})
+
+onBeforeUnmount(() => observer?.disconnect())
+
 /**
  * 빗방울을 낱개로 만든다.
  * 줄무늬를 통째로 밀면 "사선 무늬가 미끄러지는" 느낌만 나고 비처럼 보이지 않는다.
@@ -135,11 +155,19 @@ const RAIN_HEAVY = makeDrops(280, {
   minDur: 0.28, maxDur: 0.46, minLen: 75, maxLen: 175, minOp: 0.4, maxOp: 0.95, width: 2.2,
 })
 
-const drops = computed(
-  () =>
-    ({ drizzle: DRIZZLE, shower: SHOWER, 'rain-heavy': RAIN_HEAVY })[scene.value.effect] ?? RAIN,
-)
+const drops = computed(() => {
+  const base =
+    ({ drizzle: DRIZZLE, shower: SHOWER, 'rain-heavy': RAIN_HEAVY })[scene.value.effect] ?? RAIN
+  // 층이 여러 개면 방울 수가 곱해지므로, 층이 많을 때는 층당 개수를 줄인다
+  if (fieldCount.value >= 3) return base.filter((_, i) => i % 2 === 0)
+  return base
+})
 
+/**
+ * 목록이 길어지면 배경도 그만큼 길어진다.
+ * 비는 화면 높이(vh)를 기준으로 떨어지므로, 그대로 두면 맨 위 한 화면에만 내린다.
+ * 배경 높이를 재서 "화면 한 개 분량"의 비를 필요한 만큼 세로로 쌓는다.
+ */
 /** 어두운 사진 위에서는 글자가 잘 보이도록 덮개를 더 진하게 */
 const isDark = computed(() =>
   ['storm', 'lightning', 'rain-heavy', 'rain', 'shower'].includes(scene.value.effect),
@@ -147,7 +175,12 @@ const isDark = computed(() =>
 </script>
 
 <template>
-  <div class="backdrop" :class="[`fx-${scene.effect}`, { dark: isDark }]" aria-hidden="true">
+  <div
+    ref="rootEl"
+    class="backdrop"
+    :class="[`fx-${scene.effect}`, { dark: isDark }]"
+    aria-hidden="true"
+  >
     <!-- 사진은 천천히 확대되며 살아 있는 느낌만 준다 -->
     <div
       v-for="(url, i) in layers"
@@ -176,7 +209,12 @@ const isDark = computed(() =>
     <!-- 비: 빗방울을 낱개로 뿌리고, 바닥에는 물안개를 깐다 -->
     <template v-if="['rain', 'rain-heavy', 'drizzle', 'shower', 'storm'].includes(scene.effect)">
       <!-- 클래스 이름은 시간별 패널의 .rain 과 겹치지 않게 rain-field 로 둔다 -->
-      <div class="rain-field">
+      <div
+        v-for="k in fieldCount"
+        :key="k"
+        class="rain-field"
+        :style="{ top: (k - 1) * 100 + 'vh' }"
+      >
         <span
           v-for="(d, i) in drops"
           :key="i"
@@ -368,7 +406,9 @@ const isDark = computed(() =>
   position: absolute;
   width: 220%;
   inset: 0 auto 0 0;
-  background-repeat: repeat-x;
+  /* 배경이 길어져도 구름이 아래까지 이어지도록 세로로도 반복한다 */
+  background-repeat: repeat;
+  background-size: 100% 100vh;
 }
 
 .cloud-layer.a {
@@ -405,9 +445,13 @@ const isDark = computed(() =>
 
 /* ── 비 ── */
 .rain-field {
+  /* 층 하나가 화면 한 개 높이. 이것을 세로로 쌓아 배경 끝까지 채운다.
+     위로 조금 올려 두어야 층과 층 사이가 비지 않는다 */
   position: absolute;
-  /* 위쪽에서 충분히 여유를 두고 시작해야 화면 가득 고르게 내린다 */
-  inset: -30% 0 0;
+  right: 0;
+  left: 0;
+  height: 100vh;
+  margin-top: -30vh;
 }
 
 /* 빗방울 하나. 위는 투명하고 아래로 갈수록 진해야 떨어지는 물줄기로 보인다 */
@@ -434,7 +478,7 @@ const isDark = computed(() =>
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-80px, 175vh, 0);
+    transform: translate3d(-60px, 130vh, 0);
   }
 }
 
@@ -470,13 +514,18 @@ const isDark = computed(() =>
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-140px, 175vh, 0);
+    transform: translate3d(-105px, 130vh, 0);
   }
 }
 
 /* 소나기 — 굵게 쏟아지되 세기가 물결친다 */
 .fx-shower .rain-field {
   animation: shower-burst 6s ease-in-out infinite;
+}
+
+/* 층이 여러 개여도 같은 박자로 물결치게 한다 */
+.fx-shower .rain-field:nth-child(n) {
+  animation-delay: 0s;
 }
 
 @keyframes shower-burst {
@@ -500,7 +549,7 @@ const isDark = computed(() =>
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-190px, 185vh, 0);
+    transform: translate3d(-140px, 130vh, 0);
   }
 }
 
@@ -571,6 +620,8 @@ const isDark = computed(() =>
   position: absolute;
   width: 200%;
   inset: 0 auto 0 0;
+  background-repeat: repeat;
+  background-size: 100% 100vh;
   filter: blur(2px);
 }
 
