@@ -1,1 +1,0 @@
-import{R as e,V as t,m as n,t as r}from"./_plugin-vue_export-helper-j367vXl5.js";var i={},a={class:`base-dashboard-card`};function o(r,i){return e(),n(`div`,a,[t(r.$slots,`default`,{},void 0,!0)])}var s=r(i,[[`render`,o],[`__scopeId`,`data-v-38dd14fb`]]);export{s as t};
