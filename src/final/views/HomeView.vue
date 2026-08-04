@@ -2,9 +2,9 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import WeatherIcon from '../../components/assignments/weather/WeatherIcon.vue'
-import UiIcon from '../../components/assignments/weather/UiIcon.vue'
-import { fetchWeather, nearestCity } from '../../components/assignments/weather/weatherApi'
+import WeatherIcon from '../../components/weather/WeatherIcon.vue'
+import UiIcon from '../../components/weather/UiIcon.vue'
+import { fetchWeather, nearestCity } from '../../components/weather/weatherApi'
 import { useConfigStore } from '../../stores/configStore'
 import { link } from '../routes'
 

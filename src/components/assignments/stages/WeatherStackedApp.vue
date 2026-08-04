@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import WeatherBackdrop from '../weather/WeatherBackdrop.vue'
+import WeatherBackdrop from '../../weather/WeatherBackdrop.vue'
 import UnitToggler from '../pinia5/UnitToggler.vue'
 import { backdropStatus } from '../router4/backdropState'
 import { featuresOf, stageNumber } from './stageFeatures'

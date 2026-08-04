@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useConfigStore } from '../../../stores/configStore'
+import { useConfigStore } from '../../stores/configStore'
 
 /**
  * 온도 단위 스위치 — 도구 줄에 놓는 작은 두 칸짜리 버튼.

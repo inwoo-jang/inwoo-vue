@@ -3330,7 +3330,7 @@ export const assignments = [
       '각 컴포넌트 디자인을 <style scoped>로 분리',
     ],
     result: 'WeatherParent',
-    resultNote: 'Open-Meteo API 로 받은 오늘 날씨 · 하위 컴포넌트는 src/components/assignments/weather/ 에 있습니다',
+    resultNote: 'Open-Meteo API 로 받은 오늘 날씨 · 하위 컴포넌트는 src/components/weather/ 에 있습니다',
 
     /* 결과물 아래에 붙는 컴포넌트 구조 · 이벤트 흐름 설명 */
     anatomy: {
@@ -3544,7 +3544,7 @@ export const assignments = [
     result: 'WeatherStackedApp',
     resultNote:
       '5단계 앱 그대로인데 목록만 Mock 에서 실제 API 응답으로 바뀌었습니다. 카드 위 배지가 지금 어느 제공자에서 받아 왔는지 알려 줍니다',
-    note: 'Axios 인스턴스와 인터셉터로 교체 완료 — components/assignments/weather/weatherApi.js. 날씨 제공자는 OpenWeatherMap 대신 Open-Meteo를 씁니다(키가 필요 없고 CORS가 열려 있어 브라우저에서 바로 호출됩니다). 그래서 API Key를 .env로 분리하는 항목은 해당 사항이 없습니다. 교안 209쪽은 제목이 "날씨 데이터 연동"이지만 본문 요구사항이 191쪽 UnitToggler 과제와 겹쳐, 연동 범위는 강사 안내를 확인하세요.',
+    note: 'Axios 인스턴스와 인터셉터로 교체 완료 — components/weather/weatherApi.js. 날씨 제공자는 OpenWeatherMap 대신 Open-Meteo를 씁니다(키가 필요 없고 CORS가 열려 있어 브라우저에서 바로 호출됩니다). 그래서 API Key를 .env로 분리하는 항목은 해당 사항이 없습니다. 교안 209쪽은 제목이 "날씨 데이터 연동"이지만 본문 요구사항이 191쪽 UnitToggler 과제와 겹쳐, 연동 범위는 강사 안내를 확인하세요.',
     status: 'done',
   },
   {

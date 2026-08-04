@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
+import BaseDashboardCard from '../../weather/BaseDashboardCard.vue'
 import { tarotCards, cardBack } from '../../../final/data/tarotCards'
 
 /**

@@ -44,7 +44,7 @@ app.mount('#app')
  * 이미 신선한 값이 있으면 primeWeather()가 아무 것도 하지 않는다.
  */
 const primeWeather = () =>
-  import('./components/assignments/weather/weatherApi').then((m) => m.primeWeather())
+  import('./components/weather/weatherApi').then((m) => m.primeWeather())
 
 if (location.pathname.includes('/project')) {
   // 결과물 화면으로 바로 들어온 경우 — 기다릴 이유가 없다. 지금 부른다.

@@ -15,15 +15,15 @@
  */
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 // 1. 컴포넌트 파일명 국룰 표기법(PascalCase) 매칭 수입
-import BaseDashboardCard from './weather/BaseDashboardCard.vue'
-import SearchBar from './weather/SearchBar.vue'
-import RegionTabs from './weather/RegionTabs.vue'
-import WeatherCard from './weather/WeatherCard.vue'
-import WeatherByStatus from './weather/WeatherByStatus.vue'
-import HourlyDetail from './weather/HourlyDetail.vue'
-import WeatherBackdrop from './weather/WeatherBackdrop.vue'
-import UiIcon from './weather/UiIcon.vue'
-import { fetchWeather, nearestCity, REGIONS, DEMO_ROWS } from './weather/weatherApi'
+import BaseDashboardCard from '../weather/BaseDashboardCard.vue'
+import SearchBar from '../weather/SearchBar.vue'
+import RegionTabs from '../weather/RegionTabs.vue'
+import WeatherCard from '../weather/WeatherCard.vue'
+import WeatherByStatus from '../weather/WeatherByStatus.vue'
+import HourlyDetail from '../weather/HourlyDetail.vue'
+import WeatherBackdrop from '../weather/WeatherBackdrop.vue'
+import UiIcon from '../weather/UiIcon.vue'
+import { fetchWeather, nearestCity, REGIONS, DEMO_ROWS } from '../weather/weatherApi'
 
 const FAVORITES_KEY = 'inwoo-weather-favorites'
 

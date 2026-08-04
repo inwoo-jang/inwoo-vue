@@ -14,7 +14,7 @@
  */
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import WeatherBackdrop from '../components/assignments/weather/WeatherBackdrop.vue'
+import WeatherBackdrop from '../components/weather/WeatherBackdrop.vue'
 import { backdropStatus } from './data/backdropState'
 import { link } from './routes'
 

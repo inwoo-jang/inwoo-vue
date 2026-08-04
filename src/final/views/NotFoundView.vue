@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import BaseDashboardCard from '../../components/assignments/weather/BaseDashboardCard.vue'
+import BaseDashboardCard from '../../components/weather/BaseDashboardCard.vue'
 import { link } from '../routes'
 
 /**
