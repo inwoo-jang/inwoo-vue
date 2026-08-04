@@ -18,6 +18,12 @@ const route = useRoute()
 
 /** 자식 경로로 이동할 때 stageId 를 유지해야 한다 */
 const stageId = computed(() => route.params.stageId ?? '4')
+
+/**
+ * 소개를 뺀 나머지(홈 · 상세 · 없는 주소)는 전부 홈 갈래로 본다.
+ * exact-active-class 만 쓰면 상세 화면에서 아무 탭도 안 눌린 상태가 된다.
+ */
+const isAbout = computed(() => route.name === 'a4-about')
 </script>
 
 <template>
@@ -27,10 +33,7 @@ const stageId = computed(() => route.params.stageId ?? '4')
 
     <!-- 내비게이션 바 -->
     <nav class="nav" role="tablist">
-      <RouterLink
-        :to="{ name: 'a4-home', params: { stageId } }"
-        exact-active-class="on"
-      >
+      <RouterLink :to="{ name: 'a4-home', params: { stageId } }" :class="{ on: !isAbout }">
         홈
       </RouterLink>
       <RouterLink :to="{ name: 'a4-about', params: { stageId } }" active-class="on">
