@@ -127,7 +127,10 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST 만 받습니다.' })
 
-  if (!process.env.OPENAI_API_KEY) {
+  // 붙여넣기에 딸려 온 공백·줄바꿈은 그대로 두면 키가 통째로 어긋난다
+  const apiKey = (process.env.OPENAI_API_KEY ?? '').trim()
+
+  if (!apiKey) {
     return res.status(503).json({ error: '서버에 API 키가 설정되어 있지 않습니다.' })
   }
 
@@ -149,7 +152,7 @@ export default async function handler(req, res) {
     const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -167,7 +170,11 @@ export default async function handler(req, res) {
     if (!upstream.ok || !upstream.body) {
       const detail = await upstream.text().catch(() => '')
       console.error('[tarot] OpenAI 응답 실패', upstream.status, detail.slice(0, 300))
-      return res.status(502).json({ error: '해석을 받아 오지 못했습니다.' })
+      // 사유는 상태 코드로만 알린다. 본문에는 키 정보가 섞여 있을 수 있다.
+      return res.status(502).json({
+        error: '해석을 받아 오지 못했습니다.',
+        upstream: upstream.status,
+      })
     }
 
     // 글자가 만들어지는 대로 흘려 보낸다. 400자라도 다 기다리면 몇 초가 빈다.
