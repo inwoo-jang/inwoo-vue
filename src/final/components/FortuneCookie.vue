@@ -1,8 +1,10 @@
 <script setup>
 import { onBeforeUnmount, ref, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 import closedCookie from '../../assets/cookie/closed.png'
 import openCookie from '../../assets/cookie/open.png'
 import { anotherMessage, messageOfToday } from '../data/fortuneCookie'
+import { downloadBlob, drawFortuneCard } from '../utils/resultCard'
 
 /**
  * 포춘쿠키 — 눌러서 한 줄 받기
@@ -16,14 +18,21 @@ import { anotherMessage, messageOfToday } from '../data/fortuneCookie'
  * 맞춰 두었다 — 사진을 바꾸면 이 값도 같이 고쳐야 한다.
  */
 const isOpen = ref(false)
+// 첫 문구만 날짜로 정한다 — 열기 전 화면에서도 뭔가 정해져 있도록
 const message = ref(messageOfToday())
 
 /** 갈라지는 연출이 끝난 뒤에 종이를 보여 주려고 한 박자 늦춘다 */
 const isCracked = ref(false)
 let crackTimer = 0
 
+/*
+ * 열 때마다 다른 한 줄.
+ *
+ * 처음에는 날짜로 정해 하루 종일 같은 문구를 주었는데, 다시 눌러도 똑같아서
+ * 두 번째부터는 열어 볼 맛이 없었다. 누를 때마다 새로 뽑되 방금 본 것만 피한다.
+ */
 const open = () => {
-  message.value = messageOfToday()
+  message.value = anotherMessage(message.value)
   isOpen.value = true
 }
 
@@ -39,6 +48,26 @@ const again = () => {
     message.value = anotherMessage(message.value)
     isCracked.value = true
   }, 220)
+}
+
+/* 받은 한 줄을 그림 한 장으로 — 저장해 두거나 보내기 좋게 */
+const isSaving = ref(false)
+
+const saveImage = async () => {
+  if (isSaving.value) return
+  isSaving.value = true
+  try {
+    // 열린 사진에는 영어 문구가 인쇄되어 있어 그대로 쓰면 두 문장이 겹친다.
+    // 카드에서는 닫힌 쿠키를 놓고 우리 한 줄만 크게 적는다.
+    const blob = await drawFortuneCard({ message: message.value, image: closedCookie })
+    if (!blob) throw new Error('no blob')
+    downloadBlob(blob, `오늘의포춘_${new Date().toLocaleDateString('ko-KR')}.png`)
+    ElMessage.success({ message: '그림으로 저장했어요!', duration: 1600 })
+  } catch {
+    ElMessage.error('그림을 만들지 못했어요. 잠시 뒤 다시 눌러 주세요.')
+  } finally {
+    isSaving.value = false
+  }
 }
 
 /**
@@ -109,6 +138,9 @@ onBeforeUnmount(() => {
 
             <div class="acts">
               <button type="button" class="ghost" @click="again">하나 더</button>
+              <button type="button" class="ghost" :disabled="isSaving" @click="saveImage">
+                {{ isSaving ? '만드는 중…' : '그림으로 저장' }}
+              </button>
               <button type="button" class="solid" @click="close">잘 받았어요</button>
             </div>
           </div>
@@ -124,12 +156,13 @@ onBeforeUnmount(() => {
   position: relative;
   display: block;
   width: 100%;
+  margin: 0 auto;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   /* 아래 안내가 겹쳐 앉을 자리를 비워 둔다 */
-  padding-bottom: 18px;
+  padding-bottom: 26px;
   /* 살짝 기울여 두면 눌러 보고 싶은 물건처럼 보인다 */
   transform: rotate(-3deg);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -163,20 +196,50 @@ onBeforeUnmount(() => {
  * -120% → 120% 는 화면 밖까지 크게 쓸어 과했고, -45% → 45% 는 쿠키를
  * 다 지나가기 전에 멈췄다. 쿠키 폭을 한 번 건너가는 정도로 맞췄다.
  */
+/*
+ * 쓸고 지나가는 빛줄기.
+ *
+ * 예전에는 투명도가 0 → 1 로만 올라가서, 줄기가 쿠키를 벗어나 배경 위에
+ * 올라선 순간에도 가장 진했다. 그게 눈에 걸린다.
+ * 그래서 두 겹으로 흐리게 한다.
+ *   ① mask  — 줄기 자신의 좌우 끝을 먹인다 (자리로 흐리게)
+ *   ② 애니메이션 — 양 끝에서 투명도를 0 으로 (시간으로 흐리게)
+ * 결과적으로 쿠키 위를 지날 때만 밝고, 배경으로 넘어가기 전에 사라진다.
+ */
 .shine {
   position: absolute;
   inset: 8% 4% 18%;
   background: linear-gradient(112deg, transparent 40%, rgb(255 255 255 / 0.38) 50%, transparent 60%);
-  transform: translateX(-78%);
+  transform: translateX(-70%);
   opacity: 0;
-  transition:
-    transform 0.55s ease,
-    opacity 0.55s ease;
+  mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
 }
 
+/*
+ * 이름을 shine-sweep 으로 따로 둔다.
+ * 아래 .label 이 쓰는 sweep 과 이름이 같으면, 같은 파일 안에서 나중에 적힌
+ * 쪽이 이겨 이 규칙이 통째로 없어진 것처럼 동작한다 (투명도가 안 먹었다).
+ */
 .shell:hover .shine {
-  transform: translateX(78%);
-  opacity: 1;
+  animation: shine-sweep 0.75s ease-out;
+}
+
+@keyframes shine-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-70%);
+  }
+
+  30%,
+  62% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(70%);
+  }
 }
 
 /*
@@ -423,7 +486,8 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .shell img,
-  .label::after {
+  .label::after,
+  .shell:hover .shine {
     animation: none;
   }
 
@@ -437,6 +501,15 @@ onBeforeUnmount(() => {
 
   .pop-enter-active .sheet {
     animation: none;
+  }
+}
+
+/* 좁은 화면 — 라벨이 쿠키 칸을 넘어가면 히어로 밖으로 삐져나온다 */
+@media (max-width: 720px) {
+  .label {
+    padding: 5px 8px;
+    font-size: 10.5px;
+    letter-spacing: -0.03em;
   }
 }
 </style>

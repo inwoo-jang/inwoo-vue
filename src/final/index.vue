@@ -36,6 +36,7 @@ const isGames = computed(() =>
 )
 const isRecords = computed(() => route.name === 'final-records')
 const isLogin = computed(() => route.name === 'final-login')
+const isAdminPage = computed(() => route.name === 'final-admin')
 const isHome = computed(
   () =>
     !isWeather.value &&
@@ -43,6 +44,7 @@ const isHome = computed(
     !isTests.value &&
     !isGames.value &&
     !isRecords.value &&
+    !isAdminPage.value &&
     !isLogin.value,
 )
 
@@ -52,7 +54,7 @@ const isHome = computed(
  * 눌러 보고 나서야 로그인이 필요하다는 걸 알게 된다.
  */
 const auth = useAuthStore()
-const { isLoggedIn, displayName } = storeToRefs(auth)
+const { isLoggedIn, isAdmin, displayName } = storeToRefs(auth)
 const recordStore = useRecordStore()
 
 // 새로고침해도 로그인이 유지되도록, 저장해 둔 토큰이 살아 있는지 한 번 확인한다
@@ -83,9 +85,17 @@ const logout = () => {
         <RouterLink :to="link('games')" :class="{ on: isGames }">게임</RouterLink>
         <RouterLink :to="link('records')" :class="{ on: isRecords }">My</RouterLink>
 
+        <!-- 관리자에게만 보인다. 화면을 막는 일은 가드와 서버가 따로 한다 -->
+        <RouterLink v-if="isAdmin" :to="link('admin')" class="admin-tab" :class="{ on: isAdminPage }">
+          관리
+        </RouterLink>
+
         <code class="url">{{ route.path }}</code>
 
         <!-- 로그인했으면 이름과 로그아웃, 아니면 로그인 링크 -->
+        <!-- 지금 관리자로 보고 있다는 것을 늘 알려 준다 -->
+        <span v-if="isAdmin" class="admin-badge">ADMIN MODE</span>
+
         <span v-if="isLoggedIn" class="who">
           <b>{{ displayName }}</b>
           <button type="button" @click="logout">로그아웃</button>
@@ -226,6 +236,27 @@ const logout = () => {
  * 로그인은 main.css 의 .tint-cta 를 쓴다 — 늘 떠 있는 자리라 조용해야 한다.
  * 여기서는 자리와 크기만 잡고 색은 건드리지 않는다 — 두 곳이 어긋나지 않도록.
  */
+/* 관리자 표시 — 지금 어떤 권한으로 보고 있는지 */
+.admin-badge {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--danger) 82%, transparent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.nav a.admin-tab {
+  color: var(--danger);
+}
+
+.nav a.admin-tab.on {
+  background: var(--danger);
+  color: #fff;
+}
+
 .nav a.sign {
   padding: 8px 18px;
   /* .nav a 의 회색이 .tint-cta 를 덮으므로 여기서 다시 잡아 준다 */

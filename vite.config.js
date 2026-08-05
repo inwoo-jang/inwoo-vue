@@ -42,7 +42,7 @@ export default defineConfig(({ command, isPreview }) => ({
    */
   server: {
     proxy: {
-      '^/api/(auth|fortune-records|health|reset)': {
+      '^/api/(auth|fortune-records|admin|health|reset)': {
         target: 'http://localhost:3001',
         changeOrigin: true,
       },
