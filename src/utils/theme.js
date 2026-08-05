@@ -8,26 +8,34 @@
 import { ref } from 'vue'
 
 export const THEMES = [
+  /*
+   * id 는 그대로 둔다 — 이미 저장해 둔 값이 있는 사람의 설정이 풀리지 않도록.
+   * 보이는 이름과 색만 이 앱에 맞게 고쳤다.
+   */
   {
     id: 'editorial',
-    name: 'Editorial',
-    tagline: '기술 문서',
-    description: '따뜻한 종이 위에 근접 블랙으로 찍은 인쇄물. 색을 아끼고 여백으로 읽힙니다.',
+    name: '데이라이트',
+    tagline: '기본',
+    description: '따뜻한 종이 위의 초록. 날씨 배경이 가장 잘 비치는 기본 화면입니다.',
     swatches: ['#f6f4ef', '#fffefb', '#0f7a4e', '#16191c'],
+    // 미리보기 하늘 — 그 테마에서 이 앱이 어떤 공기인지 한눈에 보이도록
+    sky: ['#cfe2f5', '#eef4fb'],
   },
   {
     id: 'terminal',
-    name: 'Terminal',
-    tagline: '다크 IDE',
-    description: '코드를 오래 보는 화면. 저조도 배경에 형광 민트로 눌러야 할 곳만 밝힙니다.',
-    swatches: ['#14181f', '#1b212b', '#3ddc97', '#e8edf4'],
+    name: '나이트',
+    tagline: '어두운 화면',
+    description: '밤에 보기 편한 짙은 화면. 달빛에 가까운 남보라로 눌러야 할 곳만 밝힙니다.',
+    swatches: ['#171a23', '#212632', '#8c9cf0', '#eef1f5'],
+    sky: ['#1d2333', '#2b3350'],
   },
   {
     id: 'blueprint',
-    name: 'Blueprint',
-    tagline: '설계도',
-    description: '모눈종이 위의 도면. 차가운 청색과 각진 모서리로 구조를 드러냅니다.',
-    swatches: ['#eef1f6', '#ffffff', '#1d4ed8', '#12213a'],
+    name: '스카이',
+    tagline: '맑은 하늘',
+    description: '맑은 한낮의 하늘빛. 원색을 한 단계 낮춰 오래 봐도 눈이 편합니다.',
+    swatches: ['#eff4fa', '#fdfeff', '#3f74a8', '#1b2a3d'],
+    sky: ['#a8c8e6', '#dfeaf6'],
   },
 ]
 
