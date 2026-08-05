@@ -3,9 +3,21 @@
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/inwoo-vue/favicon.ico">
+
+    <!--
+      Pretendard — 본문·제목에 쓰는 한글 글꼴.
+      main.css 의 --font-sans 가 이 이름을 첫 번째로 부르는데 지금까지 불러오지
+      않아 시스템 기본으로 떨어져 있었다. dynamic-subset 은 화면에 실제로 쓰인
+      글자만 내려받으므로 한글 전체(수 MB)를 받지 않는다.
+    -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>inwoo-vue — Vue Learning Lab</title>
-    <script type="module" crossorigin src="/inwoo-vue/assets/index-Dl0QlgmL.js"></script>
+    <script type="module" crossorigin src="/inwoo-vue/assets/index-B9i1YvtG.js"></script>
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/rolldown-runtime-hePW80VL.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/runtime-core.esm-bundler-kkMznkCl.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/runtime-dom.esm-bundler-CHanmBTQ.js">
@@ -14,12 +26,12 @@
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/message-box-CV2dSrpA.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/useApi-CROJJdhE-BZRBkDcY.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/vue-router-Cv6XZhD8.js">
-    <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/curriculum-Dfni6hga.js">
+    <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/curriculum-D2benydl.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/_plugin-vue_export-helper-BDNMzG2s.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/preload-helper-CAv2k-sV.js">
-    <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/routes-DiCKhjLu.js">
+    <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/routes-DsBoZOhi.js">
     <link rel="modulepreload" crossorigin href="/inwoo-vue/assets/theme-B9MHiIn-.js">
-    <link rel="stylesheet" crossorigin href="/inwoo-vue/assets/index-Bivrifow.css">
+    <link rel="stylesheet" crossorigin href="/inwoo-vue/assets/index-BaJCZMs3.css">
   </head>
   <body>
     <div id="app"></div>
