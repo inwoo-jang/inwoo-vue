@@ -27,6 +27,7 @@ import {
 export const RECORD_KINDS = [
   { key: 'tarot', label: '운세', emoji: '🔮' },
   { key: 'test', label: '테스트', emoji: '🧪' },
+  { key: 'game', label: '게임', emoji: '🎲' },
 ]
 
 export const useRecordStore = defineStore('fortuneRecord', () => {

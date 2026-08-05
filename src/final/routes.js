@@ -7,6 +7,8 @@
  *   /final/weather          날씨 — 전국 도시 오늘 현황
  *   /final/weather/:cityId  도시 상세 + 시간별 예보
  *   /final/tarot            운세 — 타로 세 장으로 보는 오늘
+ *   /final/games            게임 — 정하기 어려울 때
+ *   /final/games/roulette   룰렛 돌리기
  *   /final/tests            테스트 — 룰 기반 심리테스트 목록
  *   /final/tests/:testId    테스트 진행 (animal · zombie)
  *   /final/login            로그인 — 운세 기록을 남기려면 필요하다
@@ -48,6 +50,16 @@ export default [
     path: 'tarot',
     name: 'final-tarot',
     component: () => import('./views/TarotView.vue'),
+  },
+  {
+    path: 'games',
+    name: 'final-games',
+    component: () => import('./views/GamesView.vue'),
+  },
+  {
+    path: 'games/roulette',
+    name: 'final-roulette',
+    component: () => import('./views/RouletteView.vue'),
   },
   {
     path: 'tests',

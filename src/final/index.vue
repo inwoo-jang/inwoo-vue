@@ -30,6 +30,8 @@ const isWeather = computed(() => route.name === 'final-weather' || route.name ==
 const isTarot = computed(() => route.name === 'final-tarot')
 /** 테스트 진행 화면에서도 '테스트' 탭이 눌린 채로 남아야 한다 */
 const isTests = computed(() => route.name === 'final-tests' || route.name === 'final-test')
+/** 게임 목록과 각 게임 화면에서 '게임' 탭이 눌린 채로 남는다 */
+const isGames = computed(() => String(route.name ?? '').startsWith('final-game') || route.name === 'final-roulette')
 const isRecords = computed(() => route.name === 'final-records')
 const isLogin = computed(() => route.name === 'final-login')
 const isHome = computed(
@@ -70,6 +72,7 @@ const logout = () => {
         <RouterLink :to="link('weather')" :class="{ on: isWeather }">날씨</RouterLink>
         <RouterLink :to="link('tarot')" :class="{ on: isTarot }">운세</RouterLink>
         <RouterLink :to="link('tests')" :class="{ on: isTests }">테스트</RouterLink>
+        <RouterLink :to="link('games')" :class="{ on: isGames }">게임</RouterLink>
         <RouterLink :to="link('records')" :class="{ on: isRecords }">My</RouterLink>
 
         <code class="url">{{ route.path }}</code>

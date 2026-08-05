@@ -13,16 +13,17 @@ const authorizedUser = (request) => {
 }
 
 /*
- * 기록은 두 종류다.
+ * 기록은 세 종류다.
  *   kind: 'tarot'  타로 세 장 — 종류가 정해져 있고 카드가 반드시 3장
  *   kind: 'test'   심리테스트 — 테스트 이름은 화면이 정하고 카드가 없다
+ *   kind: 'game'   룰렛 같은 게임 — 무슨 게임에서 무엇이 나왔는지만 남는다
  *
  * 종류를 안 적어 보내면 'tarot' 로 본다. 먼저 만든 타로 기록과
  * 예전 화면이 그대로 동작해야 하기 때문이다.
  */
 const validateRecord = (input) => {
   const kind = input.kind ?? 'tarot'
-  if (!['tarot', 'test'].includes(kind)) return '기록 종류가 올바르지 않습니다.'
+  if (!['tarot', 'test', 'game'].includes(kind)) return '기록 종류가 올바르지 않습니다.'
   if (typeof input.reading !== 'string' || !input.reading.trim()) return '기록할 내용이 필요합니다.'
   if (typeof input.memo !== 'undefined' && typeof input.memo !== 'string') return '메모 형식이 올바르지 않습니다.'
 
@@ -35,10 +36,19 @@ const validateRecord = (input) => {
   }
 
   // 테스트는 종류가 늘어날 수 있어 이름만 확인한다
-  if (typeof input.type !== 'string' || !input.type.trim()) return '테스트 이름이 필요합니다.'
-  if (!input.meta || typeof input.meta !== 'object') return '테스트 결과 정보가 필요합니다.'
-  if (typeof input.meta.testId !== 'string' || typeof input.meta.resultId !== 'string') {
-    return '테스트 결과 정보가 올바르지 않습니다.'
+  if (typeof input.type !== 'string' || !input.type.trim()) return '이름이 필요합니다.'
+  if (!input.meta || typeof input.meta !== 'object') return '결과 정보가 필요합니다.'
+
+  if (kind === 'test') {
+    if (typeof input.meta.testId !== 'string' || typeof input.meta.resultId !== 'string') {
+      return '테스트 결과 정보가 올바르지 않습니다.'
+    }
+    return ''
+  }
+
+  // 게임 — 무슨 게임에서 무엇이 나왔는지만 확인한다
+  if (typeof input.meta.gameId !== 'string' || typeof input.meta.result !== 'string') {
+    return '게임 결과 정보가 올바르지 않습니다.'
   }
   return ''
 }

@@ -26,6 +26,12 @@ const { displayName } = storeToRefs(auth)
 const store = useRecordStore()
 const { records, isLoading, errorMessage, filterKind, count, kindCounts } = storeToRefs(store)
 
+/** 종류 배지 앞에 붙는 그림 */
+const kindEmoji = (record) => {
+  const kind = record.kind ?? 'tarot'
+  return kind === 'test' ? '🧪' : kind === 'game' ? '🎲' : '🔮'
+}
+
 /** 테스트 기록은 저장된 id 로 지금 번들의 그림을 다시 찾아 쓴다 */
 const artOf = (record) => {
   if (record.kind !== 'test' || !record.meta) return ''
@@ -164,7 +170,7 @@ onMounted(() => store.load())
           <div class="row">
             <!-- 세부 종류는 여기서 보여 준다 (오늘의 운세 · 영혼 동물 테스트 …) -->
             <span class="type">
-              <span aria-hidden="true">{{ (record.kind ?? 'tarot') === 'test' ? '🧪' : '🔮' }}</span>
+              <span aria-hidden="true">{{ kindEmoji(record) }}</span>
               {{ record.type }}
             </span>
             <time :datetime="record.createdAt">{{ formatDate(record.createdAt) }}</time>
@@ -180,7 +186,13 @@ onMounted(() => store.load())
             </span>
           </div>
 
-          <!-- ② 운세 — 뽑은 카드 -->
+          <!-- ② 게임 — 무엇이 나왔는지 -->
+          <p v-else-if="record.kind === 'game' && record.meta" class="game-result">
+            <b>{{ record.meta.result }}</b>
+            <small v-if="record.meta.items?.length">{{ record.meta.items.length }}개 중에서</small>
+          </p>
+
+          <!-- ③ 운세 — 뽑은 카드 -->
           <p v-else-if="record.cards?.length" class="cards">{{ cardLine(record.cards) }}</p>
 
           <p class="reading">{{ record.reading }}</p>
@@ -307,9 +319,37 @@ h3 {
   background: var(--panel-inner, var(--surface));
 }
 
-/* 테스트 기록은 왼쪽 선 색으로 한눈에 구분된다 */
+/* 왼쪽 선 색으로 종류가 한눈에 구분된다 */
 .list li.test {
   border-left-color: var(--slate);
+}
+
+.list li.game {
+  border-left-color: var(--signal);
+}
+
+.list li.game .type {
+  background: var(--signal-tint);
+  color: var(--signal);
+}
+
+/* 게임은 무엇이 나왔는지가 전부라 크게 한 줄 */
+.game-result {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin: 0;
+}
+
+.game-result b {
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.game-result small {
+  color: var(--faint);
+  font-size: 11.5px;
 }
 
 .row {

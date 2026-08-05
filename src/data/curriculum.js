@@ -2534,8 +2534,31 @@ const { count } = storeToRefs(store)   // 반응성 유지`,
       '여러 도시의 날씨를 Promise.all로 한꺼번에 불러와 보세요.',
       '응답 데이터를 그대로 쓰지 말고, 화면에 필요한 형태로 가공하는 함수를 따로 만들어 보세요.',
     ],
-    practices: [],
-    status: 'todo',
+    practiceGuide: [
+      {
+        practice: 'Axios — 서버에서 날씨 받아오기',
+        do: '"정상 응답"인 채로 axios.get() 을 보내 보세요.',
+        see: '먼저 회색 스피너가 돌고, 0.6초 뒤 기온 카드로 바뀝니다.',
+        why: '서버 응답은 즉시 오지 않습니다. 그 사이를 비워 두면 사용자는 앱이 멈춘 줄 압니다. 로딩·성공·실패 세 갈래를 모두 그려야 하는 이유입니다.',
+      },
+      {
+        do: '"서버 오류(500)"로 바꾸고 다시 보내세요. 통신 기록을 함께 보세요.',
+        see: '붉은 실패 화면이 뜨고, 기록에 error.response.status = 500 이 남습니다.',
+        why: 'axios 는 2xx 가 아니면 catch 로 던집니다. 서버가 답을 준 실패라서 error.response 안에 상태 코드와 본문이 들어 있습니다.',
+      },
+      {
+        do: '"응답 없음(timeout)"으로 바꾸고 보내 보세요.',
+        see: '이번에는 기록에 "error.response 가 없다 — ECONNABORTED" 가 남습니다.',
+        why: '실패는 두 갈래입니다. 서버가 거절한 실패에는 response 가 있고, 아예 닿지 못한 실패에는 없습니다. error.response.status 만 읽는 코드는 이 경우 또 다른 에러를 냅니다.',
+      },
+      {
+        do: '어떤 모드로 실패시키든 통신 기록의 마지막 줄을 확인하세요.',
+        see: '실패했을 때도 "finally — 로딩 종료" 가 반드시 찍힙니다.',
+        why: 'isLoading 을 try 끝에서 끄면 실패했을 때 영원히 도는 스피너가 남습니다. 뒷정리는 finally 에서 합니다.',
+      },
+    ],
+    practices: ['AxiosWeatherPractice'],
+    status: 'done',
   },
 
   /* ---------------- CH08 ---------------- */
@@ -2610,8 +2633,26 @@ ElMessage.error('이메일 형식이 올바르지 않습니다.')`,
       '기존에 만든 날씨 검색창을 el-input + el-button으로 바꿔 보세요.',
       'el-loading을 API 호출 중에 표시해 보세요.',
     ],
-    practices: [],
-    status: 'todo',
+    practiceGuide: [
+      {
+        practice: 'Element Plus — 회원가입 폼',
+        do: '이메일을 비운 채로 "가입하기"를 눌러 보세요.',
+        see: '화면 오른쪽 위에 붉은 알림이 잠깐 떴다 사라집니다. 아래 기록에는 error 로 남습니다.',
+        why: 'ElMessage 는 템플릿에 태그로 적는 것이 아니라 import 해서 호출하는 함수입니다. 그래서 화면 어디에도 자리를 잡아 둘 필요가 없습니다.',
+      },
+      {
+        do: '이메일에 @ 를 넣되 약관 스위치는 끈 채로 다시 누르세요.',
+        see: '이번에는 주황색 warning 이 뜹니다. error 가 아닙니다.',
+        why: '검증은 위에서부터 순서대로 걸립니다. 첫 관문을 통과해야 다음 관문의 메시지를 볼 수 있습니다.',
+      },
+      {
+        do: '스위치를 켜고 userForm 상자를 보면서 눌러 보세요.',
+        see: 'agree 가 false 에서 true 로 바뀌고, 초록 success 가 뜹니다.',
+        why: 'el-switch 도 v-model 로 묶여 있어 클릭하는 순간 reactive 객체 안의 값이 바뀝니다. 화면 부품이 라이브러리 것이어도 상태 관리 방식은 그대로입니다.',
+      },
+    ],
+    practices: ['ElementFormPractice'],
+    status: 'done',
   },
   {
     id: 13,
@@ -2676,8 +2717,26 @@ const productRate = ref(4)
       '상품 여러 개를 v-for로 카드 목록으로 만들어 보세요.',
       '재고보다 많은 수량을 고르면 경고를 띄우도록 watch를 붙여 보세요.',
     ],
-    practices: [],
-    status: 'todo',
+    practiceGuide: [
+      {
+        practice: 'Element Plus — 상품 수량과 별점',
+        do: '수량의 − 버튼을 계속 눌러 보세요.',
+        see: '1 에서 멈추고 − 버튼이 회색으로 비활성화됩니다.',
+        why: ':min="1" 한 줄이 하는 일입니다. 직접 만들었다면 입력값 검사·버튼 잠금·음수 방어를 모두 손으로 짜야 합니다.',
+      },
+      {
+        do: '수량을 바꾸면서 아래 합계와 "지금 값" 상자를 함께 보세요.',
+        see: '합계가 즉시 다시 계산되고, productQuantity 값도 같이 바뀝니다.',
+        why: 'el-input-number 도 v-model 로 묶인 평범한 반응형 값입니다. computed 가 그 값을 보고 있으니 자동으로 다시 계산됩니다.',
+      },
+      {
+        do: '별점을 3점, 5점으로 바꿔 보세요.',
+        see: '별 옆의 설명 문구가 "괜찮아요", "최고예요"로 함께 바뀝니다.',
+        why: 'show-text 를 켜고 texts 배열을 주면 점수에 맞는 문구를 골라 줍니다. 배열의 순서가 1점부터입니다.',
+      },
+    ],
+    practices: ['ElementProductPractice'],
+    status: 'done',
   },
   {
     id: 14,
@@ -2747,8 +2806,26 @@ const productRate = ref(4)
       '목록에서 항목을 삭제할 때 확인 창을 띄우고 실제로 배열에서 제거해 보세요.',
       'onUnmounted에서 타이머를 정리하고, 화면을 빠르게 오갈 때 문제가 없는지 확인해 보세요.',
     ],
-    practices: [],
-    status: 'todo',
+    practiceGuide: [
+      {
+        practice: 'Element Plus — 삭제 확인과 진행률',
+        do: '파일 하나의 "삭제"를 누르고, 뜬 창에서 <b>취소</b>를 눌러 보세요.',
+        see: '파일은 그대로 남고, 기록에 "catch — 취소를 눌렀다" 가 찍힙니다.',
+        why: 'ElMessageBox.confirm 은 Promise 를 돌려줍니다. 확인은 then, 취소는 catch 입니다. catch 를 빼먹으면 취소할 때마다 Unhandled Rejection 경고가 콘솔에 쌓입니다.',
+      },
+      {
+        do: '이번에는 같은 파일을 삭제하고 "삭제"를 누르세요.',
+        see: '목록에서 사라지고 기록에는 "then — 삭제됨" 이 찍힙니다.',
+        why: '같은 함수인데 사용자의 선택에 따라 두 갈래로 갈라집니다. 확인창은 값을 돌려주는 게 아니라 어느 쪽 가지로 갈지를 정합니다.',
+      },
+      {
+        do: '"다운로드 시작"을 누르고 막대가 100 에서 멈추는지 보세요.',
+        see: '20씩 다섯 번 차오르고 100 에서 초록으로 바뀌며 멈춥니다.',
+        why: 'setInterval 은 스스로 멈추지 않습니다. 100 에서 clearInterval 을 부르지 않으면 120, 140 으로 계속 올라가고 이 화면을 닫아도 뒤에서 계속 돕니다.',
+      },
+    ],
+    practices: ['ElementConfirmPractice'],
+    status: 'done',
   },
 
   /* ---------------- CH09 ---------------- */
