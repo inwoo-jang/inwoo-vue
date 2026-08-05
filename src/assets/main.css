@@ -351,3 +351,45 @@ a {
   background: color-mix(in srgb, var(--slate) 20%, transparent);
   color: var(--slate-deep);
 }
+
+/* ──────────────────────────────────────────────────────────────
+ * 결과지만 인쇄하기 (테스트 결과 → PDF 로 저장)
+ *
+ * 인쇄를 누르면 결과지의 조상에는 .printing-parent, 그 형제들에는
+ * .printing-hide 가 붙는다. 여기서는 그 표시대로 접고 펼치기만 한다.
+ *
+ * 감추는 데 visibility 를 쓰지 않는 이유 — 자리가 그대로 남아
+ * 첫 장 위쪽이 텅 빈 채로 인쇄된다.
+ * ────────────────────────────────────────────────────────────── */
+@media print {
+  body.printing-result .printing-hide {
+    display: none !important;
+  }
+
+  /* 결과지까지 가는 길에 있는 상자들은 껍데기만 남긴다 */
+  body.printing-result .printing-parent {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* 배경색과 그림이 그대로 나오게 — 기본값은 잉크를 아끼려고 다 지운다 */
+  body.printing-result,
+  body.printing-result .sheet,
+  body.printing-result .sheet * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    margin: 12mm;
+  }
+}

@@ -1,5 +1,6 @@
 <script setup>
 import BaseDashboardCard from '../../components/weather/BaseDashboardCard.vue'
+import GamePreview from '../components/GamePreview.vue'
 import { link } from '../routes'
 
 /**
@@ -11,7 +12,6 @@ import { link } from '../routes'
 const games = [
   {
     to: 'roulette',
-    emoji: '🎯',
     title: '돌려서 정하기',
     desc: '점심 메뉴부터 오늘의 당번까지, 룰렛이 대신 골라 줍니다.',
     tag: '룰렛',
@@ -19,13 +19,12 @@ const games = [
     ready: true,
   },
   {
-    to: 'roulette',
-    emoji: '🎰',
+    to: 'lotto',
     title: '로또 번호 뽑기',
     desc: '1부터 45까지, 오늘의 여섯 개를 뽑아 봅니다.',
     tag: '로또',
     tone: '#b08a5e',
-    ready: false,
+    ready: true,
   },
 ]
 </script>
@@ -48,7 +47,7 @@ const games = [
             :class="{ soon: !game.ready }"
             :style="{ '--tone': game.tone }"
           >
-            <span class="face" aria-hidden="true">{{ game.emoji }}</span>
+            <GamePreview class="face" :kind="game.to" />
             <span class="body">
               <span class="tag">{{ game.tag }}</span>
               <b>{{ game.title }}</b>
@@ -99,7 +98,7 @@ h3 {
 
 .card {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
   padding: 18px;
   border-radius: 18px;
@@ -122,14 +121,7 @@ h3 {
 }
 
 .face {
-  display: grid;
   flex: none;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--tone) 16%, transparent);
-  font-size: 24px;
 }
 
 .body {

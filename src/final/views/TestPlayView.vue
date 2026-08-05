@@ -1,10 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 // 아이콘은 Ant Design 의 Vue 판을 쓴다 (@ant-design/icons 는 React 전용)
-import { CopyFilled, RedoOutlined } from '@ant-design/icons-vue'
+import { FilePdfFilled, RedoOutlined } from '@ant-design/icons-vue'
 import BaseDashboardCard from '../../components/weather/BaseDashboardCard.vue'
 import { calculateResult, findTest, tests } from '../data/personalityTests'
 import { useAuthStore } from '../../stores/authStore'
@@ -65,18 +65,82 @@ const restart = () => {
   step.value = 0
 }
 
-/** 결과 문구를 클립보드로 */
-const copyShare = async () => {
-  const result = outcome.value?.result
-  if (!result) return
-  const text = `${result.emoji} ${result.title} — ${result.subtitle}\n"${result.shareText}"\n${test.value.title}`
-  try {
-    await navigator.clipboard.writeText(text)
-    ElMessage.success({ message: '결과를 복사했습니다.', duration: 1600 })
-  } catch {
-    ElMessage.warning('브라우저가 복사를 막았습니다. 길게 눌러 직접 복사해 주세요.')
+/* ── PDF 로 저장 ────────────────────────────────────────────────
+ *
+ * 라이브러리를 붙이지 않고 브라우저의 인쇄를 그대로 쓴다.
+ * 인쇄 창에서 '대상: PDF로 저장' 을 고르면 그림까지 그대로 담긴다.
+ * html2canvas 로 그리면 글자가 흐려지는데, 이 방법은 원래 해상도로 나온다.
+ *
+ * body 에 표시를 붙여 두면 main.css 의 @media print 가
+ * 결과지(.sheet)만 남기고 나머지를 감춘다.
+ */
+const PRINT_FLAG = 'printing-result'
+
+const sheetEl = ref(null)
+/** 인쇄하려고 손댄 요소들 — 끝나면 원래대로 돌려놔야 한다 */
+let touched = []
+
+/*
+ * 결과지만 남기고 나머지를 접는다.
+ *
+ * visibility:hidden 으로 감추면 자리는 그대로 남아 첫 장 위쪽이 텅 빈다.
+ * 그래서 결과지의 조상들만 표시해 두고, 그 형제들은 display:none 으로 접는다.
+ * CSS 로는 조상을 고를 수 없어 여기서 표시를 붙인다.
+ */
+const foldPage = () => {
+  touched = []
+  for (let el = sheetEl.value?.parentElement; el && el !== document.body; el = el.parentElement) {
+    el.classList.add('printing-parent')
+    touched.push(el)
+    for (const sibling of el.parentElement?.children ?? []) {
+      if (sibling === el) continue
+      sibling.classList.add('printing-hide')
+      touched.push(sibling)
+    }
+  }
+  document.body.classList.add(PRINT_FLAG)
+}
+
+const unfoldPage = () => {
+  for (const el of touched) el.classList.remove('printing-parent', 'printing-hide')
+  touched = []
+  document.body.classList.remove(PRINT_FLAG)
+}
+
+const savePdf = async () => {
+  if (!outcome.value?.result) return
+  foldPage()
+  // 접은 결과가 화면에 반영된 뒤에 인쇄 창을 띄워야 레이아웃이 맞는다
+  await nextTick()
+  window.print()
+}
+
+onMounted(() => window.addEventListener('afterprint', unfoldPage))
+onBeforeUnmount(() => {
+  window.removeEventListener('afterprint', unfoldPage)
+  unfoldPage()
+})
+
+/** 결과지에 적을 날짜 */
+const todayLabel = computed(() =>
+  new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+)
+
+/*
+ * 결과 그림 미리 받아 두기.
+ *
+ * 결과 화면에 닿고 나서야 그림을 받으면, 동그란 자리가 잠깐 하얗게 비어 있다.
+ * 문항을 푸는 동안 미리 받아 두면 결과와 그림이 같이 나타난다.
+ */
+const preload = () => {
+  if (!test.value) return
+  for (const result of Object.values(test.value.results)) {
+    if (result.image) new Image().src = result.image
   }
 }
+
+onMounted(preload)
+watch(() => route.params.testId, preload)
 
 /** 이 테스트가 아닌 다른 테스트들 */
 const others = computed(() => tests.filter((item) => item.id !== route.params.testId))
@@ -175,6 +239,14 @@ const saveResult = async () => {
 
       <!-- ── 결과 ── -->
       <template v-else-if="outcome?.result">
+        <!-- 여기서부터 ⑤ 까지가 PDF 로 나가는 '결과지' 다 -->
+        <div ref="sheetEl" class="sheet">
+          <!-- 인쇄할 때만 보이는 머리말 -->
+          <p class="print-head" aria-hidden="true">
+            <span>{{ test.emoji }} {{ test.short }}</span>
+            <span>{{ todayLabel }}</span>
+          </p>
+
         <!-- ① 히어로 — 그림과 이름만. 결과를 "받았다"는 느낌이 먼저다 -->
         <section class="hero" aria-live="polite">
           <span class="pop pop-a" aria-hidden="true">✨</span>
@@ -236,6 +308,8 @@ const saveResult = async () => {
         <!-- ⑤ 한마디 -->
         <blockquote>{{ outcome.result.shareText }}</blockquote>
 
+        </div>
+
         <!-- ⑥ 점수 — 접어 둔다. 궁금한 사람만 편다 -->
         <details class="scores">
           <summary>내 점수 몇 점이었지? 👀</summary>
@@ -252,8 +326,8 @@ const saveResult = async () => {
 
         <!-- ⑦ 버튼 -->
         <div class="actions">
-          <button type="button" class="primary" @click="copyShare">
-            <CopyFilled aria-hidden="true" /> 결과 복사
+          <button type="button" class="primary" @click="savePdf">
+            <FilePdfFilled aria-hidden="true" /> PDF 로 저장
           </button>
 
           <button
@@ -298,6 +372,36 @@ const saveResult = async () => {
 </template>
 
 <style scoped>
+/* PDF 로 나가는 부분. 화면에서는 그냥 세로로 쌓인 묶음이다 */
+.sheet {
+  display: grid;
+  gap: 14px;
+}
+
+.print-head {
+  display: none;
+}
+
+@media print {
+  .print-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 4px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* 결과지가 두 장으로 갈라지지 않게 */
+  .sheet {
+    gap: 12px;
+    break-inside: avoid;
+  }
+
+  .hero {
+    break-inside: avoid;
+  }
+}
 .play {
   display: grid;
   gap: 14px;

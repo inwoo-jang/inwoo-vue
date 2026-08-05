@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
+import { CheckOutlined, CloseOutlined, EditFilled } from '@ant-design/icons-vue'
 import BaseDashboardCard from '../../components/weather/BaseDashboardCard.vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useRecordStore } from '../../stores/recordStore'
@@ -11,10 +12,14 @@ import { link } from '../routes'
 /**
  * 룰렛 — /final/games/roulette
  *
- * 돌리는 순서가 중요하다.
- *   ① 결과를 먼저 정하고  ② 그 칸이 바늘에 오도록 각도를 계산해  ③ 돌린다
- * 돌린 뒤에 각도를 읽어 결과를 정하면, 애니메이션이 끊기거나 브라우저가
- * 프레임을 건너뛸 때 화면과 결과가 어긋난다.
+ * 멈추는 건 사람이 한다. START 를 누르면 계속 돌고, STOP 을 누른 그 순간에
+ * 결과를 정한 뒤 그 칸이 바늘에 오도록 천천히 잦아들게 한다.
+ *
+ * 순서를 뒤집으면 안 된다. 멈춘 뒤에 각도를 읽어 결과를 정하면,
+ * 브라우저가 프레임을 건너뛸 때 화면과 결과가 어긋난다.
+ *
+ *   도는 중  : CSS animation 이 계속 돌린다 (끝을 정할 수 없으므로 transition 이 아니다)
+ *   멈출 때  : 지금 각도를 읽어 그 자리에 붙인 뒤, transition 으로 목표까지 보낸다
  */
 const items = ref([...defaultSet.items])
 const activeSetId = ref(defaultSet.id)
@@ -25,6 +30,31 @@ const canSpin = computed(() => items.value.length >= MIN_ITEMS)
 
 /** 칸 색은 이웃끼리 겹치지 않게 돌려 쓴다 */
 const toneOf = (index) => sliceTones[index % sliceTones.length]
+
+/**
+ * 글자를 뒤집어야 하는 칸인지.
+ *
+ * 이름은 원판 중심에서 바깥으로 뻗은 줄 위에 얹혀 있다.
+ * 오른쪽 반원(12시~6시)에서는 바깥쪽이 오른쪽이라 그대로 읽히지만,
+ * 왼쪽 반원에서는 바깥쪽이 왼쪽이 되어 글자가 거꾸로 선다.
+ */
+const isFlipped = (index) => {
+  // 원판이 돈 만큼을 더해서 본다
+  const center = index * slice.value + slice.value / 2 + angle.value
+  return (((center % 360) + 360) % 360) > 180
+}
+
+/**
+ * 글자를 얼마나 돌려 둘지.
+ *
+ * 도는 동안에는 원판에 붙어 같이 돈다 — 그래야 진짜 돌림판처럼 보인다.
+ * 멈추고 나면 다들 비스듬히 누워 있어서 읽기 어려우므로, 그때만 바로 세운다.
+ * (줄 자체가 center-90 만큼, 원판이 angle 만큼 돌아 있으니 그만큼 되돌린다)
+ */
+const labelTurn = (index) => {
+  if (isSpinning.value) return isFlipped(index) ? 180 : 0
+  return -(angle.value + index * slice.value + slice.value / 2 - 90)
+}
 
 /**
  * 원판 그리기.
@@ -42,41 +72,75 @@ const wheelBackground = computed(() => {
 })
 
 /* ── 돌리기 ────────────────────────────────────────────────────── */
+/** 'idle' 멈춤 · 'running' 도는 중 · 'stopping' 잦아드는 중 */
+const phase = ref('idle')
 const angle = ref(0)
-const isSpinning = ref(false)
 const winner = ref('')
+const wheelEl = ref(null)
+/** 각도를 그 자리에 '붙일' 한 프레임 동안만 켠다 */
+const snapping = ref(false)
 
-const spin = () => {
-  if (isSpinning.value || !canSpin.value) return
+/** 편집을 막아야 하는 상태 — 도는 중에 항목이 바뀌면 결과가 어긋난다 */
+const isSpinning = computed(() => phase.value !== 'idle')
+
+/** 잦아드는 데 걸리는 시간. CSS 의 transition 과 같아야 한다 */
+const SLOW_MS = 3400
+
+const start = () => {
+  if (phase.value !== 'idle' || !canSpin.value) return
+  winner.value = ''
+  savedId.value = 0
+  angle.value = 0
+  phase.value = 'running'
+}
+
+/** 지금 화면에 그려진 각도를 읽는다 (CSS animation 이 돌리는 중이라 ref 로는 알 수 없다) */
+const readAngle = () => {
+  const matrix = new DOMMatrixReadOnly(getComputedStyle(wheelEl.value).transform)
+  const deg = (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI
+  return deg < 0 ? deg + 360 : deg
+}
+
+const stop = async () => {
+  if (phase.value !== 'running') return
 
   // ① 결과를 먼저 정한다
   const index = Math.floor(Math.random() * items.value.length)
 
   /*
    * ② 그 칸이 위쪽 바늘에 오도록 각도를 정한다.
-   *    칸 i 의 한가운데는 i*slice + slice/2 이고, 바늘은 0도(12시)에 있으므로
-   *    원판을 그 각도만큼 되돌려야 한다. 칸 안에서 조금 흔들어 매번 같은
-   *    자리에 멈추지 않게 한다.
+   *    칸 i 의 한가운데는 i*slice + slice/2 이고 바늘은 0도(12시)에 있으므로,
+   *    원판을 그만큼 되돌려야 한다. 칸 안에서 조금 흔들어 매번 같은 자리에
+   *    멈추지 않게 한다.
    */
   const center = index * slice.value + slice.value / 2
   const jitter = (Math.random() - 0.5) * slice.value * 0.6
-  const turns = 5 + Math.floor(Math.random() * 3) // 5~7바퀴
+  const want = (((360 - center - jitter) % 360) + 360) % 360
 
-  // 지금까지 돈 각도에서 이어서 더 돈다 (뒤로 감기지 않게)
-  const current = angle.value
-  const target = Math.ceil(current / 360) * 360 + turns * 360 + (360 - center - jitter)
+  const from = readAngle()
+  let target = from - (from % 360) + want
+  while (target < from + 720) target += 360 // 최소 두 바퀴는 더 돌고 멈춘다
 
-  isSpinning.value = true
-  winner.value = ''
+  // ③ 도는 애니메이션을 끄고, 지금 각도에 그대로 붙인다
+  angle.value = from
+  snapping.value = true
+  phase.value = 'stopping'
+  await nextTick()
+
+  // 붙인 각도를 브라우저가 확정하게 한 뒤에야 목표를 준다. 안 그러면 안 움직인다
+  void wheelEl.value?.offsetWidth
+  snapping.value = false
   angle.value = target
 
-  // ③ 멈춘 뒤에 결과를 보여 준다
+  // ④ 다 멈춘 뒤에 결과를 보여 준다
   window.setTimeout(() => {
     winner.value = items.value[index]
-    isSpinning.value = false
-    savedId.value = 0
-  }, 4200)
+    phase.value = 'idle'
+  }, SLOW_MS)
 }
+
+/** 가운데 버튼 한 개로 START / STOP 을 겸한다 */
+const toggle = () => (phase.value === 'running' ? stop() : start())
 
 /* ── 항목 편집 ─────────────────────────────────────────────────── */
 const useSet = (set) => {
@@ -108,6 +172,49 @@ const removeItem = (index) => {
   items.value = items.value.filter((_, i) => i !== index)
   activeSetId.value = ''
   winner.value = ''
+  editingIndex.value = -1
+}
+
+/* ── 항목 고치기 ───────────────────────────────────────────────── */
+const editingIndex = ref(-1)
+const editingText = ref('')
+const editInput = ref(null)
+
+const startEdit = async (index) => {
+  if (isSpinning.value) return
+  editingIndex.value = index
+  editingText.value = items.value[index]
+  await nextTick()
+  // v-for 안의 ref 는 배열로 모인다. 고치는 칸은 늘 하나뿐이라 첫 번째다
+  const field = Array.isArray(editInput.value) ? editInput.value[0] : editInput.value
+  field?.focus()
+  field?.select()
+}
+
+const cancelEdit = () => {
+  editingIndex.value = -1
+  editingText.value = ''
+}
+
+const commitEdit = () => {
+  if (editingIndex.value < 0) return
+  const text = editingText.value.trim()
+  const index = editingIndex.value
+
+  if (!text) {
+    ElMessage.warning('내용을 적어 주세요.')
+    return
+  }
+  // 자기 자신은 빼고 본다 — 안 그러면 안 고치고 확인만 눌러도 막힌다
+  if (items.value.some((item, i) => i !== index && item === text)) {
+    ElMessage.warning('이미 있는 항목이에요.')
+    return
+  }
+
+  items.value = items.value.map((item, i) => (i === index ? text : item))
+  activeSetId.value = ''
+  winner.value = ''
+  cancelEdit()
 }
 
 /** 전체 삭제 — 되돌릴 수 없으니 비어 있으면 아무 일도 하지 않는다 */
@@ -116,6 +223,7 @@ const clearAll = () => {
   items.value = []
   activeSetId.value = ''
   winner.value = ''
+  editingIndex.value = -1
   ElMessage.success({ message: '항목을 모두 지웠어요.', duration: 1400 })
 }
 
@@ -164,29 +272,49 @@ const save = async () => {
       <div class="stage">
         <span class="pin" aria-hidden="true" />
         <div
+          ref="wheelEl"
           class="wheel"
-          :class="{ spinning: isSpinning }"
-          :style="{ background: wheelBackground, transform: `rotate(${angle}deg)` }"
+          :class="{ running: phase === 'running', snap: snapping }"
+          :style="{
+            background: wheelBackground,
+            transform: `rotate(${angle}deg)`,
+            '--slice': `${slice}deg`,
+          }"
         >
+          <!-- 칸 사이 흰 줄 — 색만으로 나눈 것보다 훨씬 원판답다 -->
+          <span class="spokes" aria-hidden="true" />
+
           <!-- 글자는 원판과 함께 돌아야 하므로 안쪽에 얹는다 -->
           <span
             v-for="(item, i) in items"
             :key="`${item}-${i}`"
             class="label"
-            :style="{ transform: `rotate(${i * slice + slice / 2}deg)` }"
+            :style="{ transform: `rotate(${i * slice + slice / 2 - 90}deg)` }"
           >
-            <b :style="{ transform: `rotate(90deg)` }">{{ item }}</b>
+            <!-- 도는 중에는 원판을 따라 눕고, 멈추면 바로 선다 -->
+            <b :style="{ transform: `rotate(${labelTurn(i)}deg)` }">{{ item }}</b>
           </span>
 
           <span v-if="!items.length" class="empty-wheel">항목을 넣어 주세요</span>
         </div>
 
+        <span class="gloss" aria-hidden="true" />
+
         <div class="hub">
-          <button type="button" :disabled="!canSpin || isSpinning" @click="spin">
-            {{ isSpinning ? '도는 중' : 'START' }}
+          <button
+            type="button"
+            :class="{ stop: phase === 'running' }"
+            :disabled="!canSpin || phase === 'stopping'"
+            @click="toggle"
+          >
+            {{ phase === 'running' ? 'STOP' : phase === 'stopping' ? '…' : 'START' }}
           </button>
         </div>
       </div>
+
+      <p v-if="isSpinning" class="guide">
+        {{ phase === 'running' ? '마음이 정해지면 STOP 을 눌러 주세요.' : '멈추는 중…' }}
+      </p>
 
       <!-- ── 결과 ── -->
       <section v-if="winner" class="result" aria-live="polite">
@@ -194,7 +322,7 @@ const save = async () => {
         <p class="result-name">{{ winner }}</p>
 
         <div class="result-acts">
-          <button type="button" class="again" :disabled="isSpinning" @click="spin">
+          <button type="button" class="again" :disabled="isSpinning" @click="start">
             다시 돌리기
           </button>
 
@@ -260,12 +388,36 @@ const save = async () => {
         </form>
 
         <ul v-if="items.length" class="chips">
-          <li v-for="(item, i) in items" :key="`${item}-${i}`">
-            <span class="dot" :style="{ background: toneOf(i) }" aria-hidden="true" />
-            {{ item }}
-            <button type="button" :disabled="isSpinning" aria-label="지우기" @click="removeItem(i)">
-              ×
-            </button>
+          <li v-for="(item, i) in items" :key="`${item}-${i}`" :class="{ editing: editingIndex === i }">
+            <!-- 고치는 중 -->
+            <template v-if="editingIndex === i">
+              <input
+                ref="editInput"
+                v-model="editingText"
+                class="edit-field"
+                maxlength="14"
+                @keyup.enter="commitEdit"
+                @keyup.esc="cancelEdit"
+              />
+              <button type="button" class="ok" aria-label="확인" @click="commitEdit">
+                <CheckOutlined />
+              </button>
+              <button type="button" aria-label="취소" @click="cancelEdit">
+                <CloseOutlined />
+              </button>
+            </template>
+
+            <!-- 평소 -->
+            <template v-else>
+              <span class="dot" :style="{ background: toneOf(i) }" aria-hidden="true" />
+              {{ item }}
+              <button type="button" :disabled="isSpinning" aria-label="수정" @click="startEdit(i)">
+                <EditFilled />
+              </button>
+              <button type="button" :disabled="isSpinning" aria-label="지우기" @click="removeItem(i)">
+                ×
+              </button>
+            </template>
           </li>
         </ul>
 
@@ -331,14 +483,67 @@ h3 {
 }
 
 .wheel {
+  position: relative;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   box-shadow:
-    0 0 0 8px color-mix(in srgb, var(--surface) 90%, transparent),
-    0 14px 34px rgb(40 46 56 / 0.22);
-  /* 멈출 때 천천히 잦아들도록 — 뒤로 튕기지 않는 곡선 */
-  transition: transform 4.2s cubic-bezier(0.16, 0.84, 0.24, 1);
+    0 0 0 7px #fff,
+    0 0 0 12px #2b3038,
+    0 16px 36px rgb(40 46 56 / 0.26);
+  /* 멈출 때 천천히 잦아들도록 — 뒤로 튕기지 않는 곡선 (SLOW_MS 와 같은 값) */
+  transition: transform 3.4s cubic-bezier(0.12, 0.72, 0.2, 1);
+}
+
+/* 도는 중 — 끝을 정할 수 없으니 transition 이 아니라 animation 이다 */
+.wheel.running {
+  animation: turn 0.85s linear infinite;
+  transition: none;
+}
+
+/* 멈추기 직전, 지금 각도에 그대로 붙이는 한 프레임 */
+.wheel.snap {
+  transition: none;
+}
+
+/*
+ * rotate 속성이 아니라 transform 으로 돌린다.
+ * 멈출 때 getComputedStyle(...).transform 으로 지금 각도를 읽어야 하는데,
+ * rotate 속성으로 돌리면 그 값이 transform 에 잡히지 않는다.
+ */
+@keyframes turn {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 칸 사이 흰 줄 */
+.spokes {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgb(255 255 255 / 0.92) 0deg 0.55deg,
+    transparent 0.55deg var(--slice, 45deg)
+  );
+  pointer-events: none;
+}
+
+/* 유리알 느낌 — 원판과 같이 돌면 어지러워서 바깥에 따로 둔다 */
+.gloss {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(120% 80% at 30% 12%, rgb(255 255 255 / 0.45), transparent 52%),
+    radial-gradient(90% 60% at 70% 96%, rgb(0 0 0 / 0.14), transparent 55%);
+  pointer-events: none;
 }
 
 /* 칸 이름 — 원판 중심에서 바깥으로 뻗은 줄 위에 얹는다 */
@@ -362,6 +567,8 @@ h3 {
   line-height: 1.2;
   text-align: center;
   text-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  /* 멈춘 뒤 바로 서는 동작만 짧게 보여 준다 */
+  transition: transform 0.3s ease-out;
   transform-origin: 50% 50%;
   overflow-wrap: anywhere;
 }
@@ -375,17 +582,17 @@ h3 {
   font-size: 13px;
 }
 
-/* 위쪽 바늘 */
+/* 위쪽 바늘 — 원판을 가리키도록 아래를 향한다 */
 .pin {
   position: absolute;
-  top: -6px;
+  top: -14px;
   left: 50%;
-  z-index: 2;
+  z-index: 3;
   width: 0;
   height: 0;
-  border-right: 11px solid transparent;
-  border-bottom: 20px solid var(--ink);
-  border-left: 11px solid transparent;
+  border-top: 22px solid var(--ink);
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
   transform: translateX(-50%);
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
 }
@@ -419,6 +626,26 @@ h3 {
 
 .hub button:hover:not(:disabled) {
   transform: scale(1.06);
+}
+
+/* 도는 중에는 '눌러서 멈추는 버튼'임이 바로 보여야 한다 */
+.hub button.stop {
+  background: #e2574c;
+  animation: throb 0.9s ease-in-out infinite alternate;
+  box-shadow: 0 0 0 0 rgb(226 87 76 / 0.45);
+}
+
+@keyframes throb {
+  to {
+    box-shadow: 0 0 0 12px rgb(226 87 76 / 0);
+  }
+}
+
+.guide {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
 }
 
 .hub button:disabled {
@@ -635,13 +862,54 @@ h3 {
   color: var(--muted);
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1;
 }
 
-.chips button:hover:not(:disabled) {
+/* 수정은 아이콘만 — 동그라미까지 두 개 나란히 있으면 지저분하다 */
+.chips button[aria-label='수정'] {
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.chips button[aria-label='수정']:hover:not(:disabled) {
+  color: var(--slate-deep);
+}
+
+/* 지우기(×)만 빨강, 취소는 색으로 겁주지 않는다 */
+.chips button[aria-label='지우기']:hover:not(:disabled) {
   background: var(--danger-tint);
   color: var(--danger);
+}
+
+.chips button[aria-label='취소']:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--slate) 20%, transparent);
+  color: var(--slate-deep);
+}
+
+.chips button.ok {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.chips li.editing {
+  padding-left: 8px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--slate);
+}
+
+.edit-field {
+  width: 96px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  outline: none;
 }
 
 .empty,
@@ -659,6 +927,10 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .wheel {
     transition-duration: 0.8s;
+  }
+
+  .hub button.stop {
+    animation: none;
   }
 }
 </style>

@@ -31,11 +31,19 @@ const isTarot = computed(() => route.name === 'final-tarot')
 /** 테스트 진행 화면에서도 '테스트' 탭이 눌린 채로 남아야 한다 */
 const isTests = computed(() => route.name === 'final-tests' || route.name === 'final-test')
 /** 게임 목록과 각 게임 화면에서 '게임' 탭이 눌린 채로 남는다 */
-const isGames = computed(() => String(route.name ?? '').startsWith('final-game') || route.name === 'final-roulette')
+const isGames = computed(() =>
+  ['final-games', 'final-roulette', 'final-lotto'].includes(route.name),
+)
 const isRecords = computed(() => route.name === 'final-records')
 const isLogin = computed(() => route.name === 'final-login')
 const isHome = computed(
-  () => !isWeather.value && !isTarot.value && !isTests.value && !isRecords.value && !isLogin.value,
+  () =>
+    !isWeather.value &&
+    !isTarot.value &&
+    !isTests.value &&
+    !isGames.value &&
+    !isRecords.value &&
+    !isLogin.value,
 )
 
 /**

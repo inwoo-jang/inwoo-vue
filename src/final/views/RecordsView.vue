@@ -118,7 +118,7 @@ onMounted(() => store.load())
         <div>
           <h3>My</h3>
           <p class="lead">
-            <b>{{ displayName }}</b>님이 남긴 운세와 테스트 <b>{{ count }}</b>건
+            <b>{{ displayName }}</b>님이 남긴 기록 <b>{{ count }}</b>건
           </p>
         </div>
 
@@ -336,15 +336,19 @@ h3 {
 /* 게임은 무엇이 나왔는지가 전부라 크게 한 줄 */
 .game-result {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   align-items: baseline;
   margin: 0;
 }
 
 .game-result b {
   color: var(--ink);
-  font-size: 17px;
+  /* 로또처럼 번호가 길게 이어지는 결과도 있어 줄바꿈을 허용한다 */
+  font-size: 16px;
   font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .game-result small {

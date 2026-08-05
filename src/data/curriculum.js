@@ -2829,6 +2829,297 @@ const productRate = ref(4)
   },
 
   /* ---------------- CH09 ---------------- */
+
+  /*
+   * 아래 다섯 장은 손으로 만들 것이 없는 읽기 카드다.
+   * 교안 230~244쪽에서 코드 챌린지와 짝이 없는 내용만 모았다.
+   * kind: 'reading' 은 "코드 챌린지 개수"에서 빼기 위한 표시다.
+   */
+  {
+    id: 'r9-history',
+    kind: 'reading',
+    chapterId: 9,
+    label: '읽기 자료',
+    title: 'JavaScript 는 어떻게 지금 모습이 되었나',
+    slidePage: '230~231쪽',
+    goal: '왜 ES6 이후만 Modern JavaScript 라 부르는지, 최신 문법을 마음껏 써도 되는지 정리합니다.',
+    lecture: {
+      intro:
+        'Vue 를 배우는데 왜 JavaScript 역사를 보나 싶겠지만, 이유가 하나 있습니다. 인터넷에서 코드를 검색하면 2010년대 코드와 지금 코드가 섞여 나옵니다. var 와 function 으로 짠 것, jQuery 로 짠 것, 그리고 우리가 배우는 것. 어느 시대 코드인지 구분할 수 있어야 무엇을 따라 쓸지 고를 수 있습니다.',
+      summary:
+        '2015년 ES6 한 번의 대규모 개편에서 지금 문법 대부분이 나왔습니다. 그 이후로는 매년 조금씩 추가되며, 이 시대를 통칭해 Modern JavaScript 라 부릅니다.',
+      points: [
+        '**1세대 (1995~1999)** — Netscape 가 브라우저에 동적 기능을 넣으려고 만들었다. IE 가 비슷하지만 다른 Jscript 를 실어서, 브라우저마다 코드가 다르게 도는 것을 막으려고 ECMA 가 표준을 정했다 (ECMAScript = ES).',
+        '**2세대 (2000~2008)** — IE 독점으로 표준화(ES4)가 무산됐다. JavaScript 는 팝업창이나 띄우는 가벼운 스크립트 취급이었고, 브라우저별 차이를 메워 준 jQuery 가 시장을 지배했다.',
+        '**3세대 (2009~2014)** — Chrome 의 V8 엔진이 공개되며 Node.js 가 태어났다. JavaScript 가 브라우저 밖 서버에서도 돌기 시작했다. use strict, forEach · map · filter 가 이때 들어왔다.',
+        '**4세대 (2015~)** — ES6 가 문법을 혁신적으로 뜯어고쳤다. 이후로는 연례 소규모 업데이트가 정착했다.',
+        'ES6(2015)~ES11(2020) 문법은 데스크톱·모바일 브라우저를 가리지 않고 **100% 네이티브로 지원**된다. ES12~ES15 도 96% 이상이다.',
+        '**Babel** 은 최신 문법을 구형 브라우저용으로 번역한다. **Polyfill** 은 구형 엔진에 아예 없는 객체·메서드(Promise 등)를 JavaScript 로 직접 구현해 끼워 넣는다. 번역과 부품 제작의 차이다.',
+      ],
+    },
+    pitfalls: [
+      {
+        why: '검색해서 나온 코드에 var 와 function() { } 이 보이면 2015년 이전 것일 가능성이 높습니다. 동작은 하지만 이 챕터에서 배우는 방식과 섞어 쓰면 일관성이 깨집니다.',
+      },
+      {
+        why: 'jQuery(`$("#id")`)로 시작하는 예제는 Vue 와 사고방식이 정반대입니다. jQuery 는 화면을 직접 찾아가 고치고, Vue 는 데이터만 바꾸면 화면이 따라옵니다. 둘을 한 프로젝트에 섞으면 누가 화면을 바꿨는지 추적할 수 없게 됩니다.',
+      },
+    ],
+    practices: [],
+    practiceNote:
+      '읽기만 하는 카드입니다. 우리가 쓰는 Vite 안에 Babel 과 Polyfill 이 이미 들어 있어서, 브라우저 호환성을 걱정하지 않고 최신 문법으로 코딩하면 됩니다.',
+    status: 'done',
+  },
+  {
+    id: 'r9-let-const',
+    kind: 'reading',
+    chapterId: 9,
+    label: '읽기 자료',
+    title: 'let & const — var 를 쓰지 않는 이유',
+    slidePage: '232쪽',
+    goal: '세 가지 선언 방식의 차이를 알고, 기본을 const 로 두는 습관을 만듭니다.',
+    lecture: {
+      intro:
+        'var 는 같은 이름을 두 번 선언해도 조용히 넘어갑니다. 300줄짜리 파일에서 이름이 겹치면, 값이 이상해졌을 때 어디서 덮어썼는지 찾을 방법이 없습니다. let 과 const 는 그 자리에서 에러를 냅니다 — 불편한 것이 목적입니다.',
+      summary:
+        'const 를 기본으로 쓰고, 값이 바뀌어야 할 때만 let 으로 바꿉니다. var 는 쓰지 않습니다.',
+      points: [
+        '**스코프** — var 는 함수 단위, let·const 는 블록({}) 단위다. if 나 for 안에서 만든 var 는 밖에서도 보인다.',
+        '**재선언** — var 는 가능(버그의 원인), let·const 는 불가능.',
+        '**재할당** — var·let 은 가능, const 는 불가능.',
+        '**호이스팅** — 셋 다 발생하지만 var 는 undefined 로 초기화되어 조용히 넘어가고, let·const 는 TDZ 로 인해 에러가 난다.',
+        '**const 로 만든 배열에 push 는 된다.** const 가 막는 것은 재할당(=)이지 내용 변경이 아니다.',
+      ],
+      syntax: [
+        {
+          code: `var name = '철수'
+var name = '영희'   // 조용히 덮어쓴다 → 출력: 영희
+
+const name = '철수'
+const name = '영희' // 에러: Identifier 'name' has already been declared
+
+const name = '철수'
+name = '영희'       // 에러: Assignment to constant variable
+
+const list = []
+list.push(1)        // 이것은 된다 — 재할당이 아니라 내용 변경`,
+          parts: [
+            { token: 'var', role: '구시대의 유산. 재선언·재할당이 모두 되어 추적이 어렵다' },
+            { token: 'let', role: '재할당은 되고 재선언은 안 된다. 값이 바뀌는 변수에 쓴다' },
+            { token: 'const', role: '재할당이 안 된다. 기본으로 이것을 쓴다' },
+            { token: 'list.push(1)', role: '내용 변경이라 const 여도 허용된다' },
+          ],
+          returns: '선언문이라 돌려주는 값이 없다. 변수라는 이름표를 만드는 일만 한다.',
+          desc: '무엇이 막히고 무엇이 되는가.',
+        },
+      ],
+    },
+    pitfalls: [
+      {
+        bad: 'const total = 0  // 이후 total += price',
+        good: 'let total = 0',
+        why: '누적하는 값에 const 를 쓰면 첫 덧셈에서 에러가 납니다. 반대로 절대 안 바뀌는 값에 let 을 쓰면 나중에 읽는 사람이 "이건 바뀌나 보다"라고 오해합니다.',
+      },
+      {
+        bad: 'const user = { name: "철수" } 를 두고 "고칠 수 없다"고 생각하기',
+        good: 'user.name = "영희" 는 된다',
+        why: 'const 는 상자를 바꾸는 것을 막을 뿐, 상자 안의 물건을 바꾸는 것은 막지 않습니다. 객체와 배열에서 특히 헷갈리는 지점입니다.',
+      },
+    ],
+    practices: [],
+    practiceNote: '읽기만 하는 카드입니다. 이 챕터의 실습 코드는 전부 const 로 시작합니다.',
+    status: 'done',
+  },
+  {
+    id: 'r9-arrow',
+    kind: 'reading',
+    chapterId: 9,
+    label: '읽기 자료',
+    title: 'Arrow Function — 계속 보이던 => 의 정체',
+    slidePage: '233쪽',
+    goal: '함수를 선언하는 세 가지 방식을 구분하고, 화살표 함수를 값처럼 넘기는 법을 익힙니다.',
+    lecture: {
+      intro:
+        '@click="() => reset()" 이나 map(item => item.name) 에서 매일 보던 그 화살표입니다. 특별한 문법이 아니라 function 이라는 단어를 지우고 => 를 넣은 것뿐입니다. 짧아서 콜백 자리에 쓰기 좋기 때문에 모던 프레임워크가 이것을 씁니다.',
+      summary:
+        '함수 선언 방식은 세 가지입니다. Vue 에서는 화살표 함수를 주로 쓰며, 한 줄이면 return 과 중괄호를 생략할 수 있습니다.',
+      points: [
+        '**Function Declaration** — `function foo() {}`. 함수 전체가 호이스팅되어 선언문 전에도 호출할 수 있다. 전통적인 유틸리티 함수에 쓴다.',
+        '**Function Expression** — `const foo = function() {}`. 변수만 호이스팅되어 초기화 전 호출하면 에러가 난다.',
+        '**Arrow Function** — `const foo = () => {}`. 변수만 호이스팅된다. 모던 프레임워크(Vue/React)와 비동기 콜백에 쓴다.',
+        '코드가 한 줄이면 중괄호와 return 을 함께 생략할 수 있다: `const sum = (a, b) => a + b`',
+        '매개변수가 하나면 소괄호도 생략 가능하다: `const pow = x => x * x`',
+        '**화살표 함수 자체를 매개변수로 넘길 수 있다.** 함수도 값이기 때문이다.',
+      ],
+      syntax: [
+        {
+          code: `const calculate = (num1, num2, operation) => {
+  return operation(num1, num2)   // 배달받은 함수를 여기서 대신 실행
+}
+
+const addResult = calculate(10, 5, (a, b) => a + b)      // 15
+const multiplyResult = calculate(10, 5, (a, b) => a * b) // 50`,
+          parts: [
+            { token: 'operation', role: '식별자. 함수를 담는 매개변수 이름이다 (내가 정한 이름)' },
+            { token: '(a, b) => a + b', role: '호출하는 쪽이 그때그때 만들어 넘기는 함수' },
+            { token: 'operation(num1, num2)', role: '받은 함수를 실제로 실행하는 자리' },
+          ],
+          returns:
+            'calculate 는 operation 이 돌려준 값을 그대로 돌려준다. 무엇이 돌아올지는 넘긴 함수가 정한다.',
+          desc: '함수를 값처럼 넘기는 것 — map·filter·watch 가 전부 이 구조다.',
+        },
+      ],
+    },
+    pitfalls: [
+      {
+        bad: 'const sum = (a, b) => { a + b }',
+        good: 'const sum = (a, b) => a + b',
+        why: '중괄호를 쓰면 함수 본문이 되므로 return 을 적어야 합니다. 중괄호를 지우면 그 식의 결과가 자동으로 반환됩니다. 값이 undefined 로 나오는 흔한 원인입니다.',
+      },
+      {
+        bad: 'const makeUser = () => { name: "철수" }',
+        good: 'const makeUser = () => ({ name: "철수" })',
+        why: '객체를 바로 돌려주려면 소괄호로 감싸야 합니다. 그러지 않으면 JavaScript 가 중괄호를 함수 본문으로 읽습니다.',
+      },
+      {
+        bad: '@click="reset()" 을 @click="reset" 로 착각',
+        good: '두 가지 모두 맞지만 뜻이 다르다',
+        why: '`@click="reset"` 은 함수 자체를 넘기는 것이고 `@click="reset()"` 은 지금 실행한 결과를 넘기는 것입니다. 인자가 필요하면 `@click="() => reset(id)"` 처럼 화살표로 감쌉니다.',
+      },
+    ],
+    practices: [],
+    practiceNote:
+      '읽기만 하는 카드입니다. 앞 챕터의 실습에서 이미 화살표 함수를 계속 써 왔습니다 — 이제 이름을 붙였을 뿐입니다.',
+    status: 'done',
+  },
+  {
+    id: 'r9-rest',
+    kind: 'reading',
+    chapterId: 9,
+    label: '읽기 자료',
+    title: 'Rest 문법 — Spread 와 같은 기호, 반대 방향',
+    slidePage: '238쪽',
+    goal: '... 이 언제 펼치는 것이고 언제 모으는 것인지 위치로 구분합니다.',
+    lecture: {
+      intro:
+        '점 세 개(...)가 두 가지 뜻으로 쓰입니다. 같은 기호라 처음에는 헷갈리는데, 구분법은 간단합니다 — 값을 만드는 오른쪽에 있으면 펼치는 것(Spread), 값을 받는 왼쪽에 있으면 모으는 것(Rest)입니다.',
+      summary:
+        'Spread 는 뭉친 것을 낱개로 펼치고, Rest 는 낱개들을 하나로 모읍니다. 방향이 정반대입니다.',
+      points: [
+        '**구조 분해에서의 Rest** — 몇 개만 변수로 빼고 남은 속성을 한데 묶어 별도의 객체·배열로 보존한다.',
+        '**함수 매개변수에서의 Rest** — 개수가 정해지지 않은 인자를 배열 하나로 받는다.',
+        'Rest 는 반드시 **마지막 자리**에 와야 한다. 남은 것을 모으는 문법이라 뒤에 뭔가 더 올 수 없다.',
+        '한 줄 안에 둘이 같이 나오기도 한다: `const merged = { ...base, ...extra }` 는 둘 다 Spread 다.',
+      ],
+      syntax: [
+        {
+          code: `const employee = {
+  name: 'Graves', age: 35,
+  role: 'Instructor', team: 'Edu-Tech', location: 'Seoul',
+}
+
+// name·age 만 꺼내고 나머지는 restInfo 에 담아라
+const { name, age, ...restInfo } = employee
+// restInfo → { role: 'Instructor', team: 'Edu-Tech', location: 'Seoul' }
+
+// 함수 매개변수에서 — 앞 둘은 이름을 주고, 나머지는 배열로 수집
+const printMedalList = (gold, silver, ...others) => {
+  console.log(others)   // ['부산', '대구', '제주', '광주']
+}
+printMedalList('수원', '서울', '부산', '대구', '제주', '광주')`,
+          parts: [
+            { token: '...restInfo', role: '왼쪽(받는 자리)에 있으므로 Rest — 남은 속성을 모은다' },
+            { token: '...others', role: '매개변수 자리의 Rest — 남은 인자를 배열로 받는다' },
+            { token: '{ ...base, ...extra }', role: '오른쪽(만드는 자리)이면 Spread — 펼쳐서 흩뿌린다' },
+          ],
+          returns:
+            'Rest 로 모은 것은 새 객체 또는 새 배열이다. 원본에서 잘라낸 것이 아니라 복사해 담은 것이라 원본은 그대로다.',
+          desc: '위치로 구분한다.',
+        },
+      ],
+    },
+    pitfalls: [
+      {
+        bad: 'const [...rest, last] = arr',
+        good: 'const [first, ...rest] = arr',
+        why: 'Rest 는 마지막에만 올 수 있습니다. "남은 것"을 정의하는 문법이라, 뒤에 무언가 더 있으면 남은 것이 무엇인지 정할 수 없습니다.',
+      },
+      {
+        why: '구조 분해 Rest 로 만든 객체는 얕은 복사입니다. 안쪽에 또 객체가 있으면 원본과 공유되므로, 그것을 고치면 원본도 함께 바뀝니다.',
+      },
+    ],
+    practices: [],
+    practiceNote:
+      '읽기만 하는 카드입니다. Spread 쪽은 바로 아래 "불변성 복사와 기본값 방어" 실습에서 직접 눌러 볼 수 있습니다.',
+    status: 'done',
+  },
+  {
+    id: 'r9-methods',
+    kind: 'reading',
+    chapterId: 9,
+    label: '읽기 자료',
+    title: 'ES6 이후 늘어난 Array · Object 기능',
+    slidePage: '241~244쪽',
+    goal: '외울 목록이 아니라, 필요할 때 찾아볼 수 있게 무엇이 있는지만 훑습니다.',
+    lecture: {
+      intro:
+        '이 카드는 외우는 곳이 아니라 찾아보는 곳입니다. 다만 하나만은 기억해 두면 좋습니다 — 2023년에 추가된 toSorted·toReversed 계열입니다. 원본을 뒤집어 버리던 옛 메서드와 달리 새 배열을 돌려주기 때문에, Vue 의 computed 안에서 반드시 이쪽을 써야 합니다.',
+      summary:
+        '배열에서는 find·includes·at·toSorted 를, 객체에서는 단축 속성명·Object.entries·Optional Chaining 을 자주 씁니다.',
+      points: [
+        '**find()** — 조건을 만족하는 최초의 *아이템 자체*를 준다 (없으면 undefined). **findIndex()** 는 *인덱스 숫자*를 준다 (없으면 -1).',
+        '**includes()** — 특정 값이 있는지 true/false 만 준다. 구식 `indexOf(x) !== -1` 을 대체한다.',
+        '**at(-1)** — 맨 뒤 요소를 `arr[arr.length - 1]` 없이 꺼낸다. 음수 인덱스를 지원한다.',
+        '**toSorted() · toReversed() · toSpliced()** (ES14) — 원본을 보존하면서 정렬·반전된 **새 배열**을 돌려준다. sort() 는 원본을 뒤집는다.',
+        '**단축 속성명** — `{ name: name }` 대신 `{ name }`. 변수명과 key 가 같을 때만.',
+        '**계산된 속성명** — `{ [keyName]: value }`. 대괄호를 쳐서 변수 값을 key 이름으로 쓴다.',
+        '**Object.entries()** — 객체를 `[[key, value], …]` 2차원 배열로 바꾼다. 배열이 되면 forEach·map 을 쓸 수 있다.',
+      ],
+      syntax: [
+        {
+          code: `const scoreBoard = { math: 90, english: 80, science: 100 }
+
+// 객체를 [['math', 90], ['english', 80], …] 2차원 배열로 쪼갠다
+Object.entries(scoreBoard).forEach(([subject, score]) => {
+  console.log(\`과목: \${subject}, 점수: \${score}\`)
+})
+
+// 원본을 지키는 정렬
+const sorted = cities.toSorted((a, b) => b.temp - a.temp)`,
+          parts: [
+            { token: 'Object.entries(...)', role: 'Object 내장 함수. 객체를 배열로 바꾼다' },
+            { token: '([subject, score])', role: '배열 구조 분해. 한 쌍이 [키, 값] 두 칸이라 그대로 받는다' },
+            { token: 'toSorted(...)', role: '원본을 두고 정렬된 새 배열을 돌려준다' },
+          ],
+          returns:
+            'Object.entries 는 2차원 배열을, toSorted 는 정렬된 새 배열을 돌려준다. 둘 다 원본은 그대로 남는다.',
+          desc: '객체를 순회하려면 일단 배열로 바꾼다.',
+        },
+      ],
+    },
+    pitfalls: [
+      {
+        bad: 'computed(() => cities.value.sort((a, b) => …))',
+        good: 'computed(() => cities.value.toSorted((a, b) => …))',
+        why: 'sort() 는 원본 배열을 직접 뒤집습니다. computed 안에서 원본을 고치면 그 변화가 다시 computed 를 깨우는 무한 루프가 나거나, 다른 화면의 순서까지 바뀝니다.',
+      },
+      {
+        bad: 'const found = arr.find(x => x.id === 3).name',
+        good: 'const found = arr.find(x => x.id === 3)?.name',
+        why: 'find 는 못 찾으면 undefined 를 줍니다. 바로 점을 찍으면 TypeError 로 앱이 멈춥니다.',
+      },
+      {
+        bad: 'if (arr.indexOf(city) > 0)',
+        good: 'if (arr.includes(city))',
+        why: 'indexOf 는 첫 번째 요소일 때 0 을 돌려주는데 0 은 falsy 라 조건이 거짓이 됩니다. `> 0` 이 아니라 `!== -1` 이어야 하고, 애초에 includes 를 쓰면 이 실수가 없습니다.',
+      },
+    ],
+    practices: [],
+    practiceNote:
+      '읽기만 하는 카드입니다. 목록을 외우지 말고, 배열을 다루다 막힐 때 여기로 돌아와 훑어보세요.',
+    status: 'done',
+  },
+
   {
     id: 15,
     chapterId: 9,
@@ -3022,7 +3313,10 @@ const stock = product.count ?? 0    // count가 0이면 0 유지`,
       summary:
         'Promise는 나중에 도착할 값을 담은 약속이고, async/await는 그 약속을 동기 코드처럼 읽히게 만드는 문법입니다.',
       points: [
-        'await는 async 함수 안에서만 쓸 수 있다.',
+        'Promise 에는 세 가지 상태가 있다 — **Pending**(시작했지만 아직 성공도 실패도 아님), **Fulfilled**(성공, 값이 준비됨), **Rejected**(실패, 이유를 알 수 있음).',
+        'ES6 이전에는 끝난 뒤 실행할 로직을 함수 인자로 넘기는 Callback 을 썼고, 그것이 겹겹이 쌓인 것이 Callback Hell 이다. Promise 는 그것을 펴기 위해 나왔다.',
+        '`.then`(성공) · `.catch`(실패) · `.finally`(성공·실패 무관) 체인으로도 쓸 수 있다. async/await 는 같은 것을 위에서 아래로 읽히게 쓴 것이다.',
+        'await는 async 함수 안에서만 쓸 수 있다. **async 함수는 항상 Promise 를 반환한다.**',
         '앞의 결과가 뒤의 입력이 되는 연쇄 호출에 특히 유용하다.',
         '에러는 try-catch로 잡는다. 잡지 않으면 Unhandled Rejection이 된다.',
       ],
@@ -3772,8 +4066,15 @@ export const assignmentsOf = (chapterId) => assignments.filter((a) => a.chapterI
 /** 실습 컴포넌트가 하나라도 연결된 챌린지 수 */
 export const liveChallengeCount = challenges.filter((c) => c.practices.length > 0).length
 
-/** 코드 챌린지 총 개수 (준비 실습 제외) */
-export const codeChallengeCount = challenges.filter((c) => c.id > 0).length
+/**
+ * 코드 챌린지 총 개수 (준비 실습 제외)
+ *
+ * kind: 'reading' 카드는 손으로 만들 것이 없는 읽기 자료라 여기서 뺀다.
+ * 홈 화면의 "N개 코드 챌린지" 가 실제로 손을 움직이는 것의 수여야 하기 때문이다.
+ */
+export const codeChallengeCount = challenges.filter(
+  (c) => c.kind !== 'reading' && c.id > 0,
+).length
 
 /** 완료한 과제 수 */
 export const doneAssignmentCount = assignments.filter((a) => a.status === 'done').length
