@@ -70,7 +70,7 @@ const logout = () => {
         <RouterLink :to="link('weather')" :class="{ on: isWeather }">날씨</RouterLink>
         <RouterLink :to="link('tarot')" :class="{ on: isTarot }">운세</RouterLink>
         <RouterLink :to="link('tests')" :class="{ on: isTests }">테스트</RouterLink>
-        <RouterLink :to="link('records')" :class="{ on: isRecords }">기록</RouterLink>
+        <RouterLink :to="link('records')" :class="{ on: isRecords }">My</RouterLink>
 
         <code class="url">{{ route.path }}</code>
 
@@ -79,7 +79,7 @@ const logout = () => {
           <b>{{ displayName }}</b>
           <button type="button" @click="logout">로그아웃</button>
         </span>
-        <RouterLink v-else :to="link('login')" class="sign" :class="{ on: isLogin }">
+        <RouterLink v-else :to="link('login')" class="sign tint-cta" :class="{ on: isLogin }">
           로그인
         </RouterLink>
       </nav>
@@ -155,7 +155,8 @@ const logout = () => {
   color: var(--ink);
 }
 
-.nav a.on {
+/* 채워 넣는 것은 '어디에 있는지'를 알리는 섹션 탭뿐. 로그인은 유리 버튼이라 뺀다 */
+.nav a.on:not(.sign) {
   color: var(--on-accent);
   background: var(--accent);
 }
@@ -210,22 +211,23 @@ const logout = () => {
  * (실제로 그렇게 만들어 메뉴에 구멍이 뚫린 것처럼 보였다.)
  * 그래서 배경·글자색을 한 벌로 같이 정한다.
  */
-.nav a.sign,
-.nav a.sign.on {
-  border: 1px solid var(--accent-line);
-  background: var(--surface);
-  color: var(--accent);
-}
-
-/* 지금 로그인 화면에 있다는 표시는 옅은 배경으로만 준다 */
-.nav a.sign.on {
-  background: var(--accent-tint);
+/*
+ * 로그인은 main.css 의 .tint-cta 를 쓴다 — 늘 떠 있는 자리라 조용해야 한다.
+ * 여기서는 자리와 크기만 잡고 색은 건드리지 않는다 — 두 곳이 어긋나지 않도록.
+ */
+.nav a.sign {
+  padding: 8px 18px;
+  /* .nav a 의 회색이 .tint-cta 를 덮으므로 여기서 다시 잡아 준다 */
+  color: var(--slate);
 }
 
 .nav a.sign:hover {
-  border-color: var(--accent);
-  background: var(--accent-tint);
-  color: var(--accent);
+  color: var(--slate-deep);
+}
+
+/* 지금 로그인 화면에 있으면 살짝 눌린 것처럼 */
+.nav a.sign.on {
+  transform: translateY(1px);
 }
 
 @media (max-width: 620px) {

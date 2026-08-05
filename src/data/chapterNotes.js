@@ -817,6 +817,506 @@ const startDownload = () => {
       },
     ],
   },
+
+  /* ================================================================
+     CH09 · Modern JavaScript — 229~249쪽
+     ================================================================ */
+  9: {
+    range: '229~249쪽',
+    lead: '새 문법을 배우는 챕터가 아니다. 앞의 여덟 챕터에서 이미 써 온 문법들을 이제야 이름과 함께 정리하는 자리다. ref, computed, axios 예제에 계속 나오던 =>, `${}`, {...}, async/await 가 전부 여기 있다. 관통하는 생각은 하나다 — 원본을 건드리지 말고, 필요한 것만 꺼내 새로 만든다.',
+
+    sections: [
+      {
+        title: 'JavaScript 는 어떻게 지금 모습이 되었나',
+        slide: '230쪽',
+        body: 'JavaScript 는 1995년 Netscape 가 웹 브라우저에 동적인 기능을 넣으려고 만든 언어에서 출발했습니다. 지금 우리가 쓰는 문법 대부분은 2015년 ES6 한 번의 대규모 개편에서 나왔습니다.',
+        table: {
+          head: ['세대', '시기', '무슨 일이 있었나'],
+          rows: [
+            [
+              '1세대 · ECMAScript 탄생',
+              '1995~1999',
+              'Internet Explorer 가 비슷하지만 다른 Jscript 를 실었다. 브라우저마다 코드가 다르게 도는 것을 막으려고 ECMA 국제표준기구가 표준 규격을 정했다 (ECMAScript = ES)',
+            ],
+            [
+              '2세대 · Web 의 한계와 jQuery',
+              '2000~2008',
+              'IE 독점으로 표준화(ES4)가 무산됐다. JavaScript 는 팝업창이나 띄우는 가벼운 스크립트 취급이었고, 브라우저별 차이를 메워 준 jQuery 가 시장을 지배했다',
+            ],
+            [
+              '3세대 · ES5 표준',
+              '2009~2014',
+              'Chrome 의 V8 엔진이 공개되며 Node.js 가 태어났다 — JavaScript 가 브라우저 밖 서버에서도 돌기 시작했다. use strict, forEach · map · filter 가 이때 들어왔다',
+            ],
+            [
+              '4세대 · Modern JavaScript',
+              '2015~',
+              'ES6 가 문법을 혁신적으로 뜯어고쳤다. 이후로는 매년 소규모 문법을 발표한다. 이 연례 업데이트 시대를 통칭해 Modern JavaScript 라 부른다',
+            ],
+          ],
+        },
+        note: '우리가 이 챕터에서 배우는 것은 사실상 "ES6 이후에 추가된 것들"이다. 그래서 ES6 를 기준으로 이전/이후를 가른다.',
+      },
+      {
+        title: '최신 문법을 써도 되는가 — 브라우저 지원',
+        slide: '231쪽',
+        body: '결론부터 말하면 마음껏 써도 됩니다. 우리가 쓰는 Vite 안에 이미 해결 장치가 들어 있기 때문입니다.',
+        bullets: [
+          'ES6(2015)~ES11(2020) 규격 — let/const, Arrow Function, Promise, async/await, Optional Chaining(?.) 등은 데스크톱·모바일 브라우저를 가리지 않고 100% 네이티브로 지원된다.',
+          'ES12(2021)~ES15(2024) 규격 — replaceAll(), 논리 할당(&&=, ||=), toReversed() 같은 비교적 최신 기능도 모던 브라우저 점유율 기준 96% 이상 지원된다.',
+          'Babel — 개발자가 최신 문법으로 코딩해도, 빌드 시스템이 배포 직전에 구형 브라우저도 알아들을 수 있는 ES5(2009년형) 문법으로 번역해 내려 준다.',
+          'Polyfill — 구형 엔진에 아예 존재하지 않는 객체나 메서드(Promise, Array.prototype.includes 등)를 JavaScript 로 직접 구현해 임시로 제공하는 코드다. 번역이 아니라 없는 부품을 만들어 끼우는 쪽이다.',
+        ],
+        note: 'Vite 번들러 내부에 Babel 과 Polyfill 기반 변환 엔진이 기본 내장돼 있다. 그래서 브라우저 호환성을 걱정하지 않고 가장 최신 문법으로 코딩할 수 있다.',
+      },
+      {
+        title: 'let & const — var 를 쓰지 않는 이유',
+        slide: '232쪽',
+        body: 'var 는 구시대의 유산입니다. 같은 이름을 두 번 선언해도 조용히 넘어가기 때문에, 큰 파일에서 변수 이름이 겹치면 어디서 값이 바뀌었는지 찾을 수 없게 됩니다.',
+        table: {
+          head: ['특성', 'var (구시대의 유산)', 'let (변수)', 'const (상수)'],
+          rows: [
+            ['스코프(Scope)', '함수 레벨 스코프', '블록 레벨 스코프 ({})', '블록 레벨 스코프 ({})'],
+            ['재선언', '가능 (버그의 원인)', '불가능', '불가능'],
+            ['재할당', '가능', '가능', '불가능'],
+            [
+              '호이스팅(Hoisting)',
+              '발생 (undefined 로 초기화)',
+              '발생 (TDZ 로 인해 에러 발생)',
+              '발생 (TDZ 로 인해 에러 발생)',
+            ],
+          ],
+        },
+        code: {
+          caption: '재선언 · 재할당이 어디서 막히는가',
+          text: `var name = '철수'
+var name = '영희'
+console.log(name)   // 출력결과: 영희 — 조용히 덮어썼다
+
+const name = '철수'
+const name = '영희' // 에러: Identifier 'name' has already been declared
+
+let name = '철수'
+name = '영희'
+console.log(name)   // 출력결과: 영희 — let 은 재할당이 된다
+
+const name = '철수'
+name = '영희'       // 에러: Assignment to constant variable`,
+        },
+        note: '기본은 const 로 쓰고, 값이 바뀌어야 할 때만 let 으로 바꾼다. var 는 쓰지 않는다.',
+      },
+      {
+        title: 'Arrow Function — Vue 코드에 계속 나오던 =>',
+        slide: '233쪽',
+        body: '함수를 선언하는 방법은 세 가지입니다. 모던 프레임워크에서 주로 쓰는 것은 화살표 함수입니다.',
+        table: {
+          head: ['비교 항목', 'Function Declaration', 'Function Expression', 'Arrow Function'],
+          rows: [
+            [
+              'Syntax',
+              'function foo(arg1, arg2) { return }',
+              'const foo = function(arg1, arg2) { return }',
+              'const foo = (arg1, arg2) => { return }',
+            ],
+            [
+              'Hoisting',
+              '함수 전체가 호이스팅됨 (선언문 전에도 호출 가능)',
+              '변수만 호이스팅됨 (초기화 전 호출 시 에러)',
+              '변수만 호이스팅됨 (초기화 전 호출 시 에러)',
+            ],
+            [
+              '주요 용도',
+              '전통적인 전역 / 유틸리티 함수 정의',
+              '클로저(Closure) 구현, 콜백 함수',
+              '모던 프레임워크(Vue/React), 메서드 내부 비동기 콜백 함수',
+            ],
+          ],
+        },
+        code: {
+          caption: '줄일 수 있는 것들 — 그리고 함수를 인자로 넘기기',
+          text: `// 코드가 한 줄이면 return 과 중괄호를 생략할 수 있다
+const sum = (num1, num2) => num1 + num2
+
+// 매개변수가 1개면 소괄호도 생략 가능
+const pow = x => x * x
+
+// 화살표 함수 자체를 매개변수로 전달할 수 있다
+const calculate = (num1, num2, operation) => {
+  return operation(num1, num2)   // 배달받은 화살표 함수를 여기서 대신 실행 (실행 대행)
+}
+
+const addResult = calculate(10, 5, (a, b) => a + b)
+console.log(\`더하기 결과: \${addResult}\`)      // 출력: 15
+
+const multiplyResult = calculate(10, 5, (a, b) => a * b)
+console.log(\`곱하기 결과: \${multiplyResult}\`) // 출력: 50`,
+        },
+        note: '@click="() => doSomething()" 이나 map(item => item.name) 에서 매일 보던 그 문법이다.',
+      },
+      {
+        title: 'Template Literals — 백틱(`)과 ${}',
+        slide: '234쪽',
+        body: "ES6에서 도입된 문자열 표기법입니다. 일반 따옴표(')나 쌍따옴표(\")가 아닌, 키보드 숫자 1 왼쪽에 있는 백틱(`) 기호를 사용해 문자열을 선언합니다. 문자열 안에 변수나 연산 결과를 동적으로 주입하고 줄바꿈을 자유롭게 허용합니다.",
+        code: {
+          caption: '+ 로 잇던 것을 ${} 하나로',
+          text: `const city = '수원'
+const temp = 24
+
+// 전: 따옴표와 공백을 놓치기 쉽다
+const message = '현재 ' + city + '의 기온은 ' + temp + '도입니다.'
+
+// 후: 백틱 안에서 \${} 로 해결
+const message = \`현재 \${city}의 기온은 \${temp}도입니다.\`
+
+// 줄바꿈도 \\n 없이 엔터 치는 모양 그대로 보존된다
+const htmlTemplate = \`
+  <div>
+    <h1>Hello</h1>
+  </div>
+\``,
+        },
+        note: '\\${} 안에는 변수뿐 아니라 연산식도 들어간다. \\${temp > 30 ? "덥다" : "선선하다"} 처럼 쓸 수 있다.',
+      },
+      {
+        title: 'Destructuring Assignment — 필요한 것만 꺼내기',
+        slide: '235쪽',
+        body: 'Array 나 Object 의 구조를 분해하여, 내부의 값들을 별도의 독립된 개별 변수에 각각 직접 할당하는 표현식입니다. arr[0] 이나 obj.key 를 반복해서 치던 번거로움을 제거하고 코드 라인 수를 획기적으로 단축합니다.',
+        code: {
+          caption: '객체는 이름으로, 배열은 순서로',
+          text: `// Object — key 이름을 기준으로 매칭된다. 순서는 상관없다
+const user = { name: '홍길동', age: 20, role: 'admin' }
+
+const name = user.name        // 전
+const age = user.age
+const { name, age } = user    // 후
+
+// Array — Index 위치(순서)를 기준으로 대칭 할당된다
+const coords = [37.5, 127.0]
+
+const latitude = coords[0]              // 전
+const longitude = coords[1]
+const [latitude, longitude] = coords    // 후 — 괄호 안의 순서대로 0번째, 1번째
+
+// 특정 위치를 건너뛰고 싶을 때 (쉼표 공백 배치)
+const colors = ['red', 'green', 'blue']
+const [first, , third] = colors   // green 은 건너뛰고 'red' 와 'blue' 만`,
+        },
+        note: '객체 분해는 이름이 맞아야 하고, 배열 분해는 순서가 맞아야 한다. 이 차이가 헷갈리는 지점의 전부다.',
+      },
+      {
+        title: 'Spread Operator (...) — 펼쳐서 흩뿌리기',
+        slide: '236~237쪽',
+        body: "배열이나 객체 앞에 마침표 3개(...)를 붙여, 그 내부의 요소를 하나하나 낱개로 순서대로 '펼쳐서(전개하여) 흩뿌려주는' 연산자입니다. 복잡한 반복문 없이 대량의 데이터를 복사하거나 결합(병합)할 수 있습니다.",
+        code: {
+          caption: '병합 · 복사 · 덮어쓰기',
+          text: `// 배열 병합 — 기존 배열의 괄호를 풀어서 새 배열 안에 흩뿌린다
+const frontEnd = ['HTML', 'CSS', 'Vue']
+const backEnd = ['Java', 'Spring']
+const fullStack = [...frontEnd, ...backEnd, 'Git']
+// ['HTML', 'CSS', 'Vue', 'Java', 'Spring', 'Git']
+
+// 배열 복사 (얕은 복사)
+const original = [1, 2, 3]
+const cloneWrong = original       // 단순 대입(=)은 주소값만 복사 → 복사본을 고치면 원본도 깨짐
+const cloneRight = [...original]  // 스프레드는 주소가 완전히 분리된 새 복사본
+
+cloneRight.push(99)
+console.log(original)    // [1, 2, 3] (원본 안전 보존)
+console.log(cloneRight)  // [1, 2, 3, 99]
+
+// 객체 — 기존 속성은 유지하고 일부만 수정한 새 객체를 리턴할 때
+const baseConfig = { theme: 'dark', language: 'ko', version: 1.0 }
+const newConfig = {
+  ...baseConfig,
+  version: 2.0,      // 동일한 key 가 있으면 뒤에 적은 녀석이 앞의 값을 덮어쓴다 (Override)
+  author: 'Graves',  // 새로운 key-value 추가
+}`,
+        },
+        note: 'Vue 의 상태 관리나 백엔드 요청 바디를 만들 때 필수 문법이다. 원본을 그대로 두고 새 것을 만드는 이 챕터의 핵심 도구다.',
+      },
+      {
+        title: 'Rest 문법 (...) — 나머지를 한데 묶기',
+        slide: '238쪽',
+        body: '똑같이 ... 기호를 쓰지만, Spread 가 주로 값을 전개하는 데 활용된다면 Rest 는 나머지 값을 처리하는 데 주로 사용됩니다. 몇 개만 변수로 빼고 남은 속성을 한데 묶어 별도의 객체나 배열로 보존합니다.',
+        code: {
+          caption: '같은 ... 인데 위치가 다르다',
+          text: `const employee = {
+  name: 'Graves', age: 35,
+  role: 'Instructor', team: 'Edu-Tech', location: 'Seoul',
+}
+
+// name 과 age 만 개별 변수로 꺼내고, 나머지 속성들은 restInfo 객체에 담아라
+const { name, age, ...restInfo } = employee
+console.log(restInfo) // { role: 'Instructor', team: 'Edu-Tech', location: 'Seoul' }
+
+// 함수 매개변수에서의 Rest (나머지 매개변수)
+// 앞의 두 개는 1등, 2등 변수에 담고, '나머지' 참가자들은 others 배열 주머니에 수집해라
+const printMedalList = (gold, silver, ...others) => {
+  console.log(\`금메달: \${gold}\`)          // 금메달: 수원
+  console.log(\`은메달: \${silver}\`)        // 은메달: 서울
+  console.log('나머지 참가자 명단:', others) // ['부산', '대구', '제주', '광주']
+}
+
+printMedalList('수원', '서울', '부산', '대구', '제주', '광주')`,
+        },
+        note: '오른쪽(값을 만드는 자리)에 있으면 Spread, 왼쪽(값을 받는 자리)에 있으면 Rest 다. 기호가 같으니 위치로 구분한다.',
+      },
+      {
+        title: 'Promise — "결과를 알려주겠다"는 약속',
+        slide: '239쪽',
+        body: 'JavaScript 엔진에서 비동기 연산의 최종 완료 또는 실패와 그 결과 값을 나타내는 표준 객체입니다. Promise 는 비동기 작업이 성공하거나 실패할 때 그 결과를 알려주겠다고 "약속"하는 객체입니다. ES6 이전에는 비동기 처리가 끝난 후 실행할 로직을 함수 인자로 전달하는 Callback 함수를 썼는데, 이것이 겹겹이 쌓이면서 Callback Hell 을 유발했습니다.',
+        table: {
+          head: ['상태(State)', '의미'],
+          rows: [
+            ['Pending (대기)', '작업이 시작됐지만 아직 성공도 실패도 아닌 초기 상태'],
+            ['Fulfilled (이행/성공)', '작업이 성공적으로 완료되었고 결과 값이 준비된 상태'],
+            ['Rejected (거부/실패)', '작업이 실패했고 그 이유(error)를 알 수 있는 상태'],
+          ],
+        },
+        code: {
+          caption: 'Promise Chains — .then / .catch / .finally',
+          text: `fetchWeatherData()          // fetchWeatherData 는 Promise 객체를 return
+  .then((data) => {
+    console.log('서버 통신 성공:', data)     // Fulfilled 상태일 때 실행: 성공 데이터 가공
+  })
+  .catch((error) => {
+    console.error('네트워크 에러 발생:', error) // Rejected 상태일 때 실행: 에러 예외 처리
+  })
+  .finally(() => {
+    console.log('비동기 통신 프로세스 완전 종료') // 성공/실패와 무관하게 마지막에 실행 (예: 로딩 스피너 종료)
+  })`,
+        },
+      },
+      {
+        title: 'async / await — 비동기를 동기처럼 읽기',
+        slide: '240쪽',
+        body: 'ES8(2017)에서 도입되었습니다. Promise 를 기반으로 작동하되, 체이닝 대신 위에서 아래로 읽히는 동기식 코드 구조로 작성할 수 있게 해 줍니다.',
+        bullets: [
+          'async — "이 함수 안에서 비동기 처리를 할 거야!"라고 선언하는 키워드다. async 함수는 항상 Promise 를 반환한다.',
+          'await — "비동기 작업이 끝날 때까지 다음 줄로 넘어가지 말고 기다려!"라고 명령하는 키워드다. async 함수 안에서만 쓸 수 있다.',
+          '.then / .catch 대신 try / catch 로 에러를 잡는다.',
+        ],
+        code: {
+          caption: '기다린 값을 그대로 다음 줄에서 쓴다',
+          text: `async function hello() {
+  return '안녕하세요!'
+}
+console.log(hello())                  // Promise { <fulfilled>: '안녕하세요!' }
+hello().then(res => console.log(res)) // 안녕하세요!
+
+async function handleData() {
+  try {
+    const result = await fetchData()               // 첫 번째 비동기 기다림
+    const saveResult = await saveToDatabase(result) // 두 번째 비동기 기다림
+    console.log('저장 성공!', saveResult)
+  } catch (error) {
+    console.log('에러 발생!', error)
+  }
+}`,
+        },
+        note: 'await 를 빼먹으면 값 대신 Promise 객체가 담긴다. "[object Promise]" 가 화면에 찍히면 십중팔구 await 누락이다.',
+      },
+      {
+        title: 'ES6 이후 추가된 Array Methods',
+        slide: '241쪽',
+        table: {
+          head: ['도입 버전', '메서드', '예시', '핵심 요약'],
+          rows: [
+            [
+              'ES6 (2015)',
+              'Array.from()',
+              'Array.from(arguments)',
+              '유사 배열 객체(Arguments, DOM NodeList)를 순수 배열로 변환해 배열 내장 고차함수를 쓸 수 있게 유도',
+            ],
+            [
+              'ES6 (2015)',
+              'find()',
+              'arr.find(item => item.id === 3)',
+              "조건을 만족하는 최초의 '아이템 알맹이 자체'를 반환 (없으면 undefined)",
+            ],
+            [
+              'ES6 (2015)',
+              'findIndex()',
+              'arr.findIndex(item => item.id === 3)',
+              "조건을 만족하는 최초의 '방 번호(인덱스 숫자)'를 반환 (없으면 -1)",
+            ],
+            [
+              'ES7 (2016)',
+              'includes()',
+              "arr.includes('수원')",
+              '배열 내 특정 값이 있는지 여부를 true / false 로만 반환. 구식 indexOf 조건식을 전면 대체',
+            ],
+            [
+              'ES10 (2019)',
+              'flat()',
+              '[1, [2, 3]].flat()',
+              '다차원으로 중첩된 다층 배열을 지정한 깊이만큼 평평하게 1차원 배열로 펴 준다',
+            ],
+            [
+              'ES13 (2022)',
+              'at()',
+              'arr.at(-1)',
+              '대괄호 인덱서(arr[arr.length - 1]) 대신, 음수 인덱스(-1)를 지원하여 맨 뒤 요소를 쉽게 역추적',
+            ],
+            [
+              'ES14 (2023)',
+              'toReversed() · toSorted() · toSpliced()',
+              'const newArr = arr.toSorted()',
+              '[최신 실무 표준] 원본 배열을 강제로 변형시키던 구형 메서드와 달리, 원본을 안전하게 보존하면서 정렬/반전된 새로운 복사본 배열을 리턴하는 불변성 메서드 세트',
+            ],
+          ],
+        },
+        note: 'sort() 는 원본을 뒤집어 버리지만 toSorted() 는 새 배열을 준다. Vue 의 computed 안에서는 반드시 toSorted() 쪽을 써야 한다.',
+      },
+      {
+        title: 'ES6 이후 추가된 Object 기능',
+        slide: '242~244쪽',
+        table: {
+          head: ['도입 버전', '기능', '예시', '핵심 요약'],
+          rows: [
+            [
+              'ES6 (2015)',
+              '단축 속성명 (Property Shorthand)',
+              'const user = { name, age }',
+              'key 이름과 대입할 변수명이 같다면, name: name 처럼 중복해서 쓰지 않고 이름만 한 번만 적어도 자동 매핑',
+            ],
+            [
+              'ES6 (2015)',
+              '계산된 속성명 (Computed Property)',
+              'const obj = { [keyName]: value }',
+              'key 자리에 고정된 문자열이 아니라, 대괄호[]를 쳐서 변수나 연산식의 결과물을 실시간 key 명으로 박아넣는 기술',
+            ],
+            [
+              'ES6 (2015)',
+              '메서드 축약 표현 (Method Shorthand)',
+              'const obj = { greet() {} }',
+              'function 키워드를 완전히 생략하고 함수명() {} 형태로 담백하게 선언',
+            ],
+            [
+              'ES6 (2015)',
+              'Object.assign()',
+              'Object.assign(target, src)',
+              '여러 객체의 속성을 하나의 대상 객체로 병합하거나 복사할 때 쓰던 메서드 (현재는 스프레드 연산자에 밀려 빈도 감소)',
+            ],
+            [
+              'ES8 (2017)',
+              'Object.keys() · values() · entries()',
+              'Object.entries(user)',
+              '객체의 [key 배열], [value 배열], [[key, value] 쌍의 2차원 배열]을 각각 추출하여 배열로 변환',
+            ],
+            [
+              'ES11 (2020)',
+              'Optional Chaining',
+              'user?.profile?.address',
+              '[실무 빈도 극상] 깊숙한 객체를 참조할 때 중간에 데이터가 비어 있어도(null/undefined) 에러로 뻗지 않고, 안전하게 undefined 를 뱉으며 프로그램을 보호',
+            ],
+          ],
+        },
+        code: {
+          caption: 'Object.entries() — 객체를 배열로 바꿔 순회하기',
+          text: `const scoreBoard = { math: 90, english: 80, science: 100 }
+
+// 객체를 [['math', 90], ['english', 80], ['science', 100]] 이라는 2차원 배열로 쪼개준다
+const entries = Object.entries(scoreBoard)
+
+// 배열이 되었으니 모든 배열 메서드로 자유롭게 순회 및 비구조화 할당 가동
+entries.forEach(([subject, score]) => {
+  console.log(\`과목: \${subject}, 점수: \${score}\`)
+})`,
+        },
+      },
+      {
+        title: 'Optional Chaining (?.) — 중간이 비어도 뻗지 않게',
+        slide: '245쪽',
+        body: '. 왼쪽에 있는 대상이 null 이거나 undefined 이면, 다음 하위 속성으로 진입하지 않고 에러 없이 undefined 를 반환합니다. 서버에서 온 데이터는 항상 필드가 다 차 있으리라는 보장이 없기 때문에 실무 빈도가 가장 높은 문법 중 하나입니다.',
+        code: {
+          caption: '탐색하다 null 을 만나면 즉시 중단하고 undefined',
+          text: `const user1 = { name: 'Graves', profile: { address: { city: 'Suwon' } } }
+const user2 = { name: '홍길동' }   // profile 속성이 물리적으로 존재하지 않는 상태
+
+const cityModern1 = user1?.profile?.address?.city
+const cityModern2 = user2?.profile?.address?.city
+
+console.log(cityModern1) // 'Suwon'
+console.log(cityModern2) // undefined — 에러 없이 안전하게 통과
+
+// 옵셔널 체이닝(?.) 뒤에 Null 병합 연산자(??)를 붙여 안전장치 이중 락을 건다
+const finalCity = user2?.profile?.address?.city ?? '등록된 주소 없음'
+console.log(finalCity)   // '등록된 주소 없음'`,
+        },
+        note: '?. 없이 user2.profile.address 를 읽으면 TypeError 로 앱 전체가 멈춘다. 화면 하나가 빈 게 아니라 흰 화면이 된다.',
+      },
+      {
+        title: 'Nullish Coalescing (??) — || 이 만들던 버그',
+        slide: '246쪽',
+        body: 'ES11(2020)에 도입된 문법입니다. 좌항의 피연산자가 null 이거나 undefined 일 때만 우항의 기본값을 반환하고, 그 외의 값이면 좌항의 값을 그대로 유지하는 연산자입니다. 과거에는 기본값을 줄 때 논리합(||)을 썼는데, || 는 null/undefined 뿐 아니라 JavaScript 가 false 로 취급하는 모든 Falsy 값(0, "", false)까지 전부 우항의 기본값으로 덮어버리는 버그를 유발했습니다.',
+        code: {
+          caption: '0 과 빈 문자열은 "값이 없는 것"이 아니다',
+          text: `const userSetting = {
+  alertCount: 0,
+  nickname: '',   // 닉네임을 아직 입력 안 해서 빈 문자열인 상황
+}
+
+// 1. 구식 OR (||) 방식의 버그
+const countOld = userSetting.alertCount || 10
+const nameOld = userSetting.nickname || '익명'
+console.log(countOld) // 10  — 버그: 유저는 분명 0회 알림을 원했는데 10회로 조작됨
+console.log(nameOld)  // '익명' — 버그: 닉네임을 공백으로 비워두고 싶었어도 강제 변환됨
+
+// 2. 모던 Nullish (??) 방식
+// 오직 null 이나 undefined 일 때만 우항으로 넘어간다. 숫자 0 이나 빈 문자열은 '데이터'로 인정한다
+const countModern = userSetting.alertCount ?? 10
+const nameModern = userSetting.nickname ?? '익명'
+console.log(countModern) // 0  — 안전 보존: 유저가 의도한 0 이 정확히 살아남음
+console.log(nameModern)  // '' — 안전 보존: 빈 문자열 데이터 유지`,
+        },
+        note: '기온 0도, 강수량 0mm, 재고 0개 — 날씨 앱과 쇼핑몰에서 || 를 쓰면 반드시 터지는 자리다.',
+      },
+    ],
+
+    checklist: [
+      'var 를 쓰지 않고 const 를 기본으로, 바뀌는 값만 let 으로 선언했다',
+      '객체·배열에서 값을 꺼낼 때 obj.key 반복 대신 구조 분해를 썼다',
+      '문자열을 + 로 잇지 않고 백틱과 ${} 로 조립했다',
+      '배열·객체를 복사할 때 = 대입 대신 스프레드(...)로 새것을 만들었다',
+      '정렬할 때 sort() 대신 toSorted() 를 써서 원본을 지켰다',
+      '서버 데이터를 깊게 참조하는 곳에 ?. 를 붙였다',
+      '기본값을 줄 때 || 대신 ?? 를 써서 0 과 빈 문자열을 지켰다',
+      '비동기 함수에 async 를 붙이고 호출 앞에 await 를 빠짐없이 넣었다',
+      '비동기 에러를 try / catch 로 감쌌다',
+    ],
+
+    quiz: [
+      {
+        q: 'const 로 선언한 배열에 push() 를 하면 에러가 나는가?',
+        a: '나지 않는다. const 가 막는 것은 재할당(=)이지 내용 변경이 아니다. arr = [] 는 에러지만 arr.push(1) 은 된다.',
+      },
+      {
+        q: 'const cloneWrong = original 로 배열을 복사했다. 무엇이 문제인가?',
+        a: '주소값만 복사돼 둘이 같은 배열을 가리킨다. 복사본을 고치면 원본도 함께 깨진다. [...original] 로 새 복사본을 만들어야 한다.',
+      },
+      {
+        q: '... 이 Spread 인지 Rest 인지 어떻게 구분하는가?',
+        a: '위치로 구분한다. 값을 만드는 오른쪽에 있으면 펼치는 Spread, 값을 받는 왼쪽에 있으면 남은 것을 모으는 Rest 다.',
+      },
+      {
+        q: '기온이 0도인데 화면에 기본값이 나온다. 어디를 고쳐야 하는가?',
+        a: 'temp || 20 처럼 || 를 쓴 자리다. 0 은 Falsy 라 우항으로 넘어간다. temp ?? 20 으로 바꾸면 0 이 살아남는다.',
+      },
+      {
+        q: '화면에 "[object Promise]" 가 찍힌다. 무엇을 빠뜨렸나?',
+        a: 'await 다. async 함수는 항상 Promise 를 반환하므로, 값을 쓰려면 호출 앞에 await 를 붙여야 한다.',
+      },
+      {
+        q: 'find() 와 findIndex() 는 무엇이 다른가?',
+        a: 'find() 는 조건을 만족하는 아이템 자체를(없으면 undefined), findIndex() 는 그 아이템의 인덱스 숫자를(없으면 -1) 돌려준다.',
+      },
+      {
+        q: 'Babel 과 Polyfill 은 무엇이 다른가?',
+        a: 'Babel 은 최신 문법을 구형 문법으로 번역한다. Polyfill 은 구형 엔진에 아예 없는 객체·메서드를 JavaScript 로 직접 구현해 끼워 넣는다.',
+      },
+    ],
+  },
 }
 
 /** 이 챕터에 정리 노트가 있는지 */
