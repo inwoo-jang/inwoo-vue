@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import ChallengeCard from '../components/ui/ChallengeCard.vue'
 import ChapterNotes from '../components/ui/ChapterNotes.vue'
 import ChapterOrientation from '../components/ui/ChapterOrientation.vue'
@@ -11,7 +11,6 @@ import { notesOf } from '../data/chapterNotes'
  * 현재 선택된 챕터 id — 주소(/learning/4)에서 읽는다.
  * 주소에 담아 두면 "CH04 보고 있어"를 링크로 그대로 보낼 수 있다.
  */
-const route = useRoute()
 const router = useRouter()
 
 const props = defineProps({

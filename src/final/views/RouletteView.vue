@@ -32,29 +32,13 @@ const canSpin = computed(() => items.value.length >= MIN_ITEMS)
 const toneOf = (index) => sliceTones[index % sliceTones.length]
 
 /**
- * 글자를 뒤집어야 하는 칸인지.
+ * 이름을 바로 세우는 데 필요한 각도.
  *
- * 이름은 원판 중심에서 바깥으로 뻗은 줄 위에 얹혀 있다.
- * 오른쪽 반원(12시~6시)에서는 바깥쪽이 오른쪽이라 그대로 읽히지만,
- * 왼쪽 반원에서는 바깥쪽이 왼쪽이 되어 글자가 거꾸로 선다.
+ * 이름은 원판 중심에서 바깥으로 뻗은 줄(.label) 위에 얹혀 있고, 그 줄은
+ * i번째 칸 가운데(-90도 보정)만큼 돌아가 있다. 그만큼 되돌려 두면 원판이
+ * 안 돌 때 글자가 똑바로 선다. 원판이 도는 만큼은 CSS 가 따로 되돌린다.
  */
-const isFlipped = (index) => {
-  // 원판이 돈 만큼을 더해서 본다
-  const center = index * slice.value + slice.value / 2 + angle.value
-  return (((center % 360) + 360) % 360) > 180
-}
-
-/**
- * 글자를 얼마나 돌려 둘지.
- *
- * 도는 동안에는 원판에 붙어 같이 돈다 — 그래야 진짜 돌림판처럼 보인다.
- * 멈추고 나면 다들 비스듬히 누워 있어서 읽기 어려우므로, 그때만 바로 세운다.
- * (줄 자체가 center-90 만큼, 원판이 angle 만큼 돌아 있으니 그만큼 되돌린다)
- */
-const labelTurn = (index) => {
-  if (isSpinning.value) return isFlipped(index) ? 180 : 0
-  return -(angle.value + index * slice.value + slice.value / 2 - 90)
-}
+const labelOffset = (index) => -(index * slice.value + slice.value / 2 - 90)
 
 /**
  * 원판 그리기.
@@ -291,8 +275,14 @@ const save = async () => {
             class="label"
             :style="{ transform: `rotate(${i * slice + slice / 2 - 90}deg)` }"
           >
-            <!-- 도는 중에는 원판을 따라 눕고, 멈추면 바로 선다 -->
-            <b :style="{ transform: `rotate(${labelTurn(i)}deg)` }">{{ item }}</b>
+            <!--
+              글자는 원판을 따라 눕지 않는다.
+              rotate  : 줄이 돌아간 만큼 되돌려 세워 두고
+              transform: 원판이 돈 만큼을 반대로 되돌린다 (도는 중엔 CSS 애니메이션)
+            -->
+            <b :style="{ rotate: `${labelOffset(i)}deg`, transform: `rotate(${-angle}deg)` }">
+              {{ item }}
+            </b>
           </span>
 
           <span v-if="!items.length" class="empty-wheel">항목을 넣어 주세요</span>
@@ -501,8 +491,29 @@ h3 {
   transition: none;
 }
 
+/*
+ * 글자는 원판이 도는 만큼 반대로 돈다.
+ * 같은 시간·같은 곡선이라 두 회전이 정확히 상쇄되고, 글자는 제자리에 선 채로
+ * 색칸만 돌아가는 것처럼 보인다.
+ */
+.wheel.running .label b {
+  animation: turn-back 0.85s linear infinite;
+  transition: none;
+}
+
+@keyframes turn-back {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
 /* 멈추기 직전, 지금 각도에 그대로 붙이는 한 프레임 */
-.wheel.snap {
+.wheel.snap,
+.wheel.snap .label b {
   transition: none;
 }
 
@@ -567,8 +578,8 @@ h3 {
   line-height: 1.2;
   text-align: center;
   text-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
-  /* 멈춘 뒤 바로 서는 동작만 짧게 보여 준다 */
-  transition: transform 0.3s ease-out;
+  /* 원판과 똑같은 곡선·시간으로 반대 방향으로 돈다 → 글자는 그 자리에 서 있다 */
+  transition: transform 3.4s cubic-bezier(0.12, 0.72, 0.2, 1);
   transform-origin: 50% 50%;
   overflow-wrap: anywhere;
 }

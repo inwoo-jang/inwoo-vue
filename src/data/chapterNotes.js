@@ -113,7 +113,7 @@ import { useCounterStore } from '@/stores/counter.js'
 
 // 2. 인스턴스 가동 (전역 저장소 포인터 확보)
 const counterStore = useCounterStore()
-<\/script>
+</script>
 
 <template>
   <p>원본 카운트 데이터(state): {{ counterStore.count }}</p>
@@ -416,7 +416,7 @@ const handleFetchWeather = async () => {
     isLoading.value = false
   }
 }
-<\/script>`,
+</script>`,
         },
         bullets: [
           'isLoading 은 통신 시작에 true, finally 에서 false 로 되돌린다. finally 에 두어야 성공하든 실패하든 반드시 풀린다.',
@@ -513,7 +513,7 @@ const handleRead = async () => {
 }
 
 onMounted(handleRead)
-<\/script>`,
+</script>`,
         },
         bullets: [
           'POST 는 axios.post(BASE_URL, { title: textInput.value }) 처럼 두 번째 인자에 Body 를 싣는다.',

@@ -52,11 +52,12 @@ export const setTheme = (id) => {
 
 /** 앱이 뜰 때 한 번 호출한다. */
 export const initTheme = () => {
+  // 읽기가 막히면 null 인 채로 남고, 아래에서 기본 테마로 넘어간다
   let saved = null
   try {
     saved = localStorage.getItem(STORAGE_KEY)
   } catch {
-    saved = null
+    // 시크릿 모드 등 저장소 접근이 막힌 환경
   }
   setTheme(isKnown(saved) ? saved : DEFAULT_THEME)
 }

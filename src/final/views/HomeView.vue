@@ -156,20 +156,12 @@ const todayNote = computed(() => {
   return { icon: '☁️', text: '흐릿해요. 천천히 시작하기 좋은 날이에요.' }
 })
 
-/** 요약 줄에 쓰는 작은 날씨 표시 */
-const summaryIcon = computed(() => {
-  const status = here.value?.status ?? ''
-  if (status.includes('비') || status.includes('소나기')) return '🌧'
-  if (status.includes('눈')) return '🌨'
-  if (status.includes('맑')) return '☀️'
-  return '☁️'
-})
-
 /** 아래 네 칸 — 이 서비스가 하는 일 전부 */
 const menus = [
   { to: 'weather', icon: 'sun-cloud', tone: 'sky', title: '날씨', desc: '오늘의 날씨와 전국 현황' },
   { to: 'tarot', icon: 'moon-star', tone: 'plum', title: '운세', desc: '오늘의 운세와 타로 보기' },
   { to: 'tests', icon: 'checklist', tone: 'leaf', title: '테스트', desc: '오늘의 심리테스트' },
+  { to: 'games', icon: 'wheel', tone: 'clay', title: '게임', desc: '고민될 땐 운에 맡기기' },
 ]
 
 /** 위치를 허용하면 받을 수 있는 것들 — 권한이 없을 때만 보여 준다 */
@@ -540,9 +532,10 @@ h1 {
 }
 
 /* ── ④ 기능 카드 ── */
+/* 넷이 한 줄에 들어오게. 좁아지면 2×2 로 접힌다 */
 .menus {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
   gap: 12px;
 }
 
@@ -586,6 +579,11 @@ h1 {
 .menu-icon.leaf {
   background: #e6f0e9;
   color: #2f6b47;
+}
+
+.menu-icon.clay {
+  background: #f4ebe1;
+  color: #96693a;
 }
 
 .menu b {

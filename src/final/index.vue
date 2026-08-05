@@ -236,9 +236,16 @@ const logout = () => {
   color: var(--slate-deep);
 }
 
-/* 지금 로그인 화면에 있으면 살짝 눌린 것처럼 */
+/*
+ * 지금 로그인 화면에 있으면 조금 더 진하게.
+ *
+ * 예전에는 translateY 로 눌린 것처럼 보였는데, 그러면 이 버튼만 아래로
+ * 내려가 메뉴 줄의 위아래가 어긋나 보였다. 자리는 그대로 두고 색만 바꾼다.
+ */
 .nav a.sign.on {
-  transform: translateY(1px);
+  border-color: color-mix(in srgb, var(--slate) 44%, transparent);
+  background: color-mix(in srgb, var(--slate) 20%, transparent);
+  color: var(--slate-deep);
 }
 
 @media (max-width: 620px) {

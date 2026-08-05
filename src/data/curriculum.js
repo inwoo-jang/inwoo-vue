@@ -4014,7 +4014,11 @@ export const assignments = [
       'npm run build로 dist/ 생성',
       'GitHub Pages에 정적 파일 배포',
     ],
-    status: 'final',
+    result: 'DeployReport',
+    resultNote:
+      '이 단계만 화면이 아니라 상태가 결과물입니다. 지금 보고 있는 페이지가 어떤 모드로 빌드됐고 키가 번들에 들어갔는지를 import.meta.env 에서 그때그때 읽어 보여 줍니다',
+    note: 'ESLint 는 이 과제를 하면서 처음 설치했습니다 — eslint.config.js(Vue 3 규칙 + Prettier 와 역할 분리)와 lint · lint:check · format 스크립트를 넣었고, 오류 6건을 고쳐 Error 0개로 만들었습니다. 그 과정에서 EventPractice 의 색상 버튼이 핸들러만 남고 화면에서 빠져 있던 것도 함께 찾아 되살렸습니다. 키는 import.meta.env.VITE_OPENWEATHER_API_KEY 로 분리하고 .env* 를 .gitignore 에 넣었으며, 값이 없는 견본인 .env.example 만 일부러 추적합니다. 배포 명령은 키를 비운 채 빌드한 뒤 404.html 복사와 .nojekyll 생성까지 함께 합니다.',
+    status: 'done',
   },
 ]
 

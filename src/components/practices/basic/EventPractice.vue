@@ -45,6 +45,17 @@ const getWithParam = (name, e) => {
     `대상: ${name} / 클릭된 태그: ${e.target.tagName}`
 }
 
+/**
+ * 눌러 볼 색상 버튼.
+ * css 를 인라인 style 로 칠해 두면, 아래에서 getComputedStyle 로 다시 읽었을 때
+ * 내가 적은 이름이 아니라 브라우저가 계산한 rgb() 값이 나온다 — 그 차이를 보는 실습이다.
+ */
+const COLOR_BUTTONS = [
+  { name: '빨강', css: '#e2564a' },
+  { name: '초록', css: '#2f8f5b' },
+  { name: '파랑', css: '#3a6ea8' },
+]
+
 // 클릭한 버튼의 이름과 실제 CSS 배경색을 확인
 const getColorInfo = (colorName, e) => {
   const backgroundColor = window.getComputedStyle(
@@ -218,6 +229,24 @@ onUnmounted(() => {
         ></span>
       </div>
 
+      <!--
+        색상 이름은 내가 직접 넘기는 인자이고, $event 는 Vue 가 주는 이벤트 객체다.
+        둘을 함께 넘길 때는 인자를 적는 순간 $event 가 자동으로 사라지므로
+        이렇게 명시적으로 적어 줘야 한다 — 이 실습에서 가장 자주 걸리는 지점이다.
+      -->
+      <div class="color-buttons">
+        <button
+          v-for="color in COLOR_BUTTONS"
+          :key="color.name"
+          type="button"
+          class="color-button"
+          :style="{ backgroundColor: color.css }"
+          @click="getColorInfo(color.name, $event)"
+        >
+          {{ color.name }}
+        </button>
+      </div>
+
       <p>
         {{ selectedColor || '무지개 바나 색상 버튼을 클릭해 보세요.' }}
       </p>
@@ -336,6 +365,24 @@ onUnmounted(() => {
   background-color: #263238;
   transform: translateX(-50%);
   pointer-events: none;
+}
+
+.color-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.color-button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
 }
 
 .selected-color {

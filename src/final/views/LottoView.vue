@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import BaseDashboardCard from '../../components/weather/BaseDashboardCard.vue'
@@ -75,29 +75,80 @@ const drawSet = () => {
   }
 }
 
-/** 공 하나가 나오는 간격 */
-const STEP_MS = 380
+/** 공 하나가 나오는 간격 (한 번에 뽑기) */
+const STEP_MS = 420
+
+/** 'auto' 한 번에 다 뽑기 · 'manual' 한 개씩 내가 뽑기 */
+const mode = ref('auto')
 
 let timer = 0
 
+/** 한 개씩 뽑는 중이라 아직 안 끝난 세트가 있는가 */
+const isPending = computed(
+  () => mode.value === 'manual' && sets.value.length > 0 && dropped.value < PER_SET,
+)
+
+/** 지금 뽑기 버튼을 누를 수 없는 때 */
+const isBusy = computed(() => isDrawing.value)
+
+/**
+ * 방금 나온 공을 관에서 자리까지 날려 보낸다.
+ *
+ * 자리(슬롯)와 관은 화면에서 서로 멀리 떨어져 있고, 세트가 쌓일수록 거리가
+ * 달라진다. 그래서 두 위치를 그때그때 재서 그 차이만큼 밀어 둔 뒤 0 으로
+ * 되돌린다 — 관에서 굴러 나와 제자리에 앉는 것처럼 보인다.
+ */
+const flyFromChute = async () => {
+  await nextTick()
+  const chute = document.querySelector('.machine .chute')
+  const balls = document.querySelectorAll('.lines .ball')
+  const ball = balls[balls.length - 1]
+  if (!chute || !ball) return
+
+  const from = chute.getBoundingClientRect()
+  const to = ball.getBoundingClientRect()
+  ball.style.setProperty('--dx', `${from.left + from.width / 2 - (to.left + to.width / 2)}px`)
+  ball.style.setProperty('--dy', `${from.bottom - (to.top + to.height / 2)}px`)
+  ball.classList.add('fly')
+}
+
+/** 새 세트를 하나 만들어 붙인다 */
+const startSet = () => {
+  savedId.value = 0
+  runId.value += 1
+  dropped.value = 0
+  sets.value = [...sets.value, drawSet()]
+}
+
 const draw = () => {
-  if (isDrawing.value) return
+  if (isBusy.value) return
+
+  // 한 개씩 뽑는 중이면, 이번 누름은 '다음 공 하나' 다
+  if (isPending.value) {
+    dropped.value += 1
+    flyFromChute()
+    return
+  }
+
   if (isFull.value) {
     ElMessage.warning(`세트는 ${MAX_SETS}개까지 모을 수 있어요.`)
     return
   }
 
-  isDrawing.value = true
-  savedId.value = 0
-  runId.value += 1
-  dropped.value = 0
-  sets.value = [...sets.value, drawSet()]
+  startSet()
 
+  if (mode.value === 'manual') {
+    // 통만 한 번 흔들어 주고, 공은 사람이 누를 때마다 나온다
+    return
+  }
+
+  isDrawing.value = true
   window.clearInterval(timer)
   // 추첨기가 한 바퀴 돌 시간을 준 뒤부터 하나씩 내보낸다
   window.setTimeout(() => {
     timer = window.setInterval(() => {
       dropped.value += 1
+      flyFromChute()
       if (dropped.value >= PER_SET) {
         window.clearInterval(timer)
         isDrawing.value = false
@@ -106,15 +157,24 @@ const draw = () => {
   }, 700)
 }
 
+/** 뽑는 방식을 바꾸면 진행 중이던 세트는 접는다 */
+const setMode = (next) => {
+  if (isDrawing.value || mode.value === next) return
+  if (isPending.value) sets.value = sets.value.slice(0, -1)
+  mode.value = next
+  dropped.value = PER_SET
+}
+
 const removeSet = (index) => {
-  if (isDrawing.value) return
+  if (isBusy.value) return
   sets.value = sets.value.filter((_, i) => i !== index)
   savedId.value = 0
 }
 
 const clearAll = () => {
-  if (isDrawing.value || !sets.value.length) return
+  if (isBusy.value || !sets.value.length) return
   sets.value = []
+  dropped.value = PER_SET
   savedId.value = 0
   ElMessage.success({ message: '뽑은 세트를 모두 지웠어요.', duration: 1400 })
 }
@@ -126,7 +186,7 @@ onBeforeUnmount(() => window.clearInterval(timer))
  * 앞서 뽑아 둔 세트는 전부 나온 상태고, 마지막 세트만 하나씩 채워진다.
  */
 const isOut = (setIndex, ballIndex) =>
-  setIndex < sets.value.length - 1 || !isDrawing.value || ballIndex < dropped.value
+  setIndex < sets.value.length - 1 || ballIndex < dropped.value
 
 const letterOf = (index) => String.fromCharCode(65 + index) // A, B, C…
 
@@ -176,7 +236,7 @@ const save = async () => {
       </header>
 
       <!-- ── 추첨기 ── -->
-      <div class="machine" :class="{ on: isDrawing }">
+      <div class="machine" :class="{ on: isDrawing || isPending }">
         <div class="drum">
           <div class="tumble">
             <!-- 가운데에서 바깥으로 뻗은 줄(.chip) 위에, 비율만큼 떨어뜨려 얹는다 -->
@@ -200,23 +260,38 @@ const save = async () => {
 
       <!-- ── 뽑기 ── -->
       <section class="draw">
-        <p class="section-label">
-          모은 세트 <b>{{ sets.length }}</b> / {{ MAX_SETS }}
-        </p>
-
-        <div class="acts">
-          <button
-            type="button"
-            class="clear"
-            :disabled="!sets.length || isDrawing"
-            @click="clearAll"
-          >
-            전체 삭제
+        <div class="modes">
+          <button type="button" :class="{ on: mode === 'auto' }" :disabled="isDrawing" @click="setMode('auto')">
+            한 번에 뽑기
           </button>
-          <button type="button" class="go" :disabled="isDrawing || isFull" @click="draw">
-            {{ isDrawing ? '뽑는 중…' : sets.length ? '세트 더 뽑기' : '번호 뽑기' }}
+          <button type="button" :class="{ on: mode === 'manual' }" :disabled="isDrawing" @click="setMode('manual')">
+            한 개씩 뽑기
           </button>
         </div>
+
+        <div class="acts">
+          <button type="button" class="clear" :disabled="!sets.length || isBusy" @click="clearAll">
+            전체 삭제
+          </button>
+          <button
+            type="button"
+            class="go"
+            :disabled="isBusy || (isFull && !isPending)"
+            @click="draw"
+          >
+            {{
+              isDrawing
+                ? '뽑는 중…'
+                : isPending
+                  ? `공 뽑기 ${dropped + 1} / ${PER_SET}`
+                  : sets.length
+                    ? '세트 더 뽑기'
+                    : '번호 뽑기'
+            }}
+          </button>
+        </div>
+
+        <p class="count">모은 세트 <b>{{ sets.length }}</b> / {{ MAX_SETS }}</p>
       </section>
 
       <!-- ── 결과 ── -->
@@ -264,7 +339,7 @@ const save = async () => {
 
         <p class="hint">마지막 한 칸은 보너스 번호예요.</p>
 
-        <div v-if="!isDrawing" class="result-acts">
+        <div v-if="!isDrawing && !isPending" class="result-acts">
           <button
             v-if="isLoggedIn && !savedId"
             type="button"
@@ -460,6 +535,50 @@ h3 {
   background: var(--surface-sunken);
 }
 
+.modes {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.05);
+}
+
+.modes button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.modes button.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgb(40 46 56 / 0.12);
+}
+
+.modes button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.count {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.count b {
+  color: var(--ink-soft);
+}
+
 .acts {
   display: flex;
   gap: 8px;
@@ -639,6 +758,26 @@ h3 {
 
   to {
     opacity: 1;
+    transform: none;
+  }
+}
+
+/* 관에서 굴러 나와 제자리에 앉는 공 — 거리는 자바스크립트가 재서 넣어 준다 */
+.ball.fly {
+  animation: fly 0.62s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+@keyframes fly {
+  from {
+    opacity: 0.85;
+    transform: translate(var(--dx, 0), var(--dy, 0)) scale(1.25);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  to {
     transform: none;
   }
 }

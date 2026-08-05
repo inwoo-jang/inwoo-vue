@@ -14,6 +14,11 @@ const tryDirectChange = () => {
   const before = props.count
   try {
     // Props 객체는 readonly라 이 대입은 무시된다 (콘솔에 경고가 찍힌다)
+    //
+    // ESLint 가 여기서 vue/no-mutating-props 오류를 내는 것이 정상이다.
+    // 이 실습은 "하면 안 되는 것"을 눌러서 보여 주는 곳이라 일부러 남겨 둔다.
+    // 규칙을 파일 전체에서 끄지 않고 이 한 줄만 끄는 이유도 같다.
+    // eslint-disable-next-line vue/no-mutating-props
     props.count = before + 1
   } catch {
     // strict 환경에서는 예외가 날 수도 있다
