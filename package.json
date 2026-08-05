@@ -12,6 +12,7 @@
     "deploy": "VITE_OPENWEATHER_API_KEY= npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll && npx --yes gh-pages@6 -d dist -b gh-pages --dotfiles -m \"deploy: $(date +%Y-%m-%d\\ %H:%M)\""
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@anthropic-ai/sdk": "^0.115.0",
     "axios": "^1.19.0",
     "element-plus": "^2.14.3",

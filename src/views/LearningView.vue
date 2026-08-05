@@ -2,8 +2,10 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ChallengeCard from '../components/ui/ChallengeCard.vue'
+import ChapterNotes from '../components/ui/ChapterNotes.vue'
 import ChapterOrientation from '../components/ui/ChapterOrientation.vue'
 import { assignmentsOf, chapters, challengesOf } from '../data/curriculum'
+import { notesOf } from '../data/chapterNotes'
 
 /**
  * 현재 선택된 챕터 id — 주소(/learning/4)에서 읽는다.
@@ -44,6 +46,9 @@ const isNavCollapsed = ref(false)
 const selectedChapter = computed(() =>
   chapters.find((chapter) => chapter.id === selectedChapterId.value),
 )
+
+/** 교안 본문 정리 — 아직 옮겨 둔 챕터에만 있다 */
+const chapterNote = computed(() => notesOf(selectedChapterId.value))
 
 const visibleChallenges = computed(() => challengesOf(selectedChapterId.value))
 
@@ -165,6 +170,9 @@ const scrollToTop = () => {
         v-if="selectedChapter.orientation"
         :orientation="selectedChapter.orientation"
       />
+
+      <!-- 교안 본문 정리 — 실습 전에 읽고, 나중에 PDF 대신 여기서 복습한다 -->
+      <ChapterNotes v-if="chapterNote" :notes="chapterNote" />
 
       <div v-if="visibleChallenges.length" class="challenge-stack">
         <ChallengeCard

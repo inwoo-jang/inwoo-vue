@@ -7,6 +7,8 @@
  *   /final/weather          날씨 — 전국 도시 오늘 현황
  *   /final/weather/:cityId  도시 상세 + 시간별 예보
  *   /final/tarot            운세 — 타로 세 장으로 보는 오늘
+ *   /final/tests            테스트 — 룰 기반 심리테스트 목록
+ *   /final/tests/:testId    테스트 진행 (animal · zombie)
  *   /final/login            로그인 — 운세 기록을 남기려면 필요하다
  *   /final/records          내 운세 기록 (로그인한 사람만)
  *
@@ -46,6 +48,17 @@ export default [
     path: 'tarot',
     name: 'final-tarot',
     component: () => import('./views/TarotView.vue'),
+  },
+  {
+    path: 'tests',
+    name: 'final-tests',
+    component: () => import('./views/TestsView.vue'),
+  },
+  {
+    // :testId 자리에 animal · zombie 가 들어온다
+    path: 'tests/:testId',
+    name: 'final-test',
+    component: () => import('./views/TestPlayView.vue'),
   },
   {
     path: 'login',
